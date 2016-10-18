@@ -22,5 +22,5 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^', TemplateView.as_view(template_name='base.html')),
     url(r'^login/', login, name='login'),
-    url(r'^login/', logout, name='logout'),
+    url(r'^logout/', logout, name='logout'),
 ]
