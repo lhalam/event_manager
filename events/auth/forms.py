@@ -6,3 +6,4 @@ class LoginForm(AuthenticationForm):
                                widget=forms.TextInput(attrs={'name': 'username'}))
     password = forms.CharField(label="Password", max_length=30, 
                                widget=forms.PasswordInput(attrs={'name': 'password'}))
+    remember_me = forms.BooleanField(label='Keep me logged in', required=False)
