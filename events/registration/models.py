@@ -33,12 +33,21 @@ class RegistrationConfirm(models.Model):
 
     @staticmethod
     def _generate_link():
+        '''
+        Generates registration confirm link.
+        :return link:
+        '''
         hash_code = uuid.uuid4().hex
         link = settings.HOST_NAME + '/reg/confirm/' + hash_code
         return link
 
     @staticmethod
     def create_confirm(user):
+        '''
+        Saves hashcode and appropriate user for registration confirm.
+        :param user:
+        :return link:
+        '''
         link = RegistrationConfirm._generate_link()
         confirm = RegistrationConfirm()
         confirm.user = user
@@ -51,6 +60,12 @@ class RegistrationConfirm(models.Model):
 
     @staticmethod
     def close_confirm(hash_code):
+        '''
+        Close registration confirm for user.
+        :param hash_code:
+        :return user:
+        :return None:
+        '''
         try:
             confirm = RegistrationConfirm.objects.get(hash_code=hash_code)
         except RegistrationConfirm.DoesNotExist:
@@ -62,9 +77,9 @@ class RegistrationConfirm(models.Model):
             if confirm.creation_date + timedelta(days=7) < timezone.now():
                 confirm.user.delete()
                 return None
+
             confirm.user.is_active = True
             confirm.user.save()
             confirm.is_active = False
             confirm.save()
             return confirm.user
-

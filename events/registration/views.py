@@ -15,6 +15,9 @@ class EmailSender(object):
         self.user = user
 
     def send_registrtion_confirm(self):
+        '''
+        Send email with confirm link.
+        '''
         link = RegistrationConfirm.create_confirm(self.user)
         subject = 'Confirm registration'
         message = render_to_string('email.txt', {'link': link, 'name': self.user.first_name })
