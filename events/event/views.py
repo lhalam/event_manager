@@ -1,24 +1,55 @@
 from .models import Event, EventUserAssignment, User
 from django.views.generic.base import View
-from django.http import HttpResponse
+from django.http import JsonResponse
 import json
 
 
 class EventView(View):
 
+    pass
+
+
+class EventUserAssignmentView(View):
+    """
+    View used for user assignment to event.
+    """
     def put(self, request, event_id):
+        """
+
+        :param request: request to View
+        :param event_id: id of event for which users will be assigned
+        :return: JsonResponse with json containing error message and status 404 if event does not exists.
+        JsonResponse with json containing two lists: successfully added users; users which do not exist and status 404
+        if some of assigned users are not existing.
+        JsonResponse with json containing list of successfully added users and status 200.
+        """
         data = json.loads(request.body.decode())
+        not_existing_users, successfully_added = [], []
 
-        if data.get('participants'):
+        try:
             event = Event.get_by_id(event_id)
-            for username in data.get('participants'):
-                user = User.objects.get(username=username)
-                obj, state = EventUserAssignment.objects.get_or_create(user=user, event=event)
-                obj.save()
-            return HttpResponse(status=204)
+        except Event.DoesNotExist:
+            return JsonResponse({"error_message": "Such event does not exists".format(event_id)}, status=404)
 
-        event = Event.get_by_id(event_id)
-        event.title = data.get('title')
-        event.description = data.get('description')
-        event.save()
-        return HttpResponse(status=204)
+        for username in data.get('participants'):
+
+            try:
+                user = User.objects.get(username=username)
+            except User.DoesNotExist:
+                not_existing_users.append(username)
+                continue
+
+            instance, added = EventUserAssignment.objects.get_or_create(user=user, event=event)
+
+            if added:
+                instance.save()
+                successfully_added.append(user.username)
+
+        if not_existing_users:
+
+            return JsonResponse({
+                "not_existing_users": not_existing_users,
+                "successfully_added": successfully_added,
+            }, status=404)
+
+        return JsonResponse({"successfully_added": successfully_added}, status=200)

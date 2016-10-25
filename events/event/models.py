@@ -29,6 +29,3 @@ class Event(models.Model):
 class EventUserAssignment(models.Model):
     event = models.ForeignKey(Event)
     user = models.ForeignKey(User)
-
-    # @classmethod
-    # def get_current_event_user_list(cls, event_id):
