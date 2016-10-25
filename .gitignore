@@ -88,14 +88,12 @@ ENV/
 # Rope project settings
 .ropeproject
 
-<<<<<<< HEAD
 # Etc
 *~
-=======
+
 # compiled less files
 events/static/COMPILED/
 
 #PyCharm
 .idea/
 
->>>>>>> dev
