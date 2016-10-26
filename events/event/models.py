@@ -17,15 +17,18 @@ class Event(models.Model):
     def __str__(self):
         return "%s" % self.title
 
-    @classmethod
-    def get_all(cls):
-        return cls.objects.all()
+    @staticmethod
+    def get_all():
+        return Event.objects.all()
 
-    @classmethod
-    def get_by_id(cls, event_id):
-        return cls.objects.get(pk=event_id)
+    @staticmethod
+    def get_by_id(event_id):
+        try:
+            return Event.objects.get(pk=event_id)
+        except Event.DoesNotExist:
+            return None
 
 
 class EventUserAssignment(models.Model):
-    event = models.ForeignKey(Event)
-    user = models.ForeignKey(User)
+    event = models.ForeignKey(Event, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)

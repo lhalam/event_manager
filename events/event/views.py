@@ -1,7 +1,9 @@
-from .models import Event, EventUserAssignment, User
-from django.views.generic.base import View
-from django.http import JsonResponse
 import json
+
+from django.http import JsonResponse
+from django.views.generic.base import View
+
+from .models import Event, EventUserAssignment, User
 
 
 class EventView(View):
@@ -13,23 +15,22 @@ class EventUserAssignmentView(View):
     """
     View used for user assignment to event.
     """
+
     def put(self, request, event_id):
         """
-
         :param request: request to View
         :param event_id: id of event for which users will be assigned
-        :return: JsonResponse with json containing error message and status 404 if event does not exists.
-        JsonResponse with json containing two lists: successfully added users; users which do not exist and status 404
+        :return: json containing error message and status 404 if event does not exists.
+        json containing two lists: successfully added users; users which do not exist and status 404
         if some of assigned users are not existing.
-        JsonResponse with json containing list of successfully added users and status 200.
+        json containing list of successfully added users and status 200.
         """
         data = json.loads(request.body.decode())
         not_existing_users, successfully_added = [], []
 
-        try:
-            event = Event.get_by_id(event_id)
-        except Event.DoesNotExist:
-            return JsonResponse({"error_message": "Such event does not exists".format(event_id)}, status=404)
+        event = Event.get_by_id(event_id)
+        if not event:
+            return JsonResponse({"error_message": "Such event does not exists"}, status=404)
 
         for username in data.get('participants'):
 
