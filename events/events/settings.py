@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'event.apps.EventConfig',
     'static_precompiler',
+    'company'
 ]
 
 MIDDLEWARE = [
