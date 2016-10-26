@@ -34,3 +34,19 @@ class CompanyView(View):
         Company.create_company(data)
         return HttpResponse(status=201)
 
+    def put(self, request, event_id):
+        data = json.loads(request.body.decode())
+
+        if data.get('participants'):
+            event = Event.get_by_id(data.get('id'))
+            for username in data.get('participants'):
+                user = User.objects.get(username=username)
+                obj, status = EventUserAssignment.objects.get_or_create(user=user, event=event)
+                obj.save()
+            return HttpResponse(status=204)
+
+        event = Event.get_by_id(data.get('id'))
+        event.title = data.get('title')
+        event.description = data.get('description')
+        event.save()
+        return HttpResponse(status=204)
