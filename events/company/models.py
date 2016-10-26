@@ -22,16 +22,6 @@ class Company(models.Model):
             return None
 
     @staticmethod
-    def create_company(data):
-        data['company_admin'] = User.objects.get(username=data.get('company_admin'))
-        company = Company(**data)
-        company.save()
-
-    @staticmethod
-    def delete_company(company_id):
-        Company.objects.get(id=company_id).delete()
-
-    @staticmethod
     def get_teams(company_id):
         return [team.name for team in Company.get_by_id(company_id).teams.all()]
 
