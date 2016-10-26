@@ -1,3 +1,4 @@
 Django==1.10.2
+django-static-precompiler==1.5
 psycopg2==2.6.2
 validate-email==1.3
