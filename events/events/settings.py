@@ -125,7 +125,7 @@ STATIC_ROOT = BASE_DIR + '/static/'
 
 STATIC_PRECOMPILER_COMPILERS = (
     ('static_precompiler.compilers.LESS', {
-        "executable": "/usr/bin/lessc",
+        "executable": "/usr/local/bin/lessc",
         "sourcemap_enabled": False,
         "global_vars": {"link-color": "red"}
     }),
