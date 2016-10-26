@@ -37,7 +37,7 @@ class RegistrationConfirm(models.Model):
         """
         Saves hashcode and appropriate user for registration confirm.
         :param user:
-        :return link:
+        :return hash_code:
         """
         confirm = RegistrationConfirm()
         confirm.user = user
