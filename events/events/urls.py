@@ -24,4 +24,6 @@ urlpatterns = [
     url(r'^auth/', include('auth.urls', namespace='auth')),
     url(r'^calendar$',TemplateView.as_view(template_name='calendar.html')),
     url(r'^api/v1/reg/', include('registration.urls', namespace='reg')),
+    url(r'^api/v1/events/', include('event.urls', namespace='event')),
+    url(r'^api/v1/calendars/', include('calendars.urls', namespace='calendars'))
 ]

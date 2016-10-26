@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'registration.apps.RegistrationConfig',
     'event.apps.EventConfig',
+    'calendars.apps.CalendarsConfig',
     'static_precompiler',
 ]
 
