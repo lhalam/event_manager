@@ -24,12 +24,16 @@ class Company(models.Model):
     @staticmethod
     def create_company(data):
         data['company_admin'] = User.objects.get(username=data.get('company_admin'))
-        instance = Company(**data)
-        instance.save()
+        company = Company(**data)
+        company.save()
 
     @staticmethod
     def delete_company(company_id):
         Company.objects.get(id=company_id).delete()
+
+    @staticmethod
+    def get_teams(company_id):
+        return [team.name for team in Company.get_by_id(company_id).teams.all()]
 
 
 class Team(models.Model):
@@ -58,6 +62,11 @@ class Team(models.Model):
             return Team.objects.get(pk=team_id)
         except Team.DoesNotExist:
             return None
+
+    @staticmethod
+    def get_members(current_team):
+        instances = TeamUserAssignment.objects.filter(team=current_team)
+        return [instance.user.username for instance in instances]
 
 
 class TeamUserAssignment(models.Model):
