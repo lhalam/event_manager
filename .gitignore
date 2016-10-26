@@ -88,9 +88,14 @@ ENV/
 # Rope project settings
 .ropeproject
 
+# DB 
+postgres
+
+# Etc
+*~
+
 # compiled less files
 events/static/COMPILED/
 
 #PyCharm
 .idea/
-
