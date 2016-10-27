@@ -1,14 +1,53 @@
 import json
+import datetime
 
-from django.http import JsonResponse
+from django.utils.timezone import get_current_timezone
+from django.http.response import HttpResponseNotFound
+from django.http import JsonResponse, HttpResponse
 from django.views.generic.base import View
+from django.forms import model_to_dict
+from django.core import serializers
 
 from .models import Event, EventUserAssignment, User
+from .forms import EventCreateForm
 
+# Variabels for converting string to datetime
+tz = get_current_timezone()
+format = '%b %d %Y %I:%M%p'
 
 class EventView(View):
+    def get(self, request, pk=None):
+        if not pk:
+            response = serializers.serialize("json", Event.objects.all())
+            return HttpResponse(response, content_type="application/json")
+        else:
+            try:
+                event = Event.objects.get(pk=pk)
+            except:
+                return HttpResponseNotFound('Doesnt not exist')
+            else:
+                response = model_to_dict(event)
+                response['start_date'] = str(event.start_date)
+                response['end_date'] = str(event.end_date)
+                return HttpResponse(json.dumps(response), content_type="application/json")
 
-    pass
+    def put(self, request, pk):
+        try:
+            event = Event.objects.get(id=pk)
+        except:
+            return HttpResponseNotFound('Doesnt not exist')
+        body_unicode = request.body.decode('utf-8')
+        data = json.loads(body_unicode)
+        data["start_date"] = tz.localize(datetime.datetime.strptime(data["start_date"], format))
+        data["end_date"] = tz.localize(datetime.datetime.strptime(data["end_date"], format))
+        form = EventCreateForm(data)
+        if form.is_valid():
+            for k, v in data.items():
+                e.__dict__[k] = v
+                e.save()
+            return HttpResponse('ok')
+        else:
+            return HttpResponse(json.dumps(form.errors.as_json), content_type="application/json")
 
 
 class EventUserAssignmentView(View):
