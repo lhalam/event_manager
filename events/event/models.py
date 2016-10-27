@@ -17,6 +17,16 @@ class Event(models.Model):
     def __str__(self):
         return "%s" % self.title
 
+    def serialize(self):
+        return {
+            "id" : self.pk,
+            "title" : self.title,
+            "start_date" : self.start_date,
+            "end_date" : self.end_date,
+            "description" : self.description,
+            "location" : self.location
+        }
+
     @staticmethod
     def get_all():
         return Event.objects.all()
@@ -32,3 +42,15 @@ class Event(models.Model):
 class EventUserAssignment(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    @staticmethod
+    def get_by_user_id(user_id):
+        try:
+            events = EventUserAssignment.objects.all()
+            user_events = []
+            for event in events:
+                if event.user.id == user_id:
+                    user_events.append(event.event)
+            return user_events
+        except Event.DoesNotExist:
+            return None

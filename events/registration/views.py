@@ -13,7 +13,7 @@ from .forms import RegistrationForm
 from events import settings
 
 
-CONFIRM_LINK = settings.HOST_NAME + '/api/v1/reg/confirm/'
+# CONFIRM_LINK = settings.HOST_NAME + '/api/v1/reg/confirm/'
 
 
 class EmailSender(object):

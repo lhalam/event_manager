@@ -22,7 +22,9 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^$', login_required(TemplateView.as_view(template_name='main.html'), login_url='auth/login?next=/')),
     url(r'^auth/', include('auth.urls', namespace='auth')),
+    url(r'^calendar$',TemplateView.as_view(template_name='calendar.html')),
     url(r'^api/v1/reg/', include('registration.urls', namespace='reg')),
     url(r'^api/v1/events/', include('event.urls', namespace='event')),
-    url(r'^api/v1/companies/', include('company.urls', namespace='company'))
+    url(r'^api/v1/companies/', include('company.urls', namespace='company')),
+    url(r'^api/v1/calendars/', include('calendars.urls', namespace='calendars'))
 ]
