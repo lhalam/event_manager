@@ -8,7 +8,6 @@ from .forms import EventValidationForm
 
 class EventView(View):
     def post(self, request):
-        event_id = None
 
         try:
             event_data = json.loads(request.body.decode())
