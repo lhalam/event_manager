@@ -37,15 +37,23 @@ class CompanyView(View):
         if not company_form.is_valid():
             return JsonResponse({'success': False,
                                  'errors': company_form.errors}, status=400)
-        if new_company_data.get('company_admin'):
+        if not new_company_data.get('company_admin'):
+            return JsonResponse({'success': False,
+                                 'errors': {
+                                     "company_admin": ['This field is required']
+                                 }
+                                 }, status=400)
+        try:
             user = User.objects.get(username=new_company_data.get('company_admin'))
-            if Company.objects.filter(company_admin=user):
-                return JsonResponse({'success': False,
-                                     'errors': {
-                                         "company_admin": ['This user is already an admin of another company']
-                                     }
-                                     }, status=400)
-            new_company_data['company_admin'] = user
+        except User.DoesNotExist:
+            return JsonResponse({"error_message": "Such user does not exists"}, status=404)
+        if Company.objects.filter(company_admin=user):
+            return JsonResponse({'success': False,
+                                 'errors': {
+                                     "company_admin": ['This user is already an admin of another company']
+                                 }
+                                 }, status=400)
+        new_company_data['company_admin'] = user
         company = Company(**new_company_data)
         company.save()
 
