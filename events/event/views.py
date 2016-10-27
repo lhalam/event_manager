@@ -5,7 +5,6 @@ from django.utils.timezone import get_current_timezone
 from django.http.response import HttpResponseNotFound
 from django.http import JsonResponse, HttpResponse
 from django.views.generic.base import View
-from django.forms import model_to_dict
 from django.core import serializers
 
 from .models import Event, EventUserAssignment, User
@@ -24,25 +23,23 @@ class EventView(View):
             try:
                 event = Event.objects.get(pk=pk)
             except:
-                return HttpResponseNotFound('Doesnt not exist')
+                return HttpResponseNotFound('Does not exist')
             else:
-                response = model_to_dict(event)
-                response['start_date'] = str(event.start_date)
-                response['end_date'] = str(event.end_date)
+                response = event.to_dict()
                 return HttpResponse(json.dumps(response), content_type="application/json")
 
     def put(self, request, pk):
         try:
             event = Event.objects.get(id=pk)
         except:
-            return HttpResponseNotFound('Doesnt not exist')
+            return HttpResponseNotFound('Does not exist')
         body_unicode = request.body.decode('utf-8')
         data = json.loads(body_unicode)
         data["start_date"] = tz.localize(datetime.datetime.strptime(data["start_date"], format))
         data["end_date"] = tz.localize(datetime.datetime.strptime(data["end_date"], format))
         form = EventCreateForm(data)
         if form.is_valid():
-            for k, v in data.items():
+            for k, v in dates.items():
                 e.__dict__[k] = v
                 e.save()
             return HttpResponse('ok')
