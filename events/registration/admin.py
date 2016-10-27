@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import User
+from .models import User, RegistrationConfirm
 
 
 class UserModelAdmin(admin.ModelAdmin):
@@ -8,4 +8,10 @@ class UserModelAdmin(admin.ModelAdmin):
     search_fields = ['username']
 
 
+class RegistrationConfirmAdmin(admin.ModelAdmin):
+    list_display = ['user']
+    list_display_links = ['user']
+    search_fields = ['user']
+
 admin.site.register(User, UserModelAdmin)
+admin.site.register(RegistrationConfirm, RegistrationConfirmAdmin)
