@@ -10,22 +10,12 @@ from django.http import JsonResponse
 from django.views.generic.base import View
 
 class ProfileView(View):
-    def put(self, request, user_id):
+    def post(self, request):
         try:
             profile = [model_to_dict(data) for data in User.get_user_by_id(user_id)]
             return JsonResponse(json.dumps(profile), status=200)
         except:
         	return JsonResponse({"not_existing_users": 'true'}, status=404)
-
-        profile = UserProfile()
-        profile.photo = data.get('birth_date')
-        profile.photo = data.FileManager.get()
-
-        return JsonResponse({'status': 'changed'})
-
-    def get(self, request):
-        data = {'photo': ''}
-        return JsonResponse(data, status=200)
 
 class FileManager(View):
     def get(self, request):
