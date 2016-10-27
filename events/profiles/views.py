@@ -2,6 +2,7 @@ import json
 from .models import User
 from boto.s3.key import Key
 from events import settings
+from .models import UserProfile
 from django.shortcuts import render
 from boto.s3.key import Key
 from boto.s3.connection import S3Connection
@@ -10,28 +11,38 @@ from django.views.generic.base import View
 
 class ProfileView(View):
     def put(self, request, user_id):
-        if user_id.not_existing_users():
-            profile = [model_to_dict(data) for data in User.get_by_id(user_id)]
+        try:
+            profile = [model_to_dict(data) for data in User.get_user_by_id(user_id)]
             return JsonResponse(json.dumps(profile), status=200)
-        else:
-        	return JsonResponse({"not_existing_users": not_existing_users}, status=404)
+        except:
+        	return JsonResponse({"not_existing_users": 'true'}, status=404)
+
+        profile = UserProfile()
+        profile.photo = data.get('birth_date')
+        profile.photo = data.FileManager.get()
+
+        return JsonResponse({'status': 'changed'})
+
+    def get(self, request):
+        data = {'photo': ''}
+        return JsonResponse(data, status=200)
 
 class FileManager(View):
     def get(self, request):
         key_bucket = self.get_key_bucket()
-        key_bucket.key = 'default_photo.png'
+        key_bucket.key = self.get_path().split('/')[-1]
         key_bucket.get_contents_to_filename(self.get_path)
         return JsonResponse({'key_photo': key_bucket.key})
 
     def post(self, request):
         key_bucket = self.get_key_bucket()
-    	key_bucket.key = 'default_photo.png'
+    	key_bucket.key = self.get_path().split('/')[-1]
         key_bucket.set_contents_from_filename(self.get_path)
         return JsonResponse({'key_photo': k.key})
 
     def delete(self, request):
         key_bucket = self.get_key_bucket()
-        key_bucket.key = 'default_photo4.png'
+        key_bucket.key = self.get_path().split('/')[-1]
         try:
             key_bucket.key.delete()
             return JsonResponse({'photo_deleted': 'success'})
