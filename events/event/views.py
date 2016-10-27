@@ -7,14 +7,8 @@ from .forms import EventValidationForm
 
 
 class EventView(View):
-    """
-    doc str
-    """
-
     def post(self, request):
         event_id = None
-        #exception_list = []
-        #successfully_list = []
 
         try:
             event_data = json.loads(request.body.decode())
@@ -36,8 +30,6 @@ class EventView(View):
             return JsonResponse({'message': 'Event created successfully'}, status=200)
 
         return JsonResponse({'errors': validation_form.errors.as_json()}, status=400)
-
-
 
 
 class EventUserAssignmentView(View):
