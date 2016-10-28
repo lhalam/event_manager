@@ -38,9 +38,9 @@ class EventView(View):
         data["end_date"] = TZ.localize(datetime.datetime.strptime(data["end_date"], FORMAT))
         form = EventCreateForm(data)
         if form.is_valid():
-            for k, v in dates.items():
-                e.__dict__[k] = v
-                e.save()
+            for k, v in data.items():
+                event.to_dict[k] = v
+                event.save()
             return HttpResponse('ok')
         else:
             return HttpResponse(json.dumps(form.errors.as_json), content_type="application/json")
