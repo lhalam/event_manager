@@ -11,14 +11,13 @@ from .models import Event, EventUserAssignment, User
 from .forms import EventCreateForm
 
 # Variabels for converting string to datetime
-tz = get_current_timezone()
-format = '%b %d %Y %I:%M%p'
+TZ = get_current_timezone()
+FORMAT = '%b %d %Y %I:%M%p'
 
 class EventView(View):
     def get(self, request, pk=None):
         if not pk:
-            response = serializers.serialize("json", Event.objects.all())
-            return HttpResponse(response, content_type="application/json")
+            return HttpResponse("Pleace Select Event id", status=400)
         else:
             try:
                 event = Event.objects.get(pk=pk)
@@ -35,8 +34,8 @@ class EventView(View):
             return HttpResponseNotFound('Does not exist')
         body_unicode = request.body.decode('utf-8')
         data = json.loads(body_unicode)
-        data["start_date"] = tz.localize(datetime.datetime.strptime(data["start_date"], format))
-        data["end_date"] = tz.localize(datetime.datetime.strptime(data["end_date"], format))
+        data["start_date"] = TZ.localize(datetime.datetime.strptime(data["start_date"], FORMAT))
+        data["end_date"] = TZ.localize(datetime.datetime.strptime(data["end_date"], FORMAT))
         form = EventCreateForm(data)
         if form.is_valid():
             for k, v in dates.items():
