@@ -46,10 +46,10 @@ class EventUserAssignment(models.Model):
     @staticmethod
     def get_by_user_id(user_id):
         try:
-            events = EventUserAssignment.objects.all()
+            events = EventUserAssignment.objects.filter(user=user_id)
+            print len(events)
             user_events = []
             for event in events:
-                if event.user.id == user_id:
                     user_events.append(event.event)
             return user_events
         except Event.DoesNotExist:
