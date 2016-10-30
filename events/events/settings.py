@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'registration.apps.RegistrationConfig',
     'event.apps.EventConfig',
+    'profiles.apps.ProfilesConfig',
     'static_precompiler',
 ]
 
@@ -77,7 +78,7 @@ WSGI_APPLICATION = 'events.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'postgres',
+        'NAME': 'eventsoft',
     }
 }
 
@@ -147,10 +148,9 @@ except ImportError:
     pass
 
 # Email settings
-EMAIL_USE_TLS = EMAIL_USE_TLS
-EMAIL_HOST = EMAIL_HOST
-EMAIL_HOST_USER = EMAIL_HOST_USER
-EMAIL_HOST_PASSWORD = EMAIL_HOST_PASSWORD
-EMAIL_PORT = EMAIL_PORT
-
-HOST_NAME = HOST_NAME
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'eventsmanagernoreply@gmail.com'
+EMAIL_HOST_PASSWORD = 'EvmgNoreply'
+EMAIL_PORT = 587
+HOST_NAME = 'http://127.0.0.1:8000'

@@ -1,28 +1,29 @@
 from __future__ import unicode_literals
 from django.db import models
 from django.conf import settings
+from django.utils import timezone
 from django.db.models.signals import post_save
 from django.contrib.auth.models import User
 
 
 class UserProfile(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    photo = models.CharField(max_length=200)
-    homepage = models.URLField()
+    photo = models.CharField(max_length=200, default='default_photo.png')
+    education = models.TextField(blank = True, null = True)
+    job = models.TextField(blank = True, null = True)
+    
 
-    def create_user_profile(**kwargs):
+    @classmethod
+    def create_user_profile(cls, **kwargs):
         UserProfile.objects.get_or_create(user=kwargs['user'])
 
-    def __str__(self):
-        return "%s" % self.title
+    @classmethod
+    def get_all(cls):
+        return cls.objects.all()
 
-    @staticmethod
-    def get_all():
-        return UserProfile.objects.all()
-
-    @staticmethod
-    def get_by_id(event_id):
+    @classmethod
+    def get_by_id(cls, profile_id):
         try:
-            return UserProfile.objects.get(pk=event_id)
-        except UserProfile.DoesNotExist:
+            return cls.objects.get(pk=profile_id)
+        except cls.DoesNotExist:
             return None
