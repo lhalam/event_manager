@@ -2,22 +2,26 @@ import json
 import datetime
 
 from django.utils.timezone import get_current_timezone
-from django.http.response import HttpResponseNotFound
+from django.http.response import HttpResponseNotFound, HttpResponseForbidden
 from django.http import JsonResponse, HttpResponse
 from django.views.generic.base import View
-from django.core import serializers
 
 from .models import Event, EventUserAssignment, User
 from .forms import EventCreateForm
 
-# Variabels for converting string to datetime
+# Var for converting string to datetime
 TZ = get_current_timezone()
 FORMAT = '%b %d %Y %I:%M%p'
+
 
 class EventView(View):
     def get(self, request, pk=None):
         if not pk:
-            return HttpResponse("Pleace Select Event id", status=400)
+            response = []
+            user_id = request.user.id
+            eus = EventUserAssignment.objects.filter(user=user_id)
+            [response.append(i.event.to_dict()) for i in eus]
+            return HttpResponse(json.dumps(response), content_type="application/json")
         else:
             try:
                 event = Event.objects.get(pk=pk)
@@ -26,7 +30,6 @@ class EventView(View):
             else:
                 response = event.to_dict()
                 return HttpResponse(json.dumps(response), content_type="application/json")
-
     def put(self, request, pk):
         try:
             event = Event.objects.get(id=pk)
