@@ -16,20 +16,24 @@ FORMAT = '%b %d %Y %I:%M%p'
 
 class EventView(View):
     def get(self, request, pk=None):
-        if not pk:
-            response = []
-            user_id = request.user.id
-            eus = EventUserAssignment.objects.filter(user=user_id)
-            [response.append(i.event.to_dict()) for i in eus]
-            return HttpResponse(json.dumps(response), content_type="application/json")
-        else:
-            try:
-                event = Event.objects.get(pk=pk)
-            except:
-                return HttpResponseNotFound('Does not exist')
-            else:
-                response = event.to_dict()
+        if request.user.is_authenticated:
+            if not pk:
+                response = []
+                user_id = request.user.id
+                eus = EventUserAssignment.objects.filter(user=user_id)
+                [response.append(i.event.to_dict()) for i in eus]
                 return HttpResponse(json.dumps(response), content_type="application/json")
+            else:
+                try:
+                    event = Event.objects.get(pk=pk)
+                except:
+                    return HttpResponseNotFound('Does not exist')
+                else:
+                    response = event.to_dict()
+                    return HttpResponse(json.dumps(response), content_type="application/json")
+        else:
+            return HttpResponseForbidden('Permission denied')
+
     def put(self, request, pk):
         try:
             event = Event.objects.get(id=pk)
