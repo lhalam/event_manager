@@ -18,10 +18,6 @@ class Event(models.Model):
         return "%s" % self.title
 
     @staticmethod
-    def get_all():
-        return Event.objects.all()
-
-    @staticmethod
     def get_by_id(event_id):
         try:
             return Event.objects.get(pk=event_id)
