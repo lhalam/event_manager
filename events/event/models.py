@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import User
+from registration.models import User
 from django.db.models.fields.related import ManyToManyField
 
 
@@ -17,10 +17,6 @@ class Event(models.Model):
 
     def __str__(self):
         return "%s" % self.title
-
-    @staticmethod
-    def get_all():
-        return Event.objects.all()
 
     @staticmethod
     def get_by_id(event_id):
