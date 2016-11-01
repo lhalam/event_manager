@@ -1,5 +1,6 @@
 from django.db import models
 from registration.models import User
+from django.db.models.fields.related import ManyToManyField
 
 
 class Event(models.Model):
@@ -23,6 +24,21 @@ class Event(models.Model):
             return Event.objects.get(pk=event_id)
         except Event.DoesNotExist:
             return None
+
+    def to_dict(self):
+        opts = self._meta
+        data = {}
+        for f in opts.concrete_fields + opts.many_to_many:
+            if isinstance(f, ManyToManyField):
+                if self.pk is None:
+                    data[f.name] = []
+                else:
+                    data[f.name] = list(f.value_from_object(self).values_list('username', flat=True))
+            else:
+                data[f.name] = f.value_from_object(self)
+        data['start_date'] = str(data['start_date'])
+        data['end_date'] = str(data['end_date'])
+        return data
 
 
 class EventUserAssignment(models.Model):
