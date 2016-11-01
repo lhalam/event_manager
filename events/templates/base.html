@@ -22,15 +22,13 @@
 </head>
 <body>
 {% include 'header.html' %}
-
-{% block content %}
-    <div class="container">
-        <h1>Hello world!</h1>
-    </div>
-    <div id='prof'></div>
-
-{% endblock content %}
-
+  {% block content %}
+  {% endblock %}
+  {% block prof %}
+  {% endblock %}
+  {% block profile %}
+    <div id="prof"></div>
+  {% endblock %}
 {% include 'footer.html' %}
 
 </body>
