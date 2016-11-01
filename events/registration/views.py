@@ -19,9 +19,9 @@ CONFIRM_LINK = settings.HOST_NAME + '/api/v1/reg/confirm/'
 class EmailSender(object):
     @staticmethod
     def send_registration_confirm(user):
-        hash_code = RegistrationConfirm.create_confirm(user)
+        confirm = RegistrationConfirm.objects.create(user=user)
         subject = 'Confirm registration'
-        message = render_to_string('email.txt', {'link': CONFIRM_LINK + hash_code, 'name': user.first_name})
+        message = render_to_string('email.txt', {'link': CONFIRM_LINK + str(confirm.hash_code), 'name': user.first_name})
         return send_mail(subject, message, settings.EMAIL_HOST_USER, [user.email]) == 1
 
 
@@ -32,23 +32,23 @@ class RegistrationView(View):
 
     def post(self, request):
         body_unicode = request.body.decode('utf-8')
-        data = json.loads(body_unicode)
-        registration_form = RegistrationForm(data)
+        registration_data = json.loads(body_unicode)
+        registration_form = RegistrationForm(registration_data)
         if registration_form.is_valid():
-            user = User()
-            user.username = data.get('email')
-            user.first_name = data.get('first_name')
-            user.last_name = data.get('last_name')
-            user.email = data.get('email')
-            user.is_active = False
-            user.set_password(data.get('password'))
-            user.save()
+            user = User.objects.create_user(
+                username=registration_data.get('email'),
+                first_name=registration_data.get('first_name'),
+                last_name=registration_data.get('last_name'),
+                email=registration_data.get('email'),
+                is_active=False,
+                password=registration_data.get('password'),
+            )
 
             EmailSender.send_registration_confirm(user)
 
             return JsonResponse({'message': 'To finish registration follow instructions in email.'}, status=201)
 
-        return JsonResponse({'errors': registration_form.errors.as_json()}, status=400)
+        return JsonResponse({'errors': registration_form.errors}, status=400)
 
 
 class ConfirmRegistrationView(View):

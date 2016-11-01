@@ -28,23 +28,9 @@ class User(BaseUser):
 
 class RegistrationConfirm(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    hash_code = models.CharField(max_length=32, unique=True)
-    creation_date = models.DateTimeField(default=datetime.now)
-
-    @staticmethod
-    def create_confirm(user):
-        """
-        Saves hashcode and appropriate user for registration confirm.
-        :param user:
-        :return hash_code:
-        """
-        confirm = RegistrationConfirm()
-        confirm.user = user
-        confirm.hash_code = uuid.uuid4().hex
-        confirm.creation_date = timezone.now()
-        confirm.save()
-
-        return confirm.hash_code
+    hash_code = models.UUIDField(default=uuid.uuid4, unique=True)
+    creation_date = models.DateTimeField(auto_now_add=True)
+    is_closed = models.BooleanField(default=False)
 
     @staticmethod
     def close_confirm(hash_code):
@@ -59,13 +45,16 @@ class RegistrationConfirm(models.Model):
         except RegistrationConfirm.DoesNotExist:
             raise PermissionDenied
 
+        if confirm.is_closed:
+            raise PermissionDenied
+
         if confirm.creation_date + timedelta(days=INVITE_DAYS_TTL) < timezone.now():
             confirm.user.delete()
             return None
 
-        user = confirm.user
-        user.is_active = True
-        user.save()
-        confirm.delete()
+        confirm.user.is_active = True
+        confirm.user.save()
+        confirm.is_closed = True
+        confirm.save()
 
-        return user
+        return confirm.user
