@@ -10,30 +10,16 @@ from django.http import JsonResponse
 from django.views.generic.base import View
 from .forms import ProfileForm
 from profiles.models import UserProfile
-import json
 from django.core import serializers
 from django.forms.models import model_to_dict
 
 class ProfileView(View):
-    def get(self, request, pk=1):
-        if UserProfile.get_by_id(pk) == None:
+    def get(self, request, profile_id):
+        if UserProfile.get_by_id(profile_id) == None:
             return JsonResponse({'exception':'no this profile'})
         else:
-            profile = model_to_dict(UserProfile.get_by_id(pk))
-            return JsonResponse(json.dumps(profile))
-
-    def put(self, request, profile_id):
-        data = json.loads(request.body.decode()) 
-        if not User.get_user_by_id(data.get('user')):
-            UserProfile.create_user_profile(data)
-        else:
-            try:
-                profile = UserProfile.get_by_id(pk=profile_id)
-            except:
-                return JsonResponseNotFound({"error": "Does not exist"})
-            else:
-                response = profile.model_to_dict()
-                return JsonResponse(json.dumps(response), status=200)
+            profile = model_to_dict(UserProfile.get_by_id(profile_id))
+            return JsonResponse(json.dumps(profile), safe=False)
 
     def post(self, request):
         data = json.loads(request.body.decode()) 
@@ -46,7 +32,7 @@ class ProfileView(View):
             profile.save()
             return JsonResponse({'message': 'added'}, status=200)
         except:
-        	return JsonResponse({"error": 'Have problem with adding'}, status=404)
+        	return JsonResponse({"exception": 'Have problem with adding'}, status=404)
 
 class FileManager(View):
     def get(self, request):

@@ -1,15 +1,14 @@
+var person = "{"
+	+'"name":"Jack-Edward",'
+	+'"years":"26 years old",'
+	+'"education":"Lviv National University",'
+	+'"job":"Softserve",'
+	+'"photo":"deault_photo.png"'
+	+"}"
+console.log(JSON.parse(person));
+
 var App = React.createClass({
-  getDefaultProps: function() {
-    return({
-      person: {
-        name: 'Jack-Edward Oliver',
-        years: '26 year old',
-        education: 'Lviv National University',
-        job: 'Python Developer at SoftServe'
-      },
-      image: 'http://static1.squarespace.com/static/55acc005e4b098e615cd80e2/t/57b057398419c2c454f09924/1471025851733'
-    })
-  },
+  }
   render: function() {
     return(
       <div className="App">
