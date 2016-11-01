@@ -24,15 +24,11 @@ class EventUserAssignmentView(View):
             return JsonResponse({"error_message": "Such event does not exists"}, status=404)
         if not event_participants.get('participants'):
             return JsonResponse({"error_message": "Invalid payload"}, status=400)
-        for username in event_participants.get('participants'):
-            try:
-                user = User.objects.get(username=username)
-                able_to_add.append(user)
-            except User.DoesNotExist:
-                able_to_add = []
-                break
-        if not able_to_add:
-            return JsonResponse({"error_message": "Invalid payload"}, status=400)
+        for user_id in event_participants.get('participants'):
+            user = User.get_user_by_id(user_id)
+            if not user:
+                return JsonResponse({"error_message": "Invalid payload"}, status=400)
+            able_to_add.append(user)
         for user in able_to_add:
             EventUserAssignment.objects.get_or_create(user=user, event=event)
         return HttpResponse(status=204)
