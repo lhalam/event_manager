@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'registration.apps.RegistrationConfig',
     'event.apps.EventConfig',
     'static_precompiler',
+    'companies.apps.CompaniesConfig',
 ]
 
 MIDDLEWARE = [
