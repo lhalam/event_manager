@@ -25,6 +25,16 @@ class Company(models.Model):
     def get_teams(company_id):
         return [team.name for team in Company.get_by_id(company_id).teams.all()]
 
+    @staticmethod
+    def get_user_company(request):
+        company = Company.objects.filter(company_admin=request.user).first()
+        if company:
+            return company
+        first_instance = TeamUserAssignment.objects.filter(user=request.user).first()
+        if first_instance:
+            return first_instance.team.company
+        return None
+
 
 class Team(models.Model):
     name = models.CharField(max_length=50)
@@ -47,9 +57,10 @@ class Team(models.Model):
         return Team.objects.all()
 
     @staticmethod
-    def get_by_id(team_id):
+    def get_by_id(team_id, company_id):
+        company = Company.get_by_id(company_id)
         try:
-            return Team.objects.get(pk=team_id)
+            return Team.objects.get(pk=team_id, company=company)
         except Team.DoesNotExist:
             return None
 
