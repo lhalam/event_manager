@@ -4,7 +4,7 @@ from registration.models import User
 
 class Company(models.Model):
     name = models.CharField(max_length=50)
-    description = models.TextField(max_length=500)
+    description = models.TextField(max_length=500, null=True)
     company_admin = models.OneToOneField(User)
 
     def __str__(self):
