@@ -34,6 +34,31 @@ class EventView(View):
         else:
             return HttpResponseForbidden('Permission denied')
 
+    def post(self, request):
+        try:
+            event_data = json.loads(request.body.decode())
+        except Exception as e:
+            return JsonResponse({
+                "json error": e.message,
+            }, status=400)
+        validation_form = EventCreateForm(event_data)
+        if validation_form.is_valid():
+            event = Event()
+            event.title = event_data.get('title')
+            event.start_date = event_data.get('start_date')
+            event.end_date = event_data.get('end_date')
+            event.location = event_data.get('location')
+            event.description = event_data.get('description')
+            event.owner_id = event_data.get('owner_id')
+            event.save()
+            try:
+                user = User.get_user_by_id(event.owner_id)
+                EventUserAssignment.objects.get_or_create(user=user, event=event)
+            except:
+                return JsonResponse({'error_message': 'Can not create relation between user and event'}, status=401)            
+            return JsonResponse({'message': 'Event created successfully'}, status=200)
+        return JsonResponse({'error_message': validation_form.errors.as_json()}, status=400)
+
     def put(self, request, pk):
         try:
             event = Event.objects.get(id=pk)

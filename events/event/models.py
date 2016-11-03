@@ -1,7 +1,7 @@
 from django.db import models
 from registration.models import User
+from django.utils.timezone import now
 from django.db.models.fields.related import ManyToManyField
-
 
 class Event(models.Model):
     title = models.CharField(max_length=200)
@@ -9,6 +9,9 @@ class Event(models.Model):
     end_date = models.DateTimeField(blank=True, null=True)
     location = models.CharField(max_length=200, null=True)
     description = models.TextField(blank=True, null=True)
+    address = models.CharField(max_length=500, null=True)
+    created_date = models.DateTimeField(blank=True, null=True)
+    owner_id = models.BigIntegerField(null=True)
     participants = models.ManyToManyField(
         User,
         through='EventUserAssignment',
@@ -17,6 +20,11 @@ class Event(models.Model):
 
     def __str__(self):
         return "%s" % self.title
+
+    def save(self, *args, **kwargs):
+        self.created_date = now()			
+        super(Event, self).save(*args, **kwargs)
+
 
     @staticmethod
     def get_by_id(event_id):
