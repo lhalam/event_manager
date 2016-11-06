@@ -73,4 +73,4 @@ class EventUserAssignmentView(View):
             able_to_add.append(user)
         for user in able_to_add:
             EventUserAssignment.objects.get_or_create(user=user, event=event)
-return HttpResponse(status=204)
+        return HttpResponse(status=204)
