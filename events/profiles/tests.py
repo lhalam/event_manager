@@ -1,3 +1,5 @@
-from django.test import TestCase
-
-# Create your tests here.
+# Conigurations
+import os
+import django
+os.environ['DJANGO_SETTINGS_MODULE'] = 'events.settings'
+django.setup()
