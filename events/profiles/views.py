@@ -36,6 +36,8 @@ class ProfileView(View):
                 if form.is_valid():
                     profile.save()
                     return JsonResponse({'status': 'success'}, status=200)
+		else:
+		    return JsonREsponse({'status': 'Some fields are incorrect. Please check.'}, status=400)
             except:
         	   return JsonResponse({'status': 'Please, check your personal information'}, status=400)
         else:
