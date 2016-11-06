@@ -9,9 +9,8 @@ from django.contrib.auth.models import User
 class UserProfile(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     photo = models.CharField(max_length=200, default='default_photo.png')
-    education = models.TextField(blank = True, null = True)
-    job = models.TextField(blank = True, null = True)
-    
+    education = models.TextField(blank = True, default='')
+    job = models.TextField(blank = True, default='')
 
     @classmethod
     def create_user_profile(cls, **kwargs):

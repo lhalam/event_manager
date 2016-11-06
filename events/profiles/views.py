@@ -1,71 +1,85 @@
 import json
-from registration.models import User
-from boto.s3.key import Key
 from events import settings
-from .models import UserProfile
-from django.shortcuts import render
 from boto.s3.key import Key
 from boto.s3.connection import S3Connection
+
+from profiles.forms import ProfileForm
 from django.http import JsonResponse
+from django.http.response import  HttpResponseForbidden
+
 from django.views.generic.base import View
-from .forms import ProfileForm
+from registration.models import User
 from profiles.models import UserProfile
-from django.core import serializers
-from django.forms.models import model_to_dict
+
 
 class ProfileView(View):
     def get(self, request, profile_id):
-        if UserProfile.get_by_id(profile_id) == None:
-            return JsonResponse({'exception':'no this profile'})
+        if request.user.is_authenticated:
+            profile = UserProfile.get_by_id(profile_id)
+            response = self.__get_dict(profile)
+            return JsonResponse(response, safe=False)
         else:
-            profile = model_to_dict(UserProfile.get_by_id(profile_id))
-            return JsonResponse(json.dumps(profile), safe=False)
+            return HttpResponseForbidden('Permission denied')
 
     def post(self, request):
-        data = json.loads(request.body.decode()) 
-        try:
-            profile = UserProfile()
-            profile.user = User.get_user_by_id(data.get('user'))
-            profile.photo = data.get('photo')
-            profile.education = data.get('education')
-            profile.job = data.get('job')
-            profile.save()
-            return JsonResponse({'message': 'added'}, status=200)
-        except:
-        	return JsonResponse({"exception": 'Have problem with adding'}, status=404)
+        if request.user.is_authenticated:
+            info = json.loads(request.body.decode()) 
+            try:
+                profile = UserProfile()
+                profile.user = User.get_user_by_id(info.get('user'))
+                profile.photo = info.get('photo')
+                profile.education = info.get('education')
+                profile.job = info.get('job')
+                form = ProfileForm(profile)
+                if form.is_valid():
+                    profile.save()
+                    return JsonResponse({'status': 'success'}, status=200)
+            except:
+        	   return JsonResponse({'status': 'Please, check your personal information'}, status=400)
+        else:
+            return HttpResponseForbidden('Permission denied')
+
+    def __get_dict(self, profile):
+        user = User.get_user_by_id(profile.user)
+        info = {
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+            'photo': FileManager.get_href(profile.photo),
+            'education': profile.education,
+            'job': profile.job
+        }
+        return json.dumps(info)
+
 
 class FileManager(View):
     def get(self, request):
-        key_bucket = self.get_key_bucket()
-        key_bucket.key = self.get_path().split('/')[-1]
-        key_bucket.get_contents_to_filename(self.get_path)
-        return JsonResponse({'key_photo': key_bucket.key})
+        response = {'path': ''}
+        return JsonResponse(response, status=200)
 
     def post(self, request):
-        key_bucket = self.get_key_bucket()
-    	key_bucket.key = self.get_path().split('/')[-1]
-        key_bucket.set_contents_from_filename(self.get_path)
-        return JsonResponse({'key_photo': k.key})
+        path = json.loads(request.body.decode()) 
+        if path:
+            try:
+                key_bucket = self.__get_key_bucket()
+                key_bucket.key = path['path'].split('/')[-1]
+                key_bucket.set_contents_from_filename(path['path'])
+                return JsonResponse({'key_photo': key_bucket.key})
+            except:
+                return JsonResponse({'status': 'Please check your path : ' + path['path']}, status=400)
+        else:
+            return JsonResponse({'status': 'Please, input correct path'}, status=400)
 
-    def delete(self, request):
-        key_bucket = self.get_key_bucket()
-        key_bucket.key = self.get_path().split('/')[-1]
-        try:
-            key_bucket.key.delete()
-            return JsonResponse({'photo_deleted': 'success'})
-        except:
-            return JsonResponse({'photo_deleted': 'error'})
+    @classmethod
+    def get_href(key, bucket_name="em-profiles"):
+        conn = S3Connection(settings.ACCESS_KEY_ID, settings.SECRET_KEY)
+        return conn.generate_url(200, "GET", bucket_name, key)
 
-    def connect_to_S3(self):
+    def __connect_to_S3(self):
         conn = S3Connection(settings.ACCESS_KEY_ID, settings.SECRET_KEY) 
-        conn = S3Connection()
         return conn
 
-    def get_path(self):
-        return '/home/roksa/Downloads/default_photo.png'
-
-    def get_key_bucket(self):
+    def __get_key_bucket(self):
         name_profiles_bucket = settings.NAME_PROFILES_BUCKET
-        bucket = self.connect_to_S3().get_bucket(name_profiles_bucket)
+        bucket = self.__connect_to_S3().get_bucket(name_profiles_bucket)
         key_bucket = Key(bucket)
         return key_bucket
