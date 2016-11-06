@@ -1,4 +1,6 @@
 import json
+import boto3
+from events import local_settings
 from events import settings
 from boto.s3.key import Key
 from boto.s3.connection import S3Connection
@@ -70,16 +72,14 @@ class FileManager(View):
             return JsonResponse({'status': 'Please, input correct path'}, status=400)
 
     @classmethod
-    def get_href(key, bucket_name="em-profiles"):
-        conn = S3Connection(settings.ACCESS_KEY_ID, settings.SECRET_KEY)
-        return conn.generate_url(200, "GET", bucket_name, key)
+    def get_href(key, bucket_name=local_settings.NAME_PROFILES_BUCKET):
+        conn = S3Connection(local_settings.ACCESS_KEY_ID, settings.SECRET_KEY)
+        return conn.generate_url(300, "GET", bucket_name, key)
 
     def __connect_to_S3(self):
-        conn = S3Connection(settings.ACCESS_KEY_ID, settings.SECRET_KEY) 
-        return conn
+        return S3Connection(local_settings.ACCESS_KEY_ID, settings.SECRET_KEY) 
 
     def __get_key_bucket(self):
-        name_profiles_bucket = settings.NAME_PROFILES_BUCKET
-        bucket = self.__connect_to_S3().get_bucket(name_profiles_bucket)
-        key_bucket = Key(bucket)
-        return key_bucket
+        bucket = self.__connect_to_S3().get_bucket(local_settings.NAME_PROFILES_BUCKET)
+        return Key(bucket)
+        
