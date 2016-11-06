@@ -24,4 +24,4 @@ class Migration(migrations.Migration):
                 ('description', models.TextField(blank=True, null=True)),
             ],
         ),
-]
+    ]

@@ -17,4 +17,4 @@ class Migration(migrations.Migration):
             name='location',
             field=models.CharField(max_length=200, null=True),
         ),
-]
+    ]
