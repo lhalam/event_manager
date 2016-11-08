@@ -67,7 +67,7 @@ class EventUserAssignmentView(View):
         if not event_participants.get('participants'):
             return JsonResponse({"error_message": "Invalid payload"}, status=400)
         for user_id in event_participants.get('participants'):
-            user = User.get_user_by_id(user_id)
+            user = User.get_by_id(user_id)
             if not user:
                 return JsonResponse({"error_message": "Invalid payload"}, status=400)
             able_to_add.append(user)

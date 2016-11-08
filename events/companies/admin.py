@@ -19,7 +19,6 @@ class TeamUserAssignmentModelAdmin(admin.ModelAdmin):
     list_display_links = ['team', 'user']
     search_fields = ['team', 'user']
 
-# Register your models here.
 admin.site.register(Company, CompanyModelAdmin)
 admin.site.register(Team, TeamModelAdmin)
 admin.site.register(TeamUserAssignment, TeamUserAssignmentModelAdmin)

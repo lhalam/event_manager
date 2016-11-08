@@ -5,7 +5,7 @@ from registration.models import User
 class Company(models.Model):
     name = models.CharField(max_length=50, null=False)
     description = models.TextField(max_length=500, null=True, blank=True)
-    company_admin = models.OneToOneField(User)
+    admin = models.OneToOneField(User)
 
     def __str__(self):
         return '{}'.format(self.name)
@@ -27,7 +27,7 @@ class Company(models.Model):
 
     @staticmethod
     def get_user_company(request):
-        company = Company.objects.filter(company_admin=request.user).first()
+        company = Company.objects.filter(admin=request.user).first()
         if company:
             return company
         first_instance = TeamUserAssignment.objects.filter(user=request.user).first()
@@ -57,10 +57,9 @@ class Team(models.Model):
         return Team.objects.all()
 
     @staticmethod
-    def get_by_id(team_id, company_id):
-        company = Company.get_by_id(company_id)
+    def get_by_id(team_id):
         try:
-            return Team.objects.get(pk=team_id, company=company)
+            return Team.objects.get(pk=team_id)
         except Team.DoesNotExist:
             return None
 

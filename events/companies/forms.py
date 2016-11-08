@@ -5,7 +5,7 @@ from .models import Company, Team
 class CompanyForm(forms.ModelForm):
     class Meta:
         model = Company
-        exclude = ['company_admin']
+        exclude = ['admin']
 
 
 class TeamForm(forms.ModelForm):
