@@ -98,6 +98,8 @@ postgres
 
 # compiled less files
 events/static/COMPILED/
+events/static/bundles/
+
 
 #PyCharm
 .idea/

@@ -15,11 +15,11 @@
     <li>Go to the local copy of repository. Open terminal and run the following command<br>
         <code>pip install -r requirements.txt</code>
     </li>
-    <li>Install less precompiler on local machine.<br>
-        <code>npm install -g less</code>
-    </li>
     <li>Install npm on local machine.<br>
         <code>sudo apt-get install npm</code>
+    </li>
+    <li>Install less precompiler on local machine.<br>
+        <code>npm install -g less</code>
     </li>
     <li>Install npm requirements on local machine.<br>
         <code>npm install</code>
