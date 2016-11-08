@@ -3,8 +3,8 @@ import { render } from 'react-dom'
 import { Router, Route, Link, hashHistory } from 'react-router'
 
 import App from './app'
-import Calendar from './calendar1'
-import Events from './events'
+import Calendar from './app/calendar'
+import Events from './app/events'
 
 const Home = () => <div><h1>Home</h1></div>
 

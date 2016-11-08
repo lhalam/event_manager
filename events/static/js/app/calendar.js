@@ -3,9 +3,6 @@ import moment from 'moment'
 import fullCalendar from 'fullcalendar'
 
 export default class Calendar extends React.Component {
-      render() {
-        return <div id="calendar"></div>;
-      }
       componentDidMount() {
         $('#calendar').fullCalendar({
                 header: {
@@ -48,5 +45,8 @@ export default class Calendar extends React.Component {
                     }
                 }
         })
+      }
+      render() {
+        return <div id="calendar"></div>;
       }
 }
