@@ -54,15 +54,3 @@ class Event(models.Model):
 class EventUserAssignment(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-
-    @staticmethod
-    def get_by_user_id(user_id):
-        try:
-            events = EventUserAssignment.objects.filter(user=user_id)
-            print len(events)
-            user_events = []
-            for event in events:
-                    user_events.append(event.event)
-            return user_events
-        except Event.DoesNotExist:
-            return None
