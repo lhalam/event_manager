@@ -27,7 +27,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -39,7 +38,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'registration.apps.RegistrationConfig',
     'event.apps.EventConfig',
+    'calendars.apps.CalendarsConfig',
     'static_precompiler',
+    'webpack_loader',
 ]
 
 MIDDLEWARE = [
@@ -118,7 +119,6 @@ SESSION_COOKIE_AGE = 60 * 60
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR + '/static/'
 
-
 STATIC_PRECOMPILER_COMPILERS = (
     ('static_precompiler.compilers.LESS', {
         "executable": "/usr/bin/lessc",
@@ -127,12 +127,23 @@ STATIC_PRECOMPILER_COMPILERS = (
     }),
 )
 
+
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
     'static_precompiler.finders.StaticPrecompilerFinder',
 )
 
+STATICFILES_DIRS = (
+    BASE_DIR,
+)
+
+WEBPACK_LOADER = {
+    'DEFAULT': {
+        'BUNDLE_DIR_NAME': 'js/',
+        'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats.json'),
+    }
+}
 
 try:
     from .local_settings import *
