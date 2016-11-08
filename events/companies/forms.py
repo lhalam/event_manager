@@ -1,19 +1,14 @@
 from django import forms
+from .models import Company, Team
 
 
-class CompanyForm(forms.Form):
-    name = forms.CharField(max_length=50, required=True)
-    description = forms.CharField(max_length=500, required=False)
+class CompanyForm(forms.ModelForm):
+    class Meta:
+        model = Company
+        exclude = ['company_admin']
 
 
-class CompanyPutForm(forms.Form):
-    name = forms.CharField(max_length=50, required=False)
-    description = forms.CharField(max_length=500, required=False)
-
-
-class TeamForm(forms.Form):
-    name = forms.CharField(max_length=50, required=True)
-
-
-class TeamPutForm(forms.Form):
-    name = forms.CharField(max_length=50, required=False)
+class TeamForm(forms.ModelForm):
+    class Meta:
+        model = Team
+        exclude = ['members', 'company']

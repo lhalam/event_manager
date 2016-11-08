@@ -3,8 +3,8 @@ from registration.models import User
 
 
 class Company(models.Model):
-    name = models.CharField(max_length=50)
-    description = models.TextField(max_length=500, null=True)
+    name = models.CharField(max_length=50, null=False)
+    description = models.TextField(max_length=500, null=True, blank=True)
     company_admin = models.OneToOneField(User)
 
     def __str__(self):
@@ -37,7 +37,7 @@ class Company(models.Model):
 
 
 class Team(models.Model):
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=50, null=False)
     company = models.ForeignKey(
         Company,
         related_name='teams',

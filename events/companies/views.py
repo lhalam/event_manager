@@ -4,8 +4,7 @@ from django.views.generic.base import View
 from django.forms import model_to_dict
 from django.http import HttpResponse, JsonResponse
 
-
-from .forms import CompanyForm, CompanyPutForm, TeamForm, TeamPutForm
+from .forms import CompanyForm, TeamForm
 from .models import Company, TeamUserAssignment, Team, User
 
 PERMISSION_DENIED = JsonResponse({"error_message": "Permission denied"}, status=403)
@@ -60,7 +59,7 @@ class CompanyView(View):
         if not CompanyView.check_company_rights(request, company_id):
                 return PERMISSION_DENIED
         upd_company_data = json.loads(request.body.decode())
-        company_form = CompanyPutForm(upd_company_data)
+        company_form = CompanyForm(upd_company_data)
         errors = company_form.errors
         if upd_company_data.get('company_admin'):
             if not request.user.is_superuser:
@@ -70,6 +69,7 @@ class CompanyView(View):
                 errors['company_admin'] = ["This user didn't exists"]
             if Company.objects.filter(company_admin=upd_admin) and company.company_admin != upd_admin:
                 errors['company_admin'] = ['This user is already an admin of another company']
+            upd_company_data['company_admin'] = upd_admin
         if not company_form.is_valid() or errors:
             return JsonResponse({'success': False, 'errors': company_form.errors}, status=400)
         Company.objects.filter(pk=company_id).update(**upd_company_data)
@@ -155,7 +155,7 @@ class TeamView(View):
         if not CompanyView.check_company_rights(request, company_id):
             return PERMISSION_DENIED
         upd_team_data = json.loads(request.body.decode())
-        team_form = TeamPutForm(upd_team_data)
+        team_form = TeamForm(upd_team_data)
         if not team_form.is_valid():
             return JsonResponse({'success': False, 'errors': team_form.errors}, status=400)
         Team.objects.filter(pk=team_id).update(**upd_team_data)
