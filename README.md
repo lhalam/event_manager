@@ -15,10 +15,16 @@
     <li>Go to the local copy of repository. Open terminal and run the following command<br>
         <code>pip install -r requirements.txt</code>
     </li>
+    <li>Install npm on local machine.<br>
+        <code>sudo apt-get install npm</code>
+    </li>
     <li>Install less precompiler on local machine.<br>
         <code>npm install -g less</code>
     </li>
-    <li>Install npm on local machine.<br>
-        <code>sudo apt-get install npm</code>
+    <li>Install npm requirements on local machine.<br>
+        <code>npm install</code>
+    </li>
+    <li>To everything execute into one js file run this command.<br>
+        <code>./node_modules/.bin/webpack</code>
     </li>
 </ul>
