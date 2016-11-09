@@ -20,6 +20,8 @@ lib64/
 parts/
 sdist/
 var/
+node_modules/
+webpack-stats.json/
 *.egg-info/
 .installed.cfg
 *.egg
@@ -96,6 +98,8 @@ postgres
 
 # compiled less files
 events/static/COMPILED/
+events/static/bundles/
+
 
 #PyCharm
 .idea/
