@@ -1,5 +1,7 @@
 import json
 
+from datetime import datetime
+
 from django.core.exceptions import PermissionDenied
 from django.views import View
 from django.contrib.auth.models import User
@@ -33,6 +35,7 @@ class RegistrationView(View):
     def post(self, request):
         body_unicode = request.body.decode('utf-8')
         registration_data = json.loads(body_unicode)
+        registration_data['birth_date'] = datetime.fromtimestamp(float(registration_data['birth_date']))
         registration_form = RegistrationForm(registration_data)
         if registration_form.is_valid():
             user = User.objects.create_user(

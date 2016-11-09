@@ -99,3 +99,8 @@ events/static/COMPILED/
 
 #PyCharm
 .idea/
+
+#temp
+main.js
+registration.less
+node_modules
