@@ -7,16 +7,13 @@ class EventList extends React.Component{
         this.state = ({events: []})
     }
     componentWillMount(){
-        $.get({
-            url: '/api/v1/events/',
-            success: function(data){
-            },
-            error: function(){
-                window.location = '/'
-            }
-        }).then(function(data){
-            this.setState({events: data})
+        axios.get('/api/v1/events/')
+        .then(function (response) {
+            this.setState({events: response.data})
         }.bind(this))
+        .catch(function (error) {
+            console.log(error);
+  });
     }
     componentDidMount(){
         

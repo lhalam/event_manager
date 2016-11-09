@@ -11,16 +11,15 @@
     {% block head %}{% endblock head %}
 
     <link rel="stylesheet" href="{% static 'css/styles.less'|compile %}" />
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
-          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.0.1/fullcalendar.min.css">
-    <link rel="stylesheet" media="print" href="//cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.0.1/fullcalendar.print.css">
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static 'css/fullcalendar.min.css' %}">
+    <link rel="stylesheet" media="print" href="{% static 'css/fullcalendar.print.css' %}">
 
-
+    <script src="{% static 'js/axios.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/less.min.js' %}"></script>
-    <script src="https://unpkg.com/react-router/umd/ReactRouter.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.15.1/moment.min.js"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCiA8bcV0Ft_uX_52t0OEUj3FQywiNL6TI"
+    <script src="{% static 'js/ReactRouter.min.js' %}"></script>
+    <script src="{% static 'js/moment.min.js' %}"></script>
+    <script src="{% static 'js/google.map.js' %}?key=AIzaSyCiA8bcV0Ft_uX_52t0OEUj3FQywiNL6TI"
     async defer></script>
     <script src="{% static 'js/react.js' %}"></script>
     <script src="{% static 'js/react-dom.js' %}"></script>

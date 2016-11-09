@@ -8,13 +8,16 @@ class Event extends React.Component{
         this.state = ({events: {}})
     }
     componentWillMount(){
-        $.get({
-            url: '/api/v1/events/' + this.props.params.event_id,
-        }).then(function(data){
-            var ar = []
-            ar.push(data)
-            this.setState({events: ar})
+        const url = '/api/v1/events/' + this.props.params.event_id
+        axios.get(url) 
+        .then(function (response) {
+            const events_array = []
+            events_array.push(response.data)
+            this.setState({events: events_array})
         }.bind(this))
+        .catch(function (error) {
+            console.log(error);
+        });
     }
     render(){
         if (this.state.events[0]){
