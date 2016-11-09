@@ -1,13 +1,15 @@
 from django.db import models
 from registration.models import User
 from django.db.models.fields.related import ManyToManyField
+from django.contrib.postgres.fields import ArrayField
 
 
 class Event(models.Model):
     title = models.CharField(max_length=200)
     start_date = models.DateTimeField(blank=True, null=True)
     end_date = models.DateTimeField(blank=True, null=True)
-    location = models.CharField(max_length=200, null=True)
+    location = ArrayField(base_field=models.FloatField(), size=2)
+    place = models.CharField(max_length=200, null=True)
     description = models.TextField(blank=True, null=True)
     participants = models.ManyToManyField(
         User,
