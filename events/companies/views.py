@@ -28,11 +28,10 @@ class CompanyView(View):
         company = Company.get_by_id(company_id)
         if not company:
             return COMPANY_NOT_EXISTS
-        if Company.get_user_company(request) != company:
-            if not request.user.is_superuser:
-                return PERMISSION_DENIED
+        if Company.get_user_company(request) != company and not request.user.is_superuser:
+            return PERMISSION_DENIED
         response = model_to_dict(company)
-        response['teams'] = Company.get_teams(company_id)
+        response['teams'] = [team.name for team in Company.get_teams(company_id)]
         return JsonResponse(response, status=200)
 
     def post(self, request):
@@ -54,7 +53,7 @@ class CompanyView(View):
         if not company:
             return COMPANY_NOT_EXISTS
         if not CompanyView.check_company_rights(request, company):
-                return PERMISSION_DENIED
+            return PERMISSION_DENIED
         upd_company_data = json.loads(request.body.decode())
         company_form = CompanyForm(upd_company_data)
         errors = company_form.errors
@@ -74,7 +73,7 @@ class CompanyView(View):
     def delete(self, request, company_id):
         company = Company.get_by_id(company_id)
         if not CompanyView.check_company_rights(request, company):
-                return PERMISSION_DENIED
+            return PERMISSION_DENIED
         company.delete()
         return NO_CONTENT
 
@@ -88,15 +87,12 @@ class CompanyView(View):
     def validate_admin_field(user, errors, data, company=None):
         if not data.get('admin'):
             errors['admin'] = ['This field is required']
-        else:
-            if not user:
-                errors['admin'] = ["This user didn't exists"]
-        if not company:
-            if Company.objects.filter(admin=user):
-                errors['admin'] = ['This user is already an admin of another company']
-        else:
-            if Company.objects.filter(admin=user) and company.admin != user:
-                errors['admin'] = ['This user is already an admin of another company']
+        elif not user:
+            errors['admin'] = ["This user didn't exists"]
+        if not company and Company.objects.filter(admin=user):
+            errors['admin'] = ['This user is already an admin of another company']
+        elif Company.objects.filter(admin=user) and company.admin != user:
+            errors['admin'] = ['This user is already an admin of another company']
         return errors
 
 
@@ -106,24 +102,22 @@ class TeamView(View):
         company = Company.get_by_id(company_id)
         if not company:
             return COMPANY_NOT_EXISTS
-        if Company.get_user_company(request) != company:
-            if not request.user.is_superuser:
-                return PERMISSION_DENIED
+        if Company.get_user_company(request) != company and not request.user.is_superuser:
+            return PERMISSION_DENIED
         if not team_id:
             response = [{
-                            'id': team.pk,
-                            'name': team.name,
-                            'company': company.name,
-                            'members': Team.get_members(team)[:4]
-                        } for team in company.teams.all()]
+                'id': team.pk,
+                'name': team.name,
+                'company': company.name,
+                'members': Team.get_members(team)[:4]
+            } for team in company.teams.all()]
             return JsonResponse(response, safe=False, status=200)
 
         team = Team.get_by_id(team_id)
         if not team:
             return TEAM_NOT_EXISTS
-        if Company.get_user_company(request) != company:
-            if not request.user.is_superuser:
-                return PERMISSION_DENIED
+        if Company.get_user_company(request) != company and not request.user.is_superuser:
+            return PERMISSION_DENIED
         response = {
             'id': team.pk,
             'name': team.name,

@@ -23,7 +23,7 @@ class Company(models.Model):
 
     @staticmethod
     def get_teams(company_id):
-        return [team.name for team in Company.get_by_id(company_id).teams.all()]
+        return [team for team in Company.get_by_id(company_id).teams.all()]
 
     @staticmethod
     def get_user_company(request):
