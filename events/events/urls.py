@@ -24,5 +24,5 @@ urlpatterns = [
     url(r'^auth/', include('auth.urls', namespace='auth')),
     url(r'^api/v1/events/', include('event.urls', namespace='event')),
     url(r'^api/v1/reg/', include('registration.urls', namespace='reg')),
-    url(r'^profile/', include('profiles.urls', namespace='profiles')),
+    url(r'^api/v1/profile/', include('profiles.urls', namespace='profiles')),
 ]

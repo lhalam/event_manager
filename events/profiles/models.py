@@ -17,10 +17,6 @@ class UserProfile(models.Model):
         UserProfile.objects.get_or_create(user=kwargs['user'])
 
     @classmethod
-    def get_all(cls):
-        return cls.objects.all()
-
-    @classmethod
     def get_by_id(cls, profile_id):
         try:
             return cls.objects.get(pk=profile_id)
