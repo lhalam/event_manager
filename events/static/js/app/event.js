@@ -1,6 +1,8 @@
-import React from 'react';
-import Map from './map.js'
+var React = require('react');
+import Map from './map'
 
+
+var React = require('react');
 
 class Event extends React.Component{
     constructor(props){
@@ -15,9 +17,6 @@ class Event extends React.Component{
             events_array.push(response.data)
             this.setState({events: events_array})
         }.bind(this))
-        .catch(function (error) {
-            console.log(error);
-        });
     }
     render(){
         if (this.state.events[0]){

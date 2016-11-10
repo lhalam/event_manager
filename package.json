@@ -28,9 +28,10 @@
     "react-dom": "^15.3.2",
     "react-router": "^3.0.0",
     "webpack": "^1.13.3",
-    "webpack-bundle-tracker": "0.0.93"
+    "webpack-bundle-tracker": "0.0.93",
+    "axios": "^0.15.2"
   },
   "dependencies": {
-    "axios": "^0.15.2"
+    
   }
 }

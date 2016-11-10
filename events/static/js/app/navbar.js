@@ -1,4 +1,4 @@
-import React from 'react'
+var React = require('react');
 import { Router, Route, Link, browserHistory } from 'react-router'
 
 export default class Navbar extends React.Component {

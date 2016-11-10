@@ -1,5 +1,5 @@
-import React from 'react'
-import Map from './map.js'
+var React = require('react');
+import Map from './map'
 
 class EventList extends React.Component{
     constructor(props){
@@ -11,9 +11,6 @@ class EventList extends React.Component{
         .then(function (response) {
             this.setState({events: response.data})
         }.bind(this))
-        .catch(function (error) {
-            console.log(error);
-  });
     }
     componentDidMount(){
         
@@ -33,6 +30,7 @@ class EventList extends React.Component{
         }else{
             return(
                 <div>
+                    Events does not exist
                 </div>
             )
         }

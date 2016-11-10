@@ -1,3 +1,5 @@
+var React = require('react');
+
 class Map extends React.Component{
     constructor(props){
         super(props);
@@ -52,7 +54,7 @@ class Map extends React.Component{
     render(){
         console.log(this.props)
         return(
-            <div id="map">
+            <div id="map" className="map">
             </div>
         )
     }
