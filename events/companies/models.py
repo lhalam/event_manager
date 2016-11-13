@@ -72,3 +72,10 @@ class Team(models.Model):
 class TeamUserAssignment(models.Model):
     team = models.ForeignKey(Team, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    @staticmethod
+    def get_all_teams(user):
+        try:
+            return TeamUserAssignment.objects.get(user=user).team.company.teams.all()
+        except TeamUserAssignment.DoesNotExist:
+            return None
