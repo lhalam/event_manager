@@ -39,8 +39,10 @@ INSTALLED_APPS = [
     'registration.apps.RegistrationConfig',
     'event.apps.EventConfig',
     'calendars.apps.CalendarsConfig',
+    'companies.apps.CompaniesConfig',
     'static_precompiler',
     'webpack_loader',
+
 ]
 
 MIDDLEWARE = [
@@ -126,7 +128,6 @@ STATIC_PRECOMPILER_COMPILERS = (
         "global_vars": {"link-color": "red"}
     }),
 )
-
 
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
