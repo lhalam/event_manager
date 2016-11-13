@@ -76,6 +76,10 @@ class TeamUserAssignment(models.Model):
     @staticmethod
     def get_all_teams(user):
         try:
-            return TeamUserAssignment.objects.get(user=user).team.company.teams.all()
-        except TeamUserAssignment.DoesNotExist:
-            return None
+            company = Company.objects.get(admin=user)
+            return company.teams.all()
+        except Company.DoesNotExist:
+            try:
+                return TeamUserAssignment.objects.get(user=user).team.company.teams.all()
+            except TeamUserAssignment.DoesNotExist:
+                return None
