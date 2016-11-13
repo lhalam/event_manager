@@ -8,14 +8,14 @@ from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.http import JsonResponse
-from django.shortcuts import redirect, reverse
+from django.shortcuts import redirect, reverse, render
 
 from .models import User, RegistrationConfirm
 from .forms import RegistrationForm
 from events import settings
 
 
-CONFIRM_LINK = settings.HOST_NAME + '/api/v1/reg/confirm/'
+CONFIRM_LINK = settings.HOST_NAME + '/registration/confirm/'
 
 
 class EmailSender(object):
@@ -29,8 +29,7 @@ class EmailSender(object):
 
 class RegistrationView(View):
     def get(self, request):
-        data = {'first_name': '', 'last_name': '', 'email': '', 'password': '', 'birth_date': ''}
-        return JsonResponse(data, status=200)
+        return render(request, 'registration.html')
 
     def post(self, request):
         body_unicode = request.body.decode('utf-8')
@@ -49,19 +48,16 @@ class RegistrationView(View):
 
             EmailSender.send_registration_confirm(user)
 
-            return JsonResponse({'message': 'To finish registration follow instructions in email.'}, status=201)
+            return JsonResponse({'message': 'To finish registration follow instructions in email'}, status=201)
 
         return JsonResponse({'errors': registration_form.errors}, status=400)
 
 
 class ConfirmRegistrationView(View):
     def get(self, request, hash_code):
-        try:
-            user = RegistrationConfirm.close_confirm(hash_code)
-        except PermissionDenied:
-            return JsonResponse({'message': 'Link is not active.'}, status=403)
+        user = RegistrationConfirm.close_confirm(hash_code)
 
         if not user:
             return redirect(reverse('reg:main'))
 
-        return JsonResponse({'user_id': user.id, 'email': user.email}, status=200)
+        return redirect(reverse('auth:login'))
