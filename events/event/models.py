@@ -10,7 +10,7 @@ class Event(models.Model):
     location = models.CharField(max_length=200, null=True)
     description = models.TextField(blank=True, null=True)
     address = models.CharField(max_length=500, null=True)
-    created_date = models.DateTimeField(blank=True, null=True)
+    created_date = models.DateTimeField(blank=True, null=True, auto_now_add=True)
     owner_id = models.BigIntegerField(null=True)
     participants = models.ManyToManyField(
         User,
@@ -20,11 +20,6 @@ class Event(models.Model):
 
     def __str__(self):
         return "%s" % self.title
-
-    def save(self, *args, **kwargs):
-        self.created_date = now()			
-        super(Event, self).save(*args, **kwargs)
-
 
     @staticmethod
     def get_by_id(event_id):
