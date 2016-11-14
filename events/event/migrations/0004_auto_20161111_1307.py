@@ -11,6 +11,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('event', '0003_auto_20161025_1919'),
+        ('registration', '0002_auto_20161028_2141')
     ]
 
     operations = [
