@@ -2,6 +2,9 @@ import React from 'react'
 import { render } from 'react-dom'
 import { Router, Route, Link, hashHistory } from 'react-router'
 
+import injectTapEventPlugin from 'react-tap-event-plugin';
+injectTapEventPlugin();
+
 import App from './app'
 import Calendar from './app/calendar'
 import Events from './app/events'
