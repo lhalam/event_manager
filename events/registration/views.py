@@ -29,6 +29,8 @@ class EmailSender(object):
 
 class RegistrationView(View):
     def get(self, request):
+        if(request.user.is_authenticated):
+            return redirect('/')
         return render(request, 'registration.html')
 
     def post(self, request):
