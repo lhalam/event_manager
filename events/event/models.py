@@ -21,6 +21,16 @@ class Event(models.Model):
     def __str__(self):
         return "%s" % self.title
 
+    def serialize(self):
+        return {
+            "id" : self.pk,
+            "title" : self.title,
+            "start_date" : self.start_date,
+            "end_date" : self.end_date,
+            "description" : self.description,
+            "location" : self.location
+        }
+
     @staticmethod
     def get_by_id(event_id):
         try:
