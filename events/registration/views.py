@@ -14,7 +14,6 @@ from .models import User, RegistrationConfirm
 from .forms import RegistrationForm
 from events import settings
 
-
 CONFIRM_LINK = settings.HOST_NAME + '/registration/confirm/'
 
 
@@ -29,7 +28,7 @@ class EmailSender(object):
 
 class RegistrationView(View):
     def get(self, request):
-        if(request.user.is_authenticated):
+        if request.user.is_authenticated:
             return redirect('/')
         return render(request, 'registration.html')
 
