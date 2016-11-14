@@ -1,4 +1,5 @@
 import json
+import time
 
 from datetime import datetime
 
@@ -35,9 +36,12 @@ class RegistrationView(View):
     def post(self, request):
         body_unicode = request.body.decode('utf-8')
         registration_data = json.loads(body_unicode)
-        registration_data['birth_date'] = datetime.fromtimestamp(float(registration_data['birth_date']))
         registration_form = RegistrationForm(registration_data)
-        if registration_form.is_valid():
+        errors = registration_form.errors
+        if float(registration_data['birth_date']) > time.time():
+            errors['birth_date'] = ['Birth date is not valid']
+
+        if registration_form.is_valid() and not errors:
             user = User.objects.create_user(
                 username=registration_data.get('email'),
                 first_name=registration_data.get('first_name'),
@@ -51,7 +55,7 @@ class RegistrationView(View):
 
             return JsonResponse({'message': 'To finish registration follow instructions in email'}, status=201)
 
-        return JsonResponse({'errors': registration_form.errors}, status=400)
+        return JsonResponse({'errors': errors}, status=400)
 
 
 class ConfirmRegistrationView(View):
