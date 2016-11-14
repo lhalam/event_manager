@@ -5,7 +5,7 @@ from django.utils import timezone
 from django.contrib.auth.models import User as BaseUser
 from django.core.exceptions import PermissionDenied
 
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 INVITE_DAYS_TTL = 7
 
@@ -17,9 +17,9 @@ class User(BaseUser):
         return cls.objects.all()
 
     @classmethod
-    def get_user_by_id(cls, id):
+    def get_by_id(cls, user_id):
         try:
-            user = cls.objects.get(pk=id)
+            user = cls.objects.get(pk=user_id)
         except cls.DoesNotExist:
             return None
         else:
