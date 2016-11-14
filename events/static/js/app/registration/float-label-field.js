@@ -3,7 +3,6 @@ import Rules from "./rules";
 import TextField from 'material-ui/TextField';
 import Popover from 'material-ui/Popover/Popover';
 import validator from 'validator';
-var ReactBootstrap = require('react-bootstrap');
 
 export default class FloatLabelField extends React.Component {
     constructor(props){

@@ -131,7 +131,7 @@ export default class Form extends React.Component {
                                                    date.getFullYear()).getTime() / MILLISECONDS;
 
         axios.post(this.props.url, registration_data)
-            .then((responce) => this.props.handleSubmit(responce.data.message, ""))
+            .then((response) => this.props.handleSubmit(response.data.message, ""))
             .catch((error) => {
                 if(error.response){
                     this.props.handleSubmit("", "Oops, something went wrong. Please try again later or contact support.")
