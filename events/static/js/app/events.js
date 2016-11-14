@@ -1,4 +1,4 @@
-var React = require('react');
+const React = require('react');
 import Map from './map'
 
 class EventList extends React.Component{
@@ -11,9 +11,6 @@ class EventList extends React.Component{
         .then(function (response) {
             this.setState({events: response.data})
         }.bind(this))
-    }
-    componentDidMount(){
-        
     }
     render(){
         if (this.state.events[0]){
