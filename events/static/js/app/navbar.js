@@ -58,28 +58,32 @@ import {Tabs, Tab} from 'material-ui/Tabs';
 // }
 
 export default class Navbar extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-          value: 3,
-        };
-        this.handleChange = (event, index, value) => this.setState({value});
-      }
-    render() {
+
+    render() {    // // constructor(props) {
+    // //     super(props);
+    // //     this.state = {
+    // //       value: 3,
+    // //     };
+    // //     this.handleChange = (event, index, value) => this.setState({value});
+    //   }
         var styles = {
           appBar: {
+              height: '64px',
           },
           tabs: {
-            width: '20%'
-          },
+              width: '20%',
+              minWidth: '300px',
+          }
         };
+
+
         return (
             <header>
                 <MuiThemeProvider muiTheme={getMuiTheme()}>
-                    <AppBar title={
+                    <AppBar style={styles.appBar} title={
                         <Tabs onChange={this.onChangeTabs} style={styles.tabs}>
-                            <Tab label="Calendar" linkButton containerElement={<Link to="calendar" />} rippleColor="rgba(0,0,0,0)" />
-                            <Tab label="Events" linkButton containerElement={<Link to="event" />} rippleColor="rgba(0,0,0,0)" />
+                            <Tab label={<span className="navbar-tab">Calendar</span>} linkButton containerElement={<Link to="calendar" />} rippleColor="rgba(0,0,0,0)" />
+                            <Tab label={<span className="navbar-tab">Events</span>} linkButton containerElement={<Link to="event" />} rippleColor="rgba(0,0,0,0)" />
                         </Tabs>
                     } />
                 </MuiThemeProvider>
