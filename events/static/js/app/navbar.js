@@ -67,21 +67,27 @@ export default class Navbar extends React.Component {
     // //     this.handleChange = (event, index, value) => this.setState({value});
     //   }
         var styles = {
-          appBar: {
-              height: '64px',
-          },
           tabs: {
               width: '20%',
-              minWidth: '300px',
-          }
+              minWidth: '270px',
+          },
+            tab: {
+                marginTop: '-3px'
+            }
         };
+
+        const muiTheme = getMuiTheme({
+          appBar: {
+            height: 50, // Instead of 64
+          },
+        });
 
 
         return (
             <header>
-                <MuiThemeProvider muiTheme={getMuiTheme()}>
-                    <AppBar style={styles.appBar} title={
-                        <Tabs onChange={this.onChangeTabs} style={styles.tabs}>
+                <MuiThemeProvider muiTheme={getMuiTheme(muiTheme)}>
+                    <AppBar title={
+                        <Tabs tabItemContainerStyle={styles.tab} onChange={this.onChangeTabs} style={styles.tabs}>
                             <Tab label={<span className="navbar-tab">Calendar</span>} linkButton containerElement={<Link to="calendar" />} rippleColor="rgba(0,0,0,0)" />
                             <Tab label={<span className="navbar-tab">Events</span>} linkButton containerElement={<Link to="event" />} rippleColor="rgba(0,0,0,0)" />
                         </Tabs>
