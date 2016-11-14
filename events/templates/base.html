@@ -24,17 +24,17 @@
 
 </head>
 <body>
+    <div class="main-container">
+        <div id="root"></div>
 
-<div id="root"></div>
+        {% block content %}
+            <div class="container">
+            </div>
+        {% endblock content %}
 
-{% block content %}
-    <div class="container">
+        {% include 'footer.html' %}
+
+        <script type="text/javascript" src="{% static 'bundles/main.js' %}"></script>
     </div>
-{% endblock content %}
-
-{% include 'footer.html' %}
-
-<script type="text/javascript" src="{% static 'bundles/main.js' %}"></script>
-
 </body>
 </html>
