@@ -99,7 +99,13 @@ postgres
 # compiled less files
 events/static/COMPILED/
 events/static/bundles/
+events/static/bundles/main.js
 
 
 #PyCharm
 .idea/
+
+# npm
+main.js
+node_modules
+/webpack-stats.json
