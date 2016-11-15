@@ -1,8 +1,8 @@
-var React = require('react');
+const React = require('react');
+const axios = require("axios");
 import Map from './map'
 
 
-var React = require('react');
 
 class Event extends React.Component{
     constructor(props){
