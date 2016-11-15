@@ -3,6 +3,8 @@ import { Router, Route, Link, browserHistory } from 'react-router';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import AppBar from 'material-ui/AppBar';
+import FlatButton from 'material-ui/FlatButton';
+
 
 import IconMenu from 'material-ui/IconMenu';
 import IconButton from 'material-ui/IconButton';
@@ -86,12 +88,17 @@ export default class Navbar extends React.Component {
         return (
             <header>
                 <MuiThemeProvider muiTheme={getMuiTheme(muiTheme)}>
-                    <AppBar title={
+                    <AppBar
+                        title={
+
+
                         <Tabs tabItemContainerStyle={styles.tab} onChange={this.onChangeTabs} style={styles.tabs}>
                             <Tab label={<span className="navbar-tab">Calendar</span>} linkButton containerElement={<Link to="calendar" />} rippleColor="rgba(0,0,0,0)" />
                             <Tab label={<span className="navbar-tab">Events</span>} linkButton containerElement={<Link to="event" />} rippleColor="rgba(0,0,0,0)" />
                         </Tabs>
-                    } />
+                        }
+                        iconElementRight={<FlatButton href="/auth/logout?next=/" label="Logout" />}
+                    />
                 </MuiThemeProvider>
             </header>
         );
