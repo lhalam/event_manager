@@ -104,5 +104,7 @@ events/static/bundles/
 #PyCharm
 .idea/
 
-#webpack
+# npm
+main.js
+node_modules
 webpack-stats.json

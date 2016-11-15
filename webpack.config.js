@@ -8,7 +8,10 @@ module.exports = {
     //the entry point we created earlier. Note that './' means
     //your current directory. You don't have to specify the extension  now,
     //because you will specify extensions later in the `resolve` section
-    entry: './events/static/js/router',
+    entry: {
+	main:'./events/static/js/router',
+	registration:'./events/static/js/registration'
+    },
 
     output: {
         //where you want your compiled bundle to be stored
@@ -48,8 +51,13 @@ module.exports = {
     },
 
     resolve: {
+
         //tells webpack where to look for modules
         modulesDirectories: ['node_modules'],
+        alias: {
+          // bind version of jquery-ui
+          "jquery-ui": "jquery-ui/ui/widgets",
+        },
         //extensions that should be used to resolve modules
         extensions: ['', '.js', '.jsx']
     }
