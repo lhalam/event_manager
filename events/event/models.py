@@ -56,3 +56,7 @@ class Event(models.Model):
 class EventUserAssignment(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    @staticmethod
+    def get_by_event_user(event, user):
+        return EventUserAssignment.objects.filter(user=user, event=event)
