@@ -1,6 +1,7 @@
 import React from 'react';
 import FloatLabelField from './float-label-field';
 import DateField from './date-field';
+import Divider from 'material-ui/Divider';
 import RaisedButton from 'material-ui/RaisedButton';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
@@ -143,6 +144,7 @@ export default class Form extends React.Component {
         return (
             <MuiThemeProvider muiTheme={getMuiTheme()}>
                 <Paper className="registration_container" zDepth={3}>
+                    <p className="registration-form-header">Sign Up</p>
                     <form className="registration_form">
                         {
                             Boolean(Object.values(this.state.response_errors).length)
@@ -212,7 +214,7 @@ export default class Form extends React.Component {
                                           disabled={!this.state.formIsValid}
                                           className="submit-btn"
                             />
-                        <a className="login" href="/auth/login">Login</a>
+                        <p className="login">Already a member? <a href="/auth/login">Login</a></p>
                     </form>
                 </Paper>
             </MuiThemeProvider>

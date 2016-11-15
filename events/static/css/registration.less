@@ -6,6 +6,7 @@
 @popover-header: rgb(0, 151, 167);
 @link-color: #1d67a4;
 @rule-color:  #fff;
+@submit-btn-bg: rgb(0, 151, 167);
 
 body {
   background: @body-bg;
@@ -31,7 +32,7 @@ li.success {
   background: @form-bg;
   max-width: 400px;
   min-width: 300px;
-  padding: 40px 0px 20px;
+  padding: 0px 0px 20px;
   border-radius: 3px;
   position: relative;
 }
@@ -70,7 +71,8 @@ li.success {
 }
 
 .submit-btn {
-  margin-top: 20px;
+  margin: 20px 0px 10px;
+  min-width: 256px !important;
 }
 
 .popover-rules {
@@ -93,11 +95,25 @@ li.success {
   }
 }
 
+.registration-form-header {
+  margin: 0;
+  padding: 5px 0 15px 25px;
+  background: @popover-header;
+  color: @rule-color;
+  border-radius: 2px 2px 0 0;
+  font-size: 30px;
+  height: 80px;
+  line-height: 75px;
+  padding-left: 40px;
+  span {
+    font-size: 15px;
+    height: 20px;
+  }
+}
+
 .login {
-  position: absolute;
-  bottom: 20px;
-  margin-left: 15px;
-  &:visited {
+  margin-top: 10px;
+  a:visited {
     color: @link-color;
   }
 }
