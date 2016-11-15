@@ -8,33 +8,28 @@
     {% load compile_static %}
     {% load static %}
 
-    {% block head %}{% endblock head %}
-
-    <link rel="stylesheet" href="{% static 'css/styles.less'|compile %}" />
     <link rel="stylesheet" href="{% static 'css/vendor/bootstrap.min.css' %}" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <link rel="stylesheet" href="{% static 'css/vendor/fullcalendar.min.css' %}">
     <link rel="stylesheet" media="print" href="{% static 'css/vendor/fullcalendar.print.css' %}">
+    <link rel="stylesheet" href="{% static 'css/styles.less'|compile %}" />
     <script async defer
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCiA8bcV0Ft_uX_52t0OEUj3FQywiNL6TI&callback=initMap">
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCiA8bcV0Ft_uX_52t0OEUj3FQywiNL6TI&callback=initMap">
     </script>
-    <script type="text/javascript" src="{% static 'js/less.min.js' %}"></script>
-    <script src="{% static 'js/moment.min.js' %}"></script>
-
-
+    <script src="{% static 'js/vendor/moment.min.js' %}"></script>
+    {% block head %}{% endblock head %}
 
 </head>
 <body>
 
-<div id="root"></div>
-
 {% block content %}
-    <div class="container">
-    </div>
+    {% load static %}
+    <div id="root"></div>
+    {{ request.user.username }}, <a href="{% url 'auth:logout' %}?next=/">Logout</a><br>
+    {{ request.sessions }}
+    <script type="text/javascript" src="{% static 'bundles/main.js' %}"></script>
 {% endblock content %}
 
 {% include 'footer.html' %}
-
-<script type="text/javascript" src="{% static 'bundles/main.js' %}"></script>
 
 </body>
 </html>

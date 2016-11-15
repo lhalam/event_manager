@@ -11,12 +11,11 @@ class RegistrationForm(forms.Form):
     last_name = forms.CharField(max_length=30)
     email = forms.EmailField()
     password = forms.CharField(min_length=8, max_length=20)
-    birth_date = forms.DateField()
 
     def clean_password(self):
         password = self.cleaned_data.get('password')
         if not PASSWORD_REGEX.match(password):
-            raise forms.ValidationError('Password is not valid. Allowed characters: A-Z a-z 0-9.', code='invalid')
+            raise forms.ValidationError('Password is not valid. Allowed characters: A-Z a-z 0-9', code='invalid')
 
         return password
 
@@ -27,4 +26,4 @@ class RegistrationForm(forms.Form):
         except User.DoesNotExist:
             return email
 
-        raise forms.ValidationError('User with this email already exists.', code='unique')
+        raise forms.ValidationError('User with this email already exists', code='unique')

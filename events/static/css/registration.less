@@ -1,0 +1,132 @@
+@body-bg: #f9f9f9;
+@form-bg: rgba(245, 245, 245, 0.7);
+@rule-error: #f44336;
+@rule-success: #3c763d;
+@success-screen-icon: #63e863;
+@popover-header: rgb(0, 151, 167);
+@link-color: #1d67a4;
+@rule-color:  #fff;
+@submit-btn-bg: rgb(0, 151, 167);
+
+body {
+  background: @body-bg;
+}
+
+form {
+  margin: 0 auto;
+  max-width: 300px;
+  min-width: 100px;
+  text-align: center;
+}
+
+li.error {
+    color: @rule-error
+}
+
+li.success {
+    color: @rule-success;
+}
+
+.registration_container {
+  margin: 50px auto;
+  background: @form-bg;
+  max-width: 400px;
+  min-width: 300px;
+  padding: 0px 0px 20px;
+  border-radius: 3px;
+  position: relative;
+}
+
+.popover-rules ul {
+  margin-top: 10px;
+  li {
+    font-size:15px;
+    padding: 0 25px;
+    span {
+      margin-left: 7px;
+      &.glyphicon {
+        width: 15px;
+        height: 15px;
+        font-size: 12px;
+        font-weight: normal;
+        margin-left: 0;
+      }
+    }
+  }
+}
+
+.popover-title {
+  padding-left: 20px;
+}
+
+.field-wrapper {
+  height: 80px;
+  text-align: center;
+  div:first-child div:last-child{
+    text-align: right;
+  }
+  label {
+    font-weight: normal;
+  }
+}
+
+.submit-btn {
+  margin: 20px 0px 10px;
+  min-width: 256px !important;
+}
+
+.popover-rules {
+  min-width: 270px;
+  p {
+    margin: 0;
+    padding: 15px 0 15px 25px;
+    background: @popover-header;
+    color: @rule-color;
+  }
+
+  ul{
+    list-style: none;
+    padding: 0;
+  }
+
+  li{
+    line-height: 25px;
+    padding: 0 25px;
+  }
+}
+
+.registration-form-header {
+  margin: 0;
+  padding: 5px 0 15px 25px;
+  background: @popover-header;
+  color: @rule-color;
+  border-radius: 2px 2px 0 0;
+  font-size: 30px;
+  height: 80px;
+  line-height: 75px;
+  padding-left: 40px;
+  span {
+    font-size: 15px;
+    height: 20px;
+  }
+}
+
+.login {
+  margin-top: 10px;
+  a:visited {
+    color: @link-color;
+  }
+}
+
+.success-screen {
+  text-align: center;
+  margin-top: 50px;
+  p {
+    font-size: 15px;
+  }
+}
+
+.success-screen-icon {
+  font-size: 100px;
+  color: @success-screen-icon;
+}
