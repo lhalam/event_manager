@@ -36,6 +36,5 @@
     "validator": "^6.1.0",
     "axios": "^0.15.2"
   },
-  "dependencies": {
-  }
+  "dependencies": {}
 }
