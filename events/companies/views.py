@@ -19,10 +19,14 @@ class CompanyView(View):
 
     def get(self, request, company_id=None):
         if not company_id:
-            if not request.user.is_superuser:
+            company = Company.get_user_company(request)
+            if not request.user.is_superuser or not company:
                 return PERMISSION_DENIED
-            companies = Company.get_all()
-            response = {"companies": [model_to_dict(company) for company in companies]}
+            if request.user.is_superuser:
+                companies = Company.get_all()
+                response = {"companies": [model_to_dict(company) for company in companies]}
+            else:
+                response = {"companies": [model_to_dict(company)]}
             return JsonResponse(response, status=200)
 
         company = Company.get_by_id(company_id)
