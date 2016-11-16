@@ -211,7 +211,7 @@ class TeamUserAssignmentView(View):
             else:
                 members_to_del = [User.get_by_id(user.id) for user in new_team_members.get('member_to_del')]
                 for user in team.members.all():
-                    if user in members_to_del:
+                    if user not in members_to_del:
                         able_to_add.append(user)
                 return JsonResponse({'members_to_del': able_to_add}, status=200)
 
