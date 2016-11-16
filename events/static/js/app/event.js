@@ -13,16 +13,26 @@ class NewEvent extends React.Component{
     constructor(props){
         super(props);
         this.state = ({events: {}})
+        this.handleAddUsers = (users) => {
+            console.log(this.state.events);
+            let event = this.state.events;
+            let allUsers = this.state.events[0]['participants'].slice();
+            allUsers.push.apply(allUsers, users.map((userObj) => userObj['username']));
+            event[0]['participants'] = allUsers;
+            this.setState({events: event}, () => console.log(this.state.events));
+        };
     }
-    componentWillMount(){
+    componentDidMount(){
         const url = '/api/v1/events/' + this.props.params.event_id
         axios.get(url) 
         .then(function (response) {
+            console.log(response.data);
             const events_array = []
             events_array.push(response.data)
             this.setState({events: events_array})
         }.bind(this))
     }
+
     render(){
         const event = this.state.events;
         if (event[0]){
@@ -71,8 +81,10 @@ class NewEvent extends React.Component{
                         </List>
                     </div>                        
                     </div>
-                        <AssignParticipants url={"/api/v1/events/"+this.props.params.event_id+"/user_assignment/"} />
-
+                    <div className="add-users-button">
+                        <AssignParticipants handleAddUsers={this.handleAddUsers}
+                                            url={"/api/v1/events/"+this.props.params.event_id+"/user_assignment/"} />
+                    </div>
                 </div>
                 </MuiThemeProvider>
             )

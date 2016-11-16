@@ -89,6 +89,7 @@ export default class AssignParticipants extends React.Component {
 
     handleRequestSubmitClose() {
         this.sendParticipants();
+        this.props.handleAddUsers(this.state.dataToSend['participants']);
         this.setState({
             open: false,
             dataToSend: {'participants': []},
