@@ -28,10 +28,10 @@ class NewEvent extends React.Component{
                     <div className="event-card-header">
                         {this.state.events[0].title}
                     </div>
+                    <div>
+                        <Map events={this.state.events} geo={false} zoom={13}/>
+                    </div>
                     <div className="event-card-body">
-                        <div>
-                            <Map events={this.state.events} geo={false} zoom={13}/>
-                        </div>
                     <div>
                         <div className="col-sm-4">
                             <b>Start Date:</b> {event[0].start_date}
@@ -43,12 +43,14 @@ class NewEvent extends React.Component{
                             <b>Place:</b> {event[0].place}
                         </div>
                     </div>
+                    <hr/>
                     <div>
                         <b className="description-title">
                             Description:
                         </b>
                         {event[0].description}
                     </div>
+                    <hr/>
                     <div>
                         <b className="description-title">
                             Participants: 

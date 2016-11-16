@@ -35,7 +35,6 @@ class EventList extends React.Component{
                         <EventItem key={event.id} event={event}/></Link>
                     })}
                 </div>
-                <App/>
             </div>
         )
         }else{
