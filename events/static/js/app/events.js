@@ -1,12 +1,36 @@
 import Map from './map'
 import {Container, Row, Col} from 'react-grid-system';
 import {Link} from 'react-router';
+import FloatingActionButton from 'material-ui/FloatingActionButton';
+import ContentAdd from 'material-ui/svg-icons/content/add';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+
+
+
 
 const React = require('react');
 const axios = require("axios");
 
 
 
+const App = () => (
+  <MuiThemeProvider>
+    <FloatingActionButtonExampleSimple />
+  </MuiThemeProvider>
+);
+
+const style = {
+  marginRight: 20,
+  float: 'right'
+};
+
+const FloatingActionButtonExampleSimple = () => (
+  <div className="wrapper-add-event-button">
+    <FloatingActionButton style={style}>
+      <ContentAdd />
+    </FloatingActionButton>
+    </div>
+)
 
 
 class EventList extends React.Component{
@@ -31,6 +55,7 @@ class EventList extends React.Component{
                         <NewItem key={event.id} event={event}/></Link>
                     })}
                 </div>
+                <App/>
             </div>
         )
         }else{
