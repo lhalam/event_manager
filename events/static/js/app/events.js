@@ -52,7 +52,7 @@ class EventList extends React.Component{
                 <div>
                     {this.state.events.map(function(event){
                         return <Link to={`/events/${event.id}`}>
-                        <NewItem key={event.id} event={event}/></Link>
+                        <EventItem key={event.id} event={event}/></Link>
                     })}
                 </div>
                 <App/>
@@ -69,19 +69,8 @@ class EventList extends React.Component{
     }
 }
 
+
 class EventItem extends React.Component{
-    render(){
-        const url =  '#/events/' + this.props.id
-        return (
-            <div>
-                <a href={url}>{this.props.title}</a>
-            </div>
-        )
-    }
-}
-
-
-class NewItem extends React.Component{
     render(){
         const url = '#/events/' + this.props.event.id 
         return(
