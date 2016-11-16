@@ -1,8 +1,56 @@
 import Map from './map'
 import {Container, Row, Col} from 'react-grid-system';
+import Paper from 'material-ui/Paper';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 const React = require('react');
 const axios = require("axios");
+
+
+const style = {
+  height: 100,
+  width: 100,
+  margin: 20,
+  textAlign: 'center',
+  display: 'inline-block',
+};
+
+const wrapperStyle = {
+    height: '100%',
+    width: 100,
+    margin: 20,
+    textAlign: 'center',
+    display: 'inline-block',
+}
+
+const Wrapper =() =>(
+    <div>
+        <Paper style={wrapperStyle}>
+            Hello world
+        </Paper>
+    </div>
+)
+
+const PaperExampleSimple = () => (
+  <div>
+    <Paper style={style} />
+    <Paper style={style} zDepth={1} />
+    <Paper style={style} zDepth={2} />
+    <Paper style={style} zDepth={3} />
+    <Paper style={style} zDepth={4} />
+    <Paper style={style} zDepth={5} />
+    <Paper style={style} />
+  </div>
+);
+
+
+
+const App = () => (
+  <MuiThemeProvider>
+    <Wrapper />
+  </MuiThemeProvider>
+);
+
 
 
 class EventList extends React.Component{
@@ -26,16 +74,9 @@ class EventList extends React.Component{
                         return <EventItem key={event.id} id={event.id} title={event.title}/>
                     })}
                 </div>
-                <div className="events-list-wrap">
-                    <Container>
-                        <Row>
-                        <Col xs={6} md={4}><EventItemNew/></Col>
-                        <Col xs={6} md={4}><EventItemNew/></Col>
-                        <Col xs={6} md={4}><EventItemNew/></Col>
-                        <Col xs={6} md={4}><EventItemNew/></Col>
-                        </Row>
-                    </Container>
-                </div>
+                <NewItem/>
+                <NewItem/>
+                <App/>
             </div>
         )
         }else{
@@ -111,7 +152,23 @@ class EventItemNew extends React.Component{
     }
 }
 
-
+class NewItem extends React.Component{
+    render(){
+        return(
+            <div className="event-item-wrapper">
+                <Col xs={4}>
+                    <div className="event-title">
+                        Title
+                    </div>
+                </Col>
+                <Col xs={2}>Place</Col>
+                <Col xs={3}>Users</Col>
+                
+                <Col xs={3}>Start Date</Col>
+            </div>
+        )
+    }
+}
 
 
 export default EventList
