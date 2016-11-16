@@ -13,26 +13,6 @@ const axios = require("axios");
 
 
 
-const App = () => (
-  <MuiThemeProvider>
-    <FloatingActionButtonExampleSimple />
-  </MuiThemeProvider>
-);
-
-const style = {
-  marginRight: 20,
-  float: 'right'
-};
-
-const FloatingActionButtonExampleSimple = () => (
-  <div className="wrapper-add-event-button">
-    <FloatingActionButton style={style}>
-      <ContentAdd />
-    </FloatingActionButton>
-    </div>
-)
-
-
 class EventList extends React.Component{
     constructor(props){
         super(props);
