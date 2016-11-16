@@ -209,9 +209,9 @@ class TeamUserAssignmentView(View):
             if not new_team_members.get('member_to_del'):
                 return INVALID_PAYLOAD
             else:
-                members_to_del = [User.get_by_id(user.id) for user in new_team_members.get('member_to_del')]
-                for user in team.members.all():
-                    if user in members_to_del:
+                members_to_del = [user for user in new_team_members.get('member_to_del')]
+                for user in Team.get_members(team):
+                    if user not in members_to_del:
                         able_to_add.append(user)
                 return JsonResponse({'members_to_del': able_to_add}, status=200)
 
@@ -238,6 +238,6 @@ class TeamUserAssignmentView(View):
                     if member not in users_not_to_add:
                         users_not_to_add.append(member)
         return [
-            user for user in User.get_all_users().exclude(users_not_to_add)
-            if user not in team_members
+            user for user in User.get_all_users()
+            if user not in team_members and user not in users_not_to_add
             ]
