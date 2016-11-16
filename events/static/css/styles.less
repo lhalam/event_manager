@@ -1,5 +1,6 @@
 @import "footer";
 @import "header";
+@import "registration";
 
 html,body{
   height:100%;
@@ -10,4 +11,25 @@ html,body{
  footer{
     position: relative;
  }
+}
+
+.team-members {
+  min-width: 500px;
+  max-width: 800px;
+  margin: 0 auto;
+
+  .members-wrap {
+    padding: 10px 40px 30px;
+  }
+  .members-header {
+    margin: 0;
+    padding: 5px 0 15px 25px;
+    background: @popover-header;
+    color: @rule-color;
+    border-radius: 2px 2px 0 0;
+    font-size: 30px;
+    height: 80px;
+    line-height: 75px;
+    padding-left: 40px;
+  }
 }
