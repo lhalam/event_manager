@@ -1,6 +1,17 @@
+import Map from './map'
+import {Container, Row, Col} from 'react-grid-system';
+import {Link} from 'react-router';
+import FloatingActionButton from 'material-ui/FloatingActionButton';
+import ContentAdd from 'material-ui/svg-icons/content/add';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+
+
+
+
 const React = require('react');
-import Map from './map';
-import axios from 'axios';
+const axios = require("axios");
+
+
 
 class EventList extends React.Component{
     constructor(props){
@@ -20,7 +31,8 @@ class EventList extends React.Component{
                 <Map events={this.state.events} geo={true} zoom={6}/>
                 <div>
                     {this.state.events.map(function(event){
-                        return <EventItem key={event.id} id={event.id} title={event.title}/>
+                        return <Link to={`/events/${event.id}`}>
+                        <EventItem key={event.id} event={event}/></Link>
                     })}
                 </div>
             </div>
@@ -36,15 +48,31 @@ class EventList extends React.Component{
     }
 }
 
+
 class EventItem extends React.Component{
     render(){
-        var url =  '#/events/' + this.props.id
-        return (
-            <div>
-                <a href={url}>{this.props.title}</a>
+        const url = '#/events/' + this.props.event.id 
+        return(
+            <div className="event-item-wrapper">
+                <Col xs={4}>
+                    <div className="event-title">
+                        {this.props.event.title}
+                    </div>
+                </Col>
+                <Col xs={2}>
+                    <div>
+                        {this.props.event.place}
+                    </div>
+                </Col>
+                <Col xs={3}>Users</Col>
+                
+                <Col xs={3}>
+                    {this.props.event.start_date}
+                </Col>
             </div>
         )
     }
 }
+
 
 export default EventList

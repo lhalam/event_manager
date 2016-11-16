@@ -1,5 +1,6 @@
 var React = require('react');
 import { Router, Route, Link, browserHistory } from 'react-router'
+import EventList from './events'
 
 export default class Navbar extends React.Component {
     render() {

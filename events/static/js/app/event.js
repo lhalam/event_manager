@@ -1,11 +1,12 @@
-var React = require('react');
-import Map from './map';
-import axios from 'axios';
+const React = require('react');
+const axios = require("axios");
+
+import Map from './map'
+import Paper from 'material-ui/Paper';
 
 
-var React = require('react');
 
-class Event extends React.Component{
+class NewEvent extends React.Component{
     constructor(props){
         super(props);
         this.state = ({events: {}})
@@ -20,52 +21,54 @@ class Event extends React.Component{
         }.bind(this))
     }
     render(){
-        if (this.state.events[0]){
+        const event = this.state.events;
+        if (event[0]){
             return(
-                <div className="row">
-                    <div className="col-sm-offset-2 col-sm-8">
-                        <table className="table table-hover table-bordered">
-                        <tbody>
-                            <tr>
-                                <td>Title</td>
-                                <td>{this.state.events[0].title}</td>
-                            </tr>
-                            <tr>
-                                <td>Start Date</td>
-                                <td>{this.state.events[0].start_date}</td>
-                            </tr>
-                            <tr>
-                                <td>End Date</td>
-                                <td>{this.state.events[0].end_date}</td>
-                            </tr>
-                            <tr>
-                                <td>Adress</td>
-                                <td>{this.state.events[0].place}</td>
-                            </tr>
-                            <tr>
-                                <td>Participants</td>
-                                <td>{this.state.events[0].participants}</td>
-                            </tr>
-                            <tr>
-                                <td>Description</td>
-                                <td>{this.state.events[0].description}</td>
-                            </tr>
-                            <tr>
-                                <td>Location</td>
-                                <td><Map events={this.state.events} geo={false} zoom={13}/></td>
-                            </tr>
-                            </tbody>
-                        </table>
+                <div className="event-card">
+                    <div className="event-card-header">
+                        {this.state.events[0].title}
+                    </div>
+                    <div>
+                        <Map events={this.state.events} geo={false} zoom={13}/>
+                    </div>
+                    <div className="event-card-body">
+                    <div>
+                        <div className="col-sm-4">
+                            <b>Start Date:</b> {event[0].start_date}
+                        </div>
+                        <div className="col-sm-4">
+                            <b>End Date:</b> {event[0].end_date}
+                        </div>
+                        <div className="col-sm-4">
+                            <b>Place:</b> {event[0].place}
+                        </div>
+                    </div>
+                    <hr/>
+                    <div>
+                        <b className="description-title">
+                            Description:
+                        </b>
+                        {event[0].description}
+                    </div>
+                    <hr/>
+                    <div>
+                        <b className="description-title">
+                            Participants: 
+                        </b>
+                            {event[0].participants}
+                    </div>                        
                     </div>
                 </div>
             )
         }else{
             return(
-                <div></div>
+                <div>
+                    Empty
+                </div>
             )
         }
     }
 }
 
 
-export default Event
+export default NewEvent
