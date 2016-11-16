@@ -130,6 +130,11 @@ export default class AssignParticipants extends React.Component {
                     onRequestClose={this.handleRequestClose}
                 />
               <RaisedButton
+                    style={{
+                        display: 'block',
+                        maxWidth: '158px',
+                        margin: '20px auto'
+                    }}
                     label={title}
                     primary={true}
                     disabled={this.state.errorMessage ? true : false}
