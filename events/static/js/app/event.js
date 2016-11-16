@@ -1,5 +1,6 @@
 var React = require('react');
-import Map from './map'
+import Map from './map';
+import axios from 'axios';
 
 
 var React = require('react');

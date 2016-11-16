@@ -1,5 +1,6 @@
 const React = require('react');
-import Map from './map'
+import Map from './map';
+import axios from 'axios';
 
 class EventList extends React.Component{
     constructor(props){
