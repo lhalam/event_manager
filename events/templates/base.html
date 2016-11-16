@@ -27,8 +27,6 @@
         {% block content %}
             {% load static %}
             <div id="root"></div>
-            {{ request.user.username }}, <a href="{% url 'auth:logout' %}?next=/">Logout</a><br>
-            {{ request.sessions }}
             <script type="text/javascript" src="{% static 'bundles/main.js' %}"></script>
         {% endblock content %}
         </div>
