@@ -39,14 +39,12 @@ export default class AssignParticipants extends React.Component {
                       getParticipants: eventParticipants.data,
                       errorMessage: null
                     });
-                  console.log('loaded from server:', eventParticipants.data['participants']);
               })
               .catch((failData) => {
                   this.setState({
                       getParticipants: {'participants': []},
                       errorMessage: failData.response.data['error_message'],
                   });
-                  console.log('error2', Object.assign({}, failData.response.data));
               });
     };
 
@@ -66,7 +64,6 @@ export default class AssignParticipants extends React.Component {
                 });
             })
             .catch((failData) => {
-                console.log(failData);
                  this.setState({
                     message: 'Error occurred. '+failData.response.data['error_message'],
                     openSnackbar: true,

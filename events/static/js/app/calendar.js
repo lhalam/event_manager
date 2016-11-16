@@ -16,7 +16,6 @@ export default class Calendar extends React.Component {
                         data: {
                         },
                         success: function(doc) {
-                            console.log(doc);
                           var events = [];
                           $.each(doc.all_events, function(index, value) {
 
@@ -26,12 +25,10 @@ export default class Calendar extends React.Component {
                               end: value['end_date']
                               //all data
                             });
-                            console.log(events)
                           });
                           callback(events);
                         },
                         error: function(e, x, y) {
-                          console.log(e);
                         }
                     });
                 },

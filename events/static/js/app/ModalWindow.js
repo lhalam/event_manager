@@ -19,11 +19,9 @@ export default class ModalWindow extends React.Component {
     }
 
     handleAddChip(chip) {
-        console.log('chip:', chip);
         if (this.props.dataSource.indexOf(chip) != -1) {
            let chips = this.props.dataDestination;
             chips.push(chip);
-            console.log("chips:", chips);
             this.setState({
                 dataToSend: {'participants': chips}
             });

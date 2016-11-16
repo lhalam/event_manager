@@ -14,19 +14,17 @@ class NewEvent extends React.Component{
         super(props);
         this.state = ({events: {}})
         this.handleAddUsers = (users) => {
-            console.log(this.state.events);
             let event = this.state.events;
             let allUsers = this.state.events[0]['participants'].slice();
             allUsers.push.apply(allUsers, users.map((userObj) => userObj['username']));
             event[0]['participants'] = allUsers;
-            this.setState({events: event}, () => console.log(this.state.events));
+            this.setState({events: event});
         };
     }
     componentDidMount(){
         const url = '/api/v1/events/' + this.props.params.event_id
         axios.get(url) 
         .then(function (response) {
-            console.log(response.data);
             const events_array = []
             events_array.push(response.data)
             this.setState({events: events_array})
