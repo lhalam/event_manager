@@ -120,6 +120,8 @@ class TeamView(View):
         team = Team.get_by_id(team_id)
         if not team:
             return TEAM_NOT_EXISTS
+        if team.company.id != company.id:
+            return PERMISSION_DENIED
         if Company.get_user_company(request) != company and not request.user.is_superuser:
             return PERMISSION_DENIED
         response = {
