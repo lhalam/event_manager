@@ -1,8 +1,11 @@
 const React = require('react');
 const axios = require("axios");
-
+import AssignParticipants from './AssignParticipants'
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import Map from './map'
 import Paper from 'material-ui/Paper';
+import Avatar from 'material-ui/Avatar';
+import {List, ListItem} from 'material-ui/List';
 
 
 
@@ -24,6 +27,7 @@ class NewEvent extends React.Component{
         const event = this.state.events;
         if (event[0]){
             return(
+                <MuiThemeProvider>
                 <div className="event-card">
                     <div className="event-card-header">
                         {this.state.events[0].title}
@@ -55,10 +59,22 @@ class NewEvent extends React.Component{
                         <b className="description-title">
                             Participants: 
                         </b>
-                            {event[0].participants}
+                        <List>
+                            {event[0].participants.map((user) => {
+                                return (
+                                <ListItem>
+                                    <Avatar style={{marginRight: 10}} size={32}>{user[0].toUpperCase()}</Avatar>
+                                    {user}
+                                </ListItem>
+                                );
+                            })}
+                        </List>
                     </div>                        
                     </div>
+                        <AssignParticipants url={"/api/v1/events/"+this.props.params.event_id+"/user_assignment/"} />
+
                 </div>
+                </MuiThemeProvider>
             )
         }else{
             return(
