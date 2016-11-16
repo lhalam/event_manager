@@ -203,7 +203,6 @@ class TeamUserAssignmentView(View):
             return PERMISSION_DENIED
         team = Team.get_by_id(team_id)
         new_team_members = json.loads(request.body.decode())
-        #TODO
         able_to_add = []
         possible_users = TeamUserAssignmentView.get_users_to_add_list(team, company_id)
         if not new_team_members.get('members_to_add'):
@@ -213,7 +212,6 @@ class TeamUserAssignmentView(View):
                 members_to_del = [user for user in new_team_members.get('member_to_del')]
                 for user in Team.get_members(team):
                     if user not in members_to_del:
-                        print(user)
                         able_to_add.append(user)
                 return JsonResponse({'members_to_del': able_to_add}, status=200)
 
