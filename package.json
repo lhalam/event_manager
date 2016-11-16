@@ -43,9 +43,10 @@
     "acorn": "^4.0.3",
     "babel-polyfill": "^6.16.0",
     "flexboxgrid": "^6.3.1",
+    "material-ui-chip-input": "^0.10.0",
+    "moment": "^2.16.0",
     "react-flexbox-grid": "^0.10.2",
     "react-grid-system": "^1.5.2",
-    "react-pure-grid": "^2.1.0",
-    "moment": "^2.16.0"
+    "react-pure-grid": "^2.1.0"
   }
 }
