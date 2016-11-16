@@ -205,30 +205,36 @@ class TeamUserAssignmentView(View):
         new_team_members = json.loads(request.body.decode())
         able_to_add = []
         possible_users = TeamUserAssignmentView.get_users_to_add_list(team, company_id)
-        if not new_team_members.get('members'):
-            return INVALID_PAYLOAD
-        for user_id in new_team_members.get('members'):
-            if user_id not in possible_users:
+        if not new_team_members.get('members_to_add'):
+            if not new_team_members.get('member_to_del'):
                 return INVALID_PAYLOAD
-            user = User.get_by_id(user_id)
-            able_to_add.append(user)
-        for user in able_to_add:
-            TeamUserAssignment.objects.get_or_create(user=user, team=team)
+            else:
+                for user in team.members.all():
+                    if user in new_team_members.get('member_to_del'):
+                        user.delete()
+        else:
+            for user in new_team_members.get('members'):
+                if user not in possible_users:
+                    return INVALID_PAYLOAD
+                user = User.get_by_id(user.id)
+                able_to_add.append(user)
+            for user in able_to_add:
+                TeamUserAssignment.objects.get_or_create(user=user, team=team)
         return NO_CONTENT
 
     @staticmethod
     def get_users_to_add_list(team, company_id):
-        team_members = [member.id for member in team.members.all()]
+        team_members = [member for member in team.members.all()]
         others_companies = Company.get_all().exclude(pk=company_id)
         users_not_to_add = []
         for company in others_companies:
-            if company.admin_id not in users_not_to_add:
-                users_not_to_add.append(company.admin_id)
+            if company.admin not in users_not_to_add:
+                users_not_to_add.append(company.admin)
             for team in company.teams.all():
                 for member in team.members.all():
-                    if member.id not in users_not_to_add:
-                        users_not_to_add.append(member.id)
+                    if member not in users_not_to_add:
+                        users_not_to_add.append(member)
         return [
-            user.id for user in User.get_all_users().exclude(pk__in=users_not_to_add)
-            if user.id not in team_members
+            user for user in User.get_all_users().exclude(users_not_to_add)
+            if user not in team_members
             ]
