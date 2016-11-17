@@ -67,10 +67,16 @@ class NewEvent extends React.Component{
                         <b className="description-title">
                             Participants: 
                         </b>
-                        <List>
+                        <List style={{
+                            maxHeight: '216px',
+                            overflow: 'auto',
+                        }}>
                             {event[0].participants.map((user) => {
                                 return (
-                                <ListItem>
+                                <ListItem style={{
+                                    float: 'left',
+                                    maxWidth: '400px',
+                                }}>
                                     <Avatar style={{marginRight: 10}} size={32}>{user[0].toUpperCase()}</Avatar>
                                     {user}
                                 </ListItem>

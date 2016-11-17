@@ -108,38 +108,38 @@ export default class AssignParticipants extends React.Component {
         const title = 'Add participants';
         const hintText = 'Start typing participant name...';
 
-    return (
-        <MuiThemeProvider>
-            <div>
-                <ModalWindow
-                    dataSource={this.state.getParticipants['participants']}
-                    dataDestination={this.state.dataToSend['participants']}
-                    open={this.state.open}
-                    onCancelClose={this.handleRequestCancelClose}
-                    onSubmitClose={this.handleRequestSubmitClose}
-                    title={title}
-                    hintText={hintText}
-                />
-                <Snackbar
-                    open={this.state.openSnackbar}
-                    message={this.state.message}
-                    autoHideDuration={3000}
-                    onRequestClose={this.handleRequestClose}
-                />
-              <RaisedButton
-                    style={{
-                        display: 'block',
-                        maxWidth: '158px',
-                        margin: '20px auto'
-                    }}
-                    label={title}
-                    primary={true}
-                    disabled={this.state.errorMessage ? true : false}
-                    onTouchTap={this.handleTouchTap}
-              />
-            </div>
-        </MuiThemeProvider>
-    );
+        return (
+            <MuiThemeProvider>
+                <div>
+                    <ModalWindow
+                        dataSource={this.state.getParticipants['participants']}
+                        dataDestination={this.state.dataToSend['participants']}
+                        open={this.state.open}
+                        onCancelClose={this.handleRequestCancelClose}
+                        onSubmitClose={this.handleRequestSubmitClose}
+                        title={title}
+                        hintText={hintText}
+                    />
+                    <Snackbar
+                        open={this.state.openSnackbar}
+                        message={this.state.message}
+                        autoHideDuration={3000}
+                        onRequestClose={this.handleRequestClose}
+                    />
+                    <RaisedButton
+                        style={{
+                            display: 'block',
+                            maxWidth: '158px',
+                            margin: '20px auto'
+                        }}
+                        label={title}
+                        primary={true}
+                        disabled={this.state.errorMessage ? true : false}
+                        onTouchTap={this.handleTouchTap}
+                    />
+                </div>
+            </MuiThemeProvider>
+        );
     }
 }
 
