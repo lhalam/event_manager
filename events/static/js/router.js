@@ -7,7 +7,8 @@ injectTapEventPlugin();
 
 import App from './app'
 import Calendar from './app/calendar'
-import Events from './app/events'
+import EventList from './app/events'
+import Event from './app/event'
 
 const Home = () => <div><h1>Home</h1></div>
 
@@ -16,7 +17,8 @@ render(
           <Route path="/" component={ App }>
               <IndexRoute component ={ Home }/>
               <Route path = "/calendar" component = { Calendar }/>
-              <Route path = "/event" component ={ Events }/>
+              <Route path='/events/:event_id' component={Event}/>
+              <Route path = "/events" component ={ EventList }/>
           </Route>
       </Router>, document.getElementById("root")
 );

@@ -28,7 +28,7 @@ export default class Navbar extends React.Component {
                         <Tabs onChange={this.onChangeTabs} style={styles.tabs}>
                             <Tab label="Home" containerElement={<Link to="/" />}/>
                             <Tab label="Calendar" containerElement={<Link to="calendar" />}/>
-                            <Tab label="Events" containerElement={<Link to="event" />}/>
+                            <Tab label="Events" containerElement={<Link to="events" />}/>
                         </Tabs>
                         }
                         iconElementRight={<FlatButton href="/auth/logout?next=/" label="Logout" />}

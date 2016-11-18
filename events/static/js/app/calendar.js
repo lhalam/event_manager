@@ -1,4 +1,4 @@
-import React from 'react'
+var React = require('react');
 import moment from 'moment'
 import fullCalendar from 'fullcalendar'
 
