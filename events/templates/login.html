@@ -5,9 +5,10 @@
 {% endblock %}
 
 {% block content %}
-    <form action="" method="POST">
+    <form action="?next=/" method="POST">
         {% csrf_token %}
         {{ form.as_p }}
         <input type="submit" value="Login">
     </form>
+    <a href="{% url "reg:main" %}">Registration</a>
 {% endblock %}
