@@ -4,7 +4,8 @@ import { Router, Route, Link, hashHistory } from 'react-router'
 
 import App from './app'
 import Calendar from './app/calendar'
-import Events from './app/events'
+import EventList from './app/events'
+import Event from './app/event'
 import Team from './app/team'
 
 const Home = () => <div><h1>Home</h1></div>
@@ -14,7 +15,8 @@ render(
           <Route component={ App }>
               <Route path = "/" component ={ Home }/>
               <Route path = "/calendar" component = { Calendar }/>
-              <Route path = "/event" component ={ Events }/>
+              <Route path = "/events/:event_id" component={Event}/>
+              <Route path = "/events" component ={ EventList }/>
               <Route path = "/companies/:cid/teams/:tid" component ={ Team }/>
           </Route>
       </Router>, document.getElementById("root")

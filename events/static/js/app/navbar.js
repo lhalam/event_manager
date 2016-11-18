@@ -1,4 +1,4 @@
-import React from 'react'
+var React = require('react');
 import { Router, Route, Link, browserHistory } from 'react-router'
 
 export default class Navbar extends React.Component {
@@ -18,8 +18,8 @@ export default class Navbar extends React.Component {
                     <div id="navbarCollapse" className="collapse navbar-collapse">
                         <ul className="nav navbar-nav">
                             <li><Link to="/">Home</Link></li>
-                            <li><Link to="calendar" >Calendar</Link></li>
-                            <li><Link to="event" >Event</Link></li>
+                            <li><Link to="/events" >Events</Link></li>
+                            <li><Link to="/calendar" >Calendar</Link></li>
                         </ul>
                         <ul className="nav navbar-nav navbar-right">
                             <li><Link to="/auth/login?next=/" >Profile</Link></li>

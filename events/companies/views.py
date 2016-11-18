@@ -209,12 +209,10 @@ class TeamUserAssignmentView(View):
             if not new_team_members.get('member_to_del'):
                 return INVALID_PAYLOAD
             else:
-                members_to_del = [user for user in new_team_members.get('member_to_del')]
-                for user in Team.get_members(team):
-                    if user not in members_to_del:
-                        able_to_add.append(user)
-                return JsonResponse({'members_to_del': able_to_add}, status=200)
+                member_to_del = new_team_members.get('member_to_del')
+                able_to_add = Team.remove_user_from_team(team, User.get_by_id(member_to_del['id']))
 
+                return JsonResponse({'members_to_del': able_to_add}, status=200)
         else:
             for user in new_team_members.get('members'):
                 if user not in possible_users:
