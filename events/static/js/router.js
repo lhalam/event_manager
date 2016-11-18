@@ -6,6 +6,7 @@ import App from './app'
 import Calendar from './app/calendar'
 import EventList from './app/events'
 import Event from './app/event'
+import CompaniesList from './app/companies'
 
 const Home = () => <div><h1>Home</h1></div>
 
@@ -16,6 +17,7 @@ render(
               <Route path = "/calendar" component = { Calendar }/>
               <Route path='/events/:event_id' component={Event}/>
               <Route path = "/events" component ={ EventList }/>
+              <Route path = "/companies" component ={ CompaniesList }/>
           </Route>
       </Router>, document.getElementById("root")
 );
