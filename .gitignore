@@ -103,3 +103,5 @@ events/static/bundles/
 
 #PyCharm
 .idea/
+
+webpack-stats.json
