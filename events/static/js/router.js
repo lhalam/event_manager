@@ -15,7 +15,7 @@ render(
               <Route path = "/" component ={ Home }/>
               <Route path = "/calendar" component = { Calendar }/>
               <Route path = "/event" component ={ Events }/>
-              <Route path = "/api/v1/companies/:cid/teams/:tid" component ={ Team }/>
+              <Route path = "/companies/:cid/teams/:tid" component ={ Team }/>
           </Route>
       </Router>, document.getElementById("root")
 );
