@@ -1,32 +1,40 @@
-var React = require('react');
-import { Router, Route, Link, browserHistory } from 'react-router'
+import React from 'react';
+import { Router, Route, Link, browserHistory } from 'react-router';
+
+import AppBar from 'material-ui/AppBar';
+import {Tabs, Tab} from 'material-ui/Tabs';
+import FlatButton from 'material-ui/FlatButton';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+
+
 
 export default class Navbar extends React.Component {
+
     render() {
+
+        const styles = {
+          tabs: {
+              width: '35%',
+              minWidth: '200px',
+          },
+        };
+
         return (
-          <header>
-                <nav role="navigation" className="navbar navbar-default">
-                    <div className="navbar-header">
-                        <button type="button" data-target="#navbarCollapse" data-toggle="collapse" className="navbar-toggle">
-                            <span className="sr-only">Toggle navigation</span>
-                            <span className="icon-bar"></span>
-                            <span className="icon-bar"></span>
-                            <span className="icon-bar"></span>
-                        </button>
-                        <Link to="/" className="navbar-brand" >Logo</Link>
-                    </div>
-                    <div id="navbarCollapse" className="collapse navbar-collapse">
-                        <ul className="nav navbar-nav">
-                            <li><Link to="/">Home</Link></li>
-                            <li><Link to="/events" >Events</Link></li>
-                            <li><Link to="/calendar" >Calendar</Link></li>
-                        </ul>
-                        <ul className="nav navbar-nav navbar-right">
-                            <li><Link to="/auth/login?next=/" >Profile</Link></li>
-                        </ul>
-                    </div>
-                </nav>
+            <header>
+                <MuiThemeProvider >
+                    <AppBar
+                        showMenuIconButton={false}
+                        title={
+                        <Tabs onChange={this.onChangeTabs} style={styles.tabs}>
+                            <Tab label="Home" containerElement={<Link to="/" />}/>
+                            <Tab label="Calendar" containerElement={<Link to="calendar" />}/>
+                            <Tab label="Events" containerElement={<Link to="events" />}/>
+                        </Tabs>
+                        }
+                        iconElementRight={<FlatButton href="/auth/logout?next=/" label="Logout" />}
+                    />
+                </MuiThemeProvider>
             </header>
         );
-  }
+    }
 }
