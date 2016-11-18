@@ -19,10 +19,14 @@ class CompanyView(View):
 
     def get(self, request, company_id=None):
         if not company_id:
-            if not request.user.is_superuser:
+            company = Company.get_user_company(request)
+            if not request.user.is_superuser or not company:
                 return PERMISSION_DENIED
-            companies = Company.get_all()
-            response = {"companies": [model_to_dict(company) for company in companies]}
+            if request.user.is_superuser:
+                companies = Company.get_all()
+                response = {"companies": [model_to_dict(company) for company in companies]}
+            else:
+                response = {"companies": [model_to_dict(company)]}
             return JsonResponse(response, status=200)
 
         company = Company.get_by_id(company_id)
@@ -116,6 +120,8 @@ class TeamView(View):
         team = Team.get_by_id(team_id)
         if not team:
             return TEAM_NOT_EXISTS
+        if team.company.id != company.id:
+            return PERMISSION_DENIED
         if Company.get_user_company(request) != company and not request.user.is_superuser:
             return PERMISSION_DENIED
         response = {
@@ -199,30 +205,39 @@ class TeamUserAssignmentView(View):
         new_team_members = json.loads(request.body.decode())
         able_to_add = []
         possible_users = TeamUserAssignmentView.get_users_to_add_list(team, company_id)
-        if not new_team_members.get('members'):
-            return INVALID_PAYLOAD
-        for user_id in new_team_members.get('members'):
-            if user_id not in possible_users:
+        if not new_team_members.get('members_to_add'):
+            if not new_team_members.get('member_to_del'):
                 return INVALID_PAYLOAD
-            user = User.get_by_id(user_id)
-            able_to_add.append(user)
-        for user in able_to_add:
-            TeamUserAssignment.objects.get_or_create(user=user, team=team)
+            else:
+                members_to_del = [user for user in new_team_members.get('member_to_del')]
+                for user in Team.get_members(team):
+                    if user not in members_to_del:
+                        able_to_add.append(user)
+                return JsonResponse({'members_to_del': able_to_add}, status=200)
+
+        else:
+            for user in new_team_members.get('members'):
+                if user not in possible_users:
+                    return INVALID_PAYLOAD
+                user = User.get_by_id(user.id)
+                able_to_add.append(user)
+            for user in able_to_add:
+                TeamUserAssignment.objects.get_or_create(user=user, team=team)
         return NO_CONTENT
 
     @staticmethod
     def get_users_to_add_list(team, company_id):
-        team_members = [member.id for member in team.members.all()]
+        team_members = [member for member in team.members.all()]
         others_companies = Company.get_all().exclude(pk=company_id)
         users_not_to_add = []
         for company in others_companies:
-            if company.admin_id not in users_not_to_add:
-                users_not_to_add.append(company.admin_id)
+            if company.admin not in users_not_to_add:
+                users_not_to_add.append(company.admin)
             for team in company.teams.all():
                 for member in team.members.all():
-                    if member.id not in users_not_to_add:
-                        users_not_to_add.append(member.id)
+                    if member not in users_not_to_add:
+                        users_not_to_add.append(member)
         return [
-            user.id for user in User.get_all_users().exclude(pk__in=users_not_to_add)
-            if user.id not in team_members
+            user for user in User.get_all_users()
+            if user not in team_members and user not in users_not_to_add
             ]

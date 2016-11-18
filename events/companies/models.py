@@ -65,8 +65,17 @@ class Team(models.Model):
 
     @staticmethod
     def get_members(current_team):
+        members = []
         instances = TeamUserAssignment.objects.filter(team=current_team)
-        return [instance.user.username for instance in instances]
+        for instance in instances:
+            user_object = {
+                "id": instance.user.id,
+                "first_name": instance.user.first_name,
+                "last_name": instance.user.last_name,
+                "username": instance.user.username
+            }
+            members.append(user_object)
+        return members
 
 
 class TeamUserAssignment(models.Model):
