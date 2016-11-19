@@ -6,6 +6,7 @@ import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import Paper from 'material-ui/Paper';
 import RaisedButton from 'material-ui/RaisedButton';
 import injectTapEventPlugin from 'react-tap-event-plugin';
+import AddCompaniesWindow from './AddCompanyWindow'
 injectTapEventPlugin();
 
 
@@ -51,7 +52,7 @@ export default class CompaniesList extends React.Component {
                 margin: '30px auto'
             },
             button: {
-                margin: '0 30px 0 0'
+                margin: '0 auto',
             }
         };
         let companies = this.state.companies.map( (companyObject) => {
@@ -76,7 +77,10 @@ export default class CompaniesList extends React.Component {
           <Table
               selectable={false}
           >
-            <TableHeader>
+            <TableHeader
+                displaySelectAll={false}
+                adjustForCheckbox={false}
+            >
               <TableRow>
                 <TableHeaderColumn>ID</TableHeaderColumn>
                 <TableHeaderColumn>Title</TableHeaderColumn>
@@ -84,7 +88,10 @@ export default class CompaniesList extends React.Component {
                 <TableHeaderColumn>{}</TableHeaderColumn>
               </TableRow>
             </TableHeader>
-            <TableBody>
+            <TableBody
+                displayRowCheckbox={false}
+                showRowHover={true}
+            >
               {companies}
             </TableBody>
           </Table>
@@ -99,6 +106,7 @@ export default class CompaniesList extends React.Component {
                     style={style.paper}
                 >
                     {TableExampleSimple}
+                    <AddCompaniesWindow/>
                 </Paper>
             </MuiThemeProvider>
         )
