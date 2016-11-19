@@ -17,7 +17,7 @@ class Comment (models.Model):
         return self.text
 
     def to_dict(self):
-        children = [child.tgo_dict() for child in self.children.all()]
+        children = [child.to_dict() for child in self.children.all()]
         author = {
             "id": self.author.id,
             "name": "{} {}".format(self.author.first_name, self.author.last_name)
