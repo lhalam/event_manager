@@ -24,9 +24,9 @@ class CompanyView(View):
                 return PERMISSION_DENIED
             if request.user.is_superuser:
                 companies = Company.get_all()
-                response = {"companies": [model_to_dict(company) for company in companies]}
+                response = {"companies": [Company.to_dict(company) for company in companies]}
             else:
-                response = {"companies": [model_to_dict(company)]}
+                response = {"companies": [Company.to_dict(company)]}
             return JsonResponse(response, status=200)
 
         company = Company.get_by_id(company_id)
