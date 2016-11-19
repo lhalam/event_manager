@@ -20,7 +20,7 @@ class CompanyView(View):
     def get(self, request, company_id=None):
         if not company_id:
             company = Company.get_user_company(request)
-            if not request.user.is_superuser or not company:
+            if not request.user.is_superuser and not company:
                 return PERMISSION_DENIED
             if request.user.is_superuser:
                 companies = Company.get_all()
