@@ -19,7 +19,19 @@ class CommentView(View):
         return HttpResponse(json.dumps(response), content_type="text/json")
 
     def post(self, request, id=None):
-        pass
+        body_requst = json.loads(request.body.decode("utf-8"))
+        data = {}
+        data["text"] = body_requst["text"]
+        data["author"] = User.get_by_id(request.user.id)
+        if id:
+            data["event"] = Event.get_by_id(id)
+        else:
+            data["parrent_comment"] = Comment.get_by_id(body_requst["parrent_id"])
+        form = CommentForm(data)
+        if not form.is_valid():
+            return HttpResponse(form.errors.as_json(), content_type="text/json", status=400)
+        Comment.objects.create(**data)
+        return HttpResponse('Ok')
 
     def delete(self, request, id=None):
         if not request.user:

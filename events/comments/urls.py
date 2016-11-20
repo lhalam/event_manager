@@ -4,5 +4,5 @@ from . import views
 
 
 urlpatterns = [
-    url(r"(?P<id>\d*)/$", views.CommentView.as_view(), name="comments"),
+    url(r"^((?P<id>\d+)/)?$", views.CommentView.as_view(), name="comments"),
 ]

@@ -16,6 +16,12 @@ class Comment (models.Model):
     def __str__(self):
         return self.text
 
+    def get_by_id(comment_id):
+        try:
+            return Comment.objects.get(pk=comment_id)
+        except Comment.DoesNotExist:
+            return None
+
     def to_dict(self):
         children = [child.to_dict() for child in self.children.all()]
         author = {
