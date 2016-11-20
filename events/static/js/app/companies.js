@@ -5,9 +5,7 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import Paper from 'material-ui/Paper';
 import RaisedButton from 'material-ui/RaisedButton';
-import injectTapEventPlugin from 'react-tap-event-plugin';
 import AddCompaniesWindow from './AddCompanyWindow'
-injectTapEventPlugin();
 
 
 export default class CompaniesList extends React.Component {
@@ -17,23 +15,10 @@ export default class CompaniesList extends React.Component {
             companies: []
         };
         this.loadCompanies = this.loadCompanies.bind(this);
-        this.deleteCompany = this.deleteCompany.bind(this);
     }
 
     componentDidMount () {
         this.loadCompanies()
-    }
-
-    deleteCompany(id) {
-        axios.delete('api/v1/companies/'+id)
-            .then(() => {
-                let companies = this.state.companies.filter( (userObject) => {
-                    return userObject['id'] != id
-                });
-                this.setState({
-                    companies: companies
-                });
-            });
     }
 
     loadCompanies() {
@@ -42,6 +27,12 @@ export default class CompaniesList extends React.Component {
                 console.log(response.data);
                 this.setState(response.data);
             })
+    }
+
+    newCompanyHandler() {
+        this.setState({
+            open: true
+        })
     }
 
     render() {
@@ -60,15 +51,7 @@ export default class CompaniesList extends React.Component {
                 <TableRow key={companyObject['id']}>
                     <TableRowColumn>{companyObject['id']}</TableRowColumn>
                     <TableRowColumn>{companyObject['name']}</TableRowColumn>
-                    <TableRowColumn>{companyObject['admin']}</TableRowColumn>
-                    <TableRowColumn>
-                        <RaisedButton
-                            label="Delete"
-                            style={style.button}
-                            secondary={true}
-                            onTouchTap={this.deleteCompany.bind(this, companyObject['id'])}
-                        />
-                    </TableRowColumn>
+                    <TableRowColumn>{companyObject['admin']['username']}</TableRowColumn>
                 </TableRow>
             );
         });
@@ -85,7 +68,6 @@ export default class CompaniesList extends React.Component {
                 <TableHeaderColumn>ID</TableHeaderColumn>
                 <TableHeaderColumn>Title</TableHeaderColumn>
                 <TableHeaderColumn>Admin</TableHeaderColumn>
-                <TableHeaderColumn>{}</TableHeaderColumn>
               </TableRow>
             </TableHeader>
             <TableBody
@@ -106,6 +88,11 @@ export default class CompaniesList extends React.Component {
                     style={style.paper}
                 >
                     {TableExampleSimple}
+                    <RaisedButton
+                        label="Add new company"
+                        primary={true}
+                        onTouchTap={this.newCompanyHandler}
+                    />
                     <AddCompaniesWindow/>
                 </Paper>
             </MuiThemeProvider>
