@@ -6,13 +6,13 @@ from django.contrib.postgres.fields import ArrayField
 
 class Event(models.Model):
     title = models.CharField(max_length=200)
-    start_date = models.DateTimeField(blank=True, null=True)
-    end_date = models.DateTimeField(blank=True, null=True)
+    start_date = models.DateTimeField(blank=False)
+    end_date = models.DateTimeField(blank=False)
     location = ArrayField(base_field=models.FloatField(), size=2)
-    place = models.CharField(max_length=200, null=True)
-    description = models.TextField(blank=True, null=True)
-    address = models.CharField(max_length=500, null=True)
-    created_date = models.DateTimeField(blank=True, null=True, auto_now_add=True)
+    place = models.CharField(max_length=200, blank=False)
+    description = models.TextField(blank=False)
+    address = models.CharField(max_length=500, blank=False)
+    created_date = models.DateTimeField(auto_now_add=True)
     owner_id = models.BigIntegerField(null=True)
     participants = models.ManyToManyField(
         User,

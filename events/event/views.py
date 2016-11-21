@@ -39,23 +39,22 @@ class EventView(View):
             return HttpResponseForbidden('Permission denied')
 
     def post(self, request):
-        if request.user.is_authenticated:
-            try:
-                event_data = json.loads(request.body.decode())
-            except:
-                return JsonResponse({"error_message": "Problem with JSON load or decode"}, status=400)
-            validation_form = EventCreateForm(event_data)
-            if validation_form.is_valid():
-                event = Event.objects.create(**event_data)
-               # try:
-                    #user = User.get_user_by_id(event.owner_id)
-                    #EventUserAssignment.objects.create(user=user, event=event)
-                #except:
-                 #   return JsonResponse({"error_message": "Can not create relation between user and event"}, status=401)
-                return JsonResponse({'message': "Event created successfully"}, status=200)
-            return JsonResponse({"error_message": validation_form.errors.as_json()}, status=400)
-        else:
+        if not request.user.is_authenticated:
             return PERMISSION_DENIED
+        try:
+            event_data = json.loads(request.body.decode())
+        except:
+            return JsonResponse({"error_message": "Problem with JSON load or decode"}, status=400)
+        validation_form = EventCreateForm(event_data)
+        if validation_form.is_valid():
+            event = Event.objects.create(**event_data)
+            try:
+                user = User.get_user_by_id(event.owner_id)
+                EventUserAssignment.objects.create(user=user, event=event)
+            except:
+                return JsonResponse({"error_message": "Can not create relation between user and event"}, status=401)
+            return JsonResponse({'message': "Event created successfully"}, status=200)
+        return JsonResponse({"error_message": validation_form.errors.as_json()}, status=400) 
 
     def put(self, request, pk):
         try:
