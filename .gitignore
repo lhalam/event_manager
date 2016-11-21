@@ -103,3 +103,6 @@ events/static/bundles/
 
 #PyCharm
 .idea/
+
+#vscode
+events/.vscode/
