@@ -79,6 +79,17 @@ class Team(models.Model):
             return None
 
     @staticmethod
+    def to_dict(team):
+        return {
+            'id': team.id,
+            'name': team.name,
+            'company': {
+                'id': team.company.id,
+                'name': team.company.name,
+            }
+        }
+
+    @staticmethod
     def get_members(current_team):
         members = []
         instances = TeamUserAssignment.objects.filter(team=current_team)

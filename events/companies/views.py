@@ -35,7 +35,7 @@ class CompanyView(View):
         if Company.get_user_company(request) != company and not request.user.is_superuser:
             return PERMISSION_DENIED
         response = Company.to_dict(company)
-        response['teams'] = [team.name for team in Company.get_teams(company_id)]
+        response['teams'] = [Team.to_dict(team) for team in Company.get_teams(company_id)]
         return JsonResponse(response, status=200)
 
     def post(self, request):
