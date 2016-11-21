@@ -11,7 +11,6 @@ class Event(models.Model):
     location = ArrayField(base_field=models.FloatField(), size=2)
     place = models.CharField(max_length=200, blank=False)
     description = models.TextField(blank=False)
-    address = models.CharField(max_length=500, blank=False)
     created_date = models.DateTimeField(auto_now_add=True)
     owner_id = models.BigIntegerField(null=True)
     participants = models.ManyToManyField(
