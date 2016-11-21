@@ -7,6 +7,7 @@ import Avatar from 'material-ui/Avatar';
 import FlatButton from 'material-ui/FlatButton';
 import Subheader from 'material-ui/Subheader';
 import Dialog from 'material-ui/Dialog';
+import Divider from 'material-ui/Divider';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import AddCompanyWindow from './AddCompanyWindow';
 import injectTapEventPlugin from 'react-tap-event-plugin';
@@ -61,6 +62,10 @@ export default class Company extends React.Component {
 
     handleBackButton() {
         setTimeout(hashHistory.push('/companies'), 500)
+    }
+
+    handleTeamClick(team_id, company_id) {
+        setTimeout(hashHistory.push('/companies/'+company_id+'/teams/'+team_id), 500)
     }
 
     handleDialogOpen() {
@@ -131,7 +136,9 @@ export default class Company extends React.Component {
             teams = companyObject['teams'].map((team) => {
                 return (
                     <ListItem
-                        primaryText={team}
+                        key={team.id}
+                        primaryText={team.name}
+                        onTouchTap={this.handleTeamClick.bind(this, team.id, team.company.id)}
                     />
                 );
 
@@ -139,10 +146,18 @@ export default class Company extends React.Component {
         }
 
         const teamList = (
-            <List>
+            <div>
                 <Subheader>Teams</Subheader>
-                {teams}
-            </List>
+                <List
+                    style={{
+                        maxHeight: '288px',
+                        overflow: 'auto'
+                    }}
+                >
+
+                    {teams}
+                </List>
+            </div>
 
 
         );
@@ -178,7 +193,6 @@ export default class Company extends React.Component {
                 >
                     <CardTitle
                         style={{
-                            margin: 0,
                             padding: '15px 0 15px 25px',
                             background: 'rgb(0, 151, 167)',
                             color: '#fff',
@@ -191,8 +205,11 @@ export default class Company extends React.Component {
                     <CardText>
                         {companyObject['description']}
                     </CardText>
+                    <Divider/>
                     {admin}
+                    <Divider/>
                     {teamList}
+                    <Divider/>
                     {buttons}
                     <Dialog
                         open={this.state.open}
