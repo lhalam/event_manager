@@ -1,16 +1,18 @@
-var React = require('react');
-import Map from './map';
-import axios from 'axios';
+const React = require('react');
+const axios = require("axios");
+import Map from './map'
+import Avatar from 'material-ui/Avatar';
+import {List, ListItem} from 'material-ui/List';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 
-var React = require('react');
 
 class Event extends React.Component{
     constructor(props){
         super(props);
         this.state = ({events: {}})
     }
-    componentWillMount(){
+    componentDidMount(){
         const url = '/api/v1/events/' + this.props.params.event_id
         axios.get(url) 
         .then(function (response) {
@@ -19,49 +21,62 @@ class Event extends React.Component{
             this.setState({events: events_array})
         }.bind(this))
     }
+
     render(){
-        if (this.state.events[0]){
+        const event = this.state.events;
+        if (event[0]){
             return(
-                <div className="row">
-                    <div className="col-sm-offset-2 col-sm-8">
-                        <table className="table table-hover table-bordered">
-                        <tbody>
-                            <tr>
-                                <td>Title</td>
-                                <td>{this.state.events[0].title}</td>
-                            </tr>
-                            <tr>
-                                <td>Start Date</td>
-                                <td>{this.state.events[0].start_date}</td>
-                            </tr>
-                            <tr>
-                                <td>End Date</td>
-                                <td>{this.state.events[0].end_date}</td>
-                            </tr>
-                            <tr>
-                                <td>Adress</td>
-                                <td>{this.state.events[0].place}</td>
-                            </tr>
-                            <tr>
-                                <td>Participants</td>
-                                <td>{this.state.events[0].participants}</td>
-                            </tr>
-                            <tr>
-                                <td>Description</td>
-                                <td>{this.state.events[0].description}</td>
-                            </tr>
-                            <tr>
-                                <td>Location</td>
-                                <td><Map events={this.state.events} geo={false} zoom={13}/></td>
-                            </tr>
-                            </tbody>
-                        </table>
+                <MuiThemeProvider>
+                <div className="event-card">
+                    <div className="event-card-header">
+                        {this.state.events[0].title}
+                    </div>
+                    <div>
+                        <Map events={this.state.events} geo={false} zoom={13}/>
+                    </div>
+                    <div className="event-card-body">
+                    <div>
+                        <div className="col-sm-4">
+                            <b>Start Date:</b> {event[0].start_date}
+                        </div>
+                        <div className="col-sm-4">
+                            <b>End Date:</b> {event[0].end_date}
+                        </div>
+                        <div className="col-sm-4">
+                            <b>Place:</b> {event[0].place}
+                        </div>
+                    </div>
+                    <hr/>
+                    <div>
+                        <b className="description-title">
+                            Participants: 
+                        </b>
+                        <List style={{
+                            maxHeight: '216px',
+                            overflow: 'auto',
+                        }}>
+                            {event[0].participants.map((user) => {
+                                return (
+                                <ListItem style={{
+                                    float: 'left',
+                                    maxWidth: '400px',
+                                }}>
+                                    <Avatar style={{marginRight: 10}} size={32}>{user[0].toUpperCase()}</Avatar>
+                                    {user}
+                                </ListItem>
+                                );
+                            })}
+                        </List>
+                    </div>                               
                     </div>
                 </div>
+                </MuiThemeProvider>
             )
         }else{
             return(
-                <div></div>
+                <div>
+                    Empty
+                </div>
             )
         }
     }

@@ -14,31 +14,27 @@ from .forms import EventCreateForm
 TZ = get_current_timezone()
 FORMAT = '%b %d %Y %I:%M%p'
 
-EVENT_NOT_EXISTS = JsonResponse({"error_message": "Such event does not exists"}, status=404)
+EVENT_NOT_EXISTS = JsonResponse({"error_messatge": "Such event does not exists"}, status=404)
 PERMISSION_DENIED = JsonResponse({"error_message": "Permission denied"}, status=403)
 INVALID_PAYLOAD = JsonResponse({"error_message": "Invalid payload"}, status=400)
 
 
 class EventView(View):
     def get(self, request, pk=None):
-        if request.user.is_authenticated:
-            if not pk:
-                response = []
-                user_id = request.user.id
-                eus = EventUserAssignment.objects.filter(user=user_id)
-                [response.append(i.event.to_dict()) for i in eus]
-                return HttpResponse(json.dumps(response), content_type="application/json")
-            else:
-                try:
-                    event = Event.objects.get(pk=pk)
-                except:
-                    return HttpResponseNotFound('Does not exist')
-                else:
-                    response = event.to_dict()
-                    return HttpResponse(json.dumps(response), content_type="application/json")
+        if not request.user.is_authenticated:
+            return PERMISSION_DENIED
+        if not pk:
+            user_id = request.user.id
+            eus = EventUserAssignment.objects.filter(user=user_id)
+            response = [item.event.to_dict() for item in eus]
+            return HttpResponse(json.dumps(response), content_type="application/json")
+        event = Event.get_by_id(pk)
+        if event:
+            response = event.to_dict()
+            return HttpResponse(json.dumps(response), content_type="application/json")
         else:
-            return HttpResponseForbidden('Permission denied')
-
+            return EVENT_NOT_EXISTS
+            
     def put(self, request, pk):
         try:
             event = Event.objects.get(id=pk)
