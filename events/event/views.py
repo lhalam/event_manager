@@ -14,7 +14,7 @@ from .forms import EventCreateForm
 TZ = get_current_timezone()
 FORMAT = '%b %d %Y %I:%M%p'
 
-EVENT_NOT_EXISTS = JsonResponse({"error_messatge": "Such event does not exists"}, status=404)
+EVENT_NOT_EXISTS = JsonResponse({"error_message": "Such event does not exists"}, status=404)
 PERMISSION_DENIED = JsonResponse({"error_message": "Permission denied"}, status=403)
 INVALID_PAYLOAD = JsonResponse({"error_message": "Invalid payload"}, status=400)
 

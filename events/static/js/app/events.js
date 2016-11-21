@@ -2,12 +2,8 @@ import Map from './map'
 import {Container, Row, Col} from 'react-grid-system';
 import {Link} from 'react-router';
 
-
-
-
 const React = require('react');
 const axios = require("axios");
-
 
 
 class EventList extends React.Component{
