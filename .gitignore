@@ -104,5 +104,10 @@ events/static/bundles/
 #PyCharm
 .idea/
 
+# npm
+main.js
+node_modules
+webpack-stats.json
+
 #vscode
 events/.vscode/
