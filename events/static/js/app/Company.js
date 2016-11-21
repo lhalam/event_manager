@@ -59,6 +59,10 @@ export default class Company extends React.Component {
             })
     }
 
+    handleBackButton() {
+        setTimeout(hashHistory.push('/companies'), 500)
+    }
+
     handleDialogOpen() {
         this.setState({
             open: true
@@ -95,6 +99,7 @@ export default class Company extends React.Component {
 
         let companyObject = this.state.company;
         let admin = null;
+        let teams = null;
 
         if (companyObject['admin']) {
             admin = (
@@ -122,11 +127,33 @@ export default class Company extends React.Component {
                 onTouchTap={this.deleteCompany}
             />
         ];
+        if (companyObject['teams']) {
+            teams = companyObject['teams'].map((team) => {
+                return (
+                    <ListItem
+                        primaryText={team}
+                    />
+                );
+
+            });
+        }
+
+        const teamList = (
+            <List>
+                <Subheader>Teams</Subheader>
+                {teams}
+            </List>
 
 
+        );
 
         const buttons = (
-            <CardActions>
+            <CardActions
+            >
+                <FlatButton
+                    label="BACK"
+                    onTouchTap={this.handleBackButton}
+                />
                 <FlatButton
                     primary={true}
                     label="EDIT"
@@ -142,12 +169,30 @@ export default class Company extends React.Component {
 
         return (
             <MuiThemeProvider>
-                <Card>
-                    <CardTitle title={companyObject['name']}/>
+                <Card
+                    style={{
+                        minWidth: '300px',
+                        width: '65%',
+                        margin: '0 auto'
+                    }}
+                >
+                    <CardTitle
+                        style={{
+                            margin: 0,
+                            padding: '15px 0 15px 25px',
+                            background: 'rgb(0, 151, 167)',
+                            color: '#fff',
+                            fontSize: '30px'
+                        }}
+                    >
+                        {companyObject['name']}
+                    </CardTitle>
+                    <Subheader>Description</Subheader>
                     <CardText>
                         {companyObject['description']}
                     </CardText>
                     {admin}
+                    {teamList}
                     {buttons}
                     <Dialog
                         open={this.state.open}
