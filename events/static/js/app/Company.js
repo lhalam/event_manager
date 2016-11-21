@@ -6,6 +6,7 @@ import {List, ListItem} from 'material-ui/List';
 import Avatar from 'material-ui/Avatar';
 import FlatButton from 'material-ui/FlatButton';
 import Subheader from 'material-ui/Subheader';
+import Paper from 'material-ui/Paper';
 import Dialog from 'material-ui/Dialog';
 import Divider from 'material-ui/Divider';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
@@ -109,7 +110,9 @@ export default class Company extends React.Component {
         if (companyObject['admin']) {
             admin = (
                 <List>
-                    <Subheader>Company Admin</Subheader>
+                    <div className="subheader">
+                        <Subheader>Company Admin</Subheader>
+                    </div>
                     <ListItem
                         primaryText={companyObject['admin']['first_name']+' '+companyObject['admin']['last_name']}
                         secondaryText={companyObject['admin']['username']}
@@ -146,7 +149,7 @@ export default class Company extends React.Component {
         }
 
         const teamList = (
-            <div>
+            <div className="team-list">
                 <Subheader>Teams</Subheader>
                 <List
                     style={{
@@ -184,27 +187,12 @@ export default class Company extends React.Component {
 
         return (
             <MuiThemeProvider>
-                <Card
-                    style={{
-                        minWidth: '300px',
-                        width: '65%',
-                        margin: '0 auto'
-                    }}
-                >
-                    <CardTitle
-                        style={{
-                            padding: '15px 0 15px 25px',
-                            background: 'rgb(0, 151, 167)',
-                            color: '#fff',
-                            fontSize: '30px'
-                        }}
-                    >
+                <Paper>
+                    <p>
                         {companyObject['name']}
-                    </CardTitle>
+                    </p>
                     <Subheader>Description</Subheader>
-                    <CardText>
-                        {companyObject['description']}
-                    </CardText>
+                    {companyObject['description']}
                     <Divider/>
                     {admin}
                     <Divider/>
@@ -220,7 +208,7 @@ export default class Company extends React.Component {
                     <AddCompanyWindow
                         open={this.state.openEdit}
                     />
-                </Card>
+                </Paper>
             </MuiThemeProvider>
 
         );

@@ -31,13 +31,32 @@ export default class AddCompanyWindow extends React.Component {
 
 
     render() {
+
+        const styles = {
+
+            dialogTitle: {
+                backgroundColor: 'rgb(0, 151, 167)',
+                color: '#f9f9f9',
+                fontSize: '30px'
+            },
+            dialogRoot: {
+                margin: '0 auto',
+                maxWidth: '500px',
+                width: '100%'
+            },
+            dialogBody: {
+                paddingTop: '20px',
+            },
+            dialogBodyMenuStyle: {
+                maxHeight: '200px'
+            },
+
+        };
+
         return (
             <Dialog
                 open={this.props.open}
-                style={{
-                    width: '600px',
-                    margin: '0 auto'
-                }}
+                contentStyle={styles.dialogRoot}
             >
                 <CompanyTextField
                     value='test'
