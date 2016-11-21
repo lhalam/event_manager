@@ -47,11 +47,11 @@ class EventView(View):
             validation_form = EventCreateForm(event_data)
             if validation_form.is_valid():
                 event = Event.objects.create(**event_data)
-                try:
-                    user = User.get_user_by_id(event.owner_id)
-                    EventUserAssignment.objects.create(user=user, event=event)
-                except:
-                    return JsonResponse({"error_message": "Can not create relation between user and event"}, status=401)
+               # try:
+                    #user = User.get_user_by_id(event.owner_id)
+                    #EventUserAssignment.objects.create(user=user, event=event)
+                #except:
+                 #   return JsonResponse({"error_message": "Can not create relation between user and event"}, status=401)
                 return JsonResponse({'message': "Event created successfully"}, status=200)
             return JsonResponse({"error_message": validation_form.errors.as_json()}, status=400)
         else:
