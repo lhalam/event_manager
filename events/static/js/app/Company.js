@@ -8,6 +8,7 @@ import FlatButton from 'material-ui/FlatButton';
 import Subheader from 'material-ui/Subheader';
 import Dialog from 'material-ui/Dialog';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import AddCompanyWindow from './AddCompanyWindow';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 injectTapEventPlugin();
 
@@ -21,13 +22,16 @@ export default class Company extends React.Component {
         this.state = {
             company: [],
             error: '',
-            open: false
+            open: false,
+            openEdit: false
 
         };
         this.loadCompany = this.loadCompany.bind(this);
         this.deleteCompany = this.deleteCompany.bind(this);
         this.handleDialogOpen = this.handleDialogOpen.bind(this);
         this.handleDialogClose = this.handleDialogClose.bind(this);
+        this.handleDialogEditOpen = this.handleDialogEditOpen.bind(this);
+        this.handleDialogEditClose = this.handleDialogEditClose.bind(this);
     }
 
     loadCompany() {
@@ -61,9 +65,21 @@ export default class Company extends React.Component {
         });
     }
 
+    handleDialogEditOpen() {
+        this.setState({
+            openEdit: true
+        });
+    }
+
     handleDialogClose() {
         this.setState({
             open: false
+        });
+    }
+
+    handleDialogEditClose() {
+        this.setState({
+            openEdit: false
         });
     }
 
@@ -114,6 +130,7 @@ export default class Company extends React.Component {
                 <FlatButton
                     primary={true}
                     label="EDIT"
+                    onTouchTap={this.handleDialogEditOpen}
                 />
                 <FlatButton
                     secondary={true}
@@ -138,6 +155,9 @@ export default class Company extends React.Component {
                     >
                         Are you sure, you want delete this company?
                     </Dialog>
+                    <AddCompanyWindow
+                        open={this.state.openEdit}
+                    />
                 </Card>
             </MuiThemeProvider>
 
