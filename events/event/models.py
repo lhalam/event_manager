@@ -1,8 +1,15 @@
 from django.db import models
 from registration.models import User
-from django.utils.timezone import now
 from django.db.models.fields.related import ManyToManyField
 from django.contrib.postgres.fields import ArrayField
+from django.utils.timezone import utc
+
+from datetime import datetime
+
+
+
+TZ = utc
+
 
 class Event(models.Model):
     title = models.CharField(max_length=200)
@@ -12,7 +19,7 @@ class Event(models.Model):
     place = models.CharField(max_length=200, blank=False)
     description = models.TextField(blank=False)
     created_date = models.DateTimeField(auto_now_add=True)
-    owner_id = models.BigIntegerField(null=True)
+    owner = models.ForeignKey(User, null=False, related_name='owner')
     participants = models.ManyToManyField(
         User,
         through='EventUserAssignment',
@@ -21,6 +28,12 @@ class Event(models.Model):
 
     def __str__(self):
         return "%s" % self.title
+
+    def save(self, *args, **kwargs):
+        self.start_date = TZ.localize(datetime.fromtimestamp(float(self.start_date)))
+        self.end_date = TZ.localize(datetime.fromtimestamp(float(self.end_date)))
+        self.location = self.location.split(",")
+        super(self.__class__, self).save(*args, **kwargs)
 
     def serialize(self):
         return {
@@ -50,8 +63,9 @@ class Event(models.Model):
                     data[f.name] = list(f.value_from_object(self).values_list('username', flat=True))
             else:
                 data[f.name] = f.value_from_object(self)
-        data['start_date'] = str(data['start_date'])
-        data['end_date'] = str(data['end_date'])
+        data['start_date'] = data['start_date'].timestamp()
+        data['end_date'] = data['end_date'].timestamp()
+        data['created_date'] = data['created_date'].timestamp()
         return data
 
 
