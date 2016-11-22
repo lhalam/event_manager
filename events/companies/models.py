@@ -41,11 +41,11 @@ class Company(models.Model):
         return [team for team in Company.get_by_id(company_id).teams.all()]
 
     @staticmethod
-    def get_user_company(request):
-        company = Company.objects.filter(admin=request.user).first()
+    def get_user_company(user):
+        company = Company.objects.filter(admin=user).first()
         if company:
             return company
-        first_instance = TeamUserAssignment.objects.filter(user=request.user).first()
+        first_instance = TeamUserAssignment.objects.filter(user=user).first()
         if first_instance:
             return first_instance.team.company
         return None

@@ -19,7 +19,7 @@ class CompanyView(View):
 
     def get(self, request, company_id=None):
         if not company_id:
-            company = Company.get_user_company(request)
+            company = Company.get_user_company(request.user)
             if not request.user.is_superuser and not company:
                 return PERMISSION_DENIED
             if request.user.is_superuser:
@@ -32,7 +32,7 @@ class CompanyView(View):
         company = Company.get_by_id(company_id)
         if not company:
             return COMPANY_NOT_EXISTS
-        if Company.get_user_company(request) != company and not request.user.is_superuser:
+        if Company.get_user_company(request.user) != company and not request.user.is_superuser:
             return PERMISSION_DENIED
         response = Company.to_dict(company)
         response['teams'] = [Team.to_dict(team) for team in Company.get_teams(company_id)]
@@ -106,7 +106,7 @@ class TeamView(View):
         company = Company.get_by_id(company_id)
         if not company:
             return COMPANY_NOT_EXISTS
-        if Company.get_user_company(request) != company and not request.user.is_superuser:
+        if Company.get_user_company(request.user) != company and not request.user.is_superuser:
             return PERMISSION_DENIED
         if not team_id:
             response = [{
@@ -122,7 +122,7 @@ class TeamView(View):
             return TEAM_NOT_EXISTS
         if team.company.id != company.id:
             return PERMISSION_DENIED
-        if Company.get_user_company(request) != company and not request.user.is_superuser:
+        if Company.get_user_company(request.user) != company and not request.user.is_superuser:
             return PERMISSION_DENIED
         response = {
             'id': team.pk,
@@ -239,3 +239,25 @@ class TeamUserAssignmentView(View):
             user for user in User.get_all_users()
             if user not in team_members and user not in users_not_to_add
             ]
+
+
+class AdminAssignView(View):
+    def get(self, company_id=None):
+        possible_admins = []
+        if not company_id:
+            possible_admins.extend([{
+                'id': user.id,
+                'username': user.username,
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+            } for user in User.get_all_users() if not Company.get_user_company(user)])
+            return JsonResponse({'possible_admins': possible_admins}, status=200)
+        company = Company.get_by_id(company_id)
+        possible_admins.extend([{
+            'id': user.id,
+            'username': user.username,
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+        } for user in User.get_all_users() if not Company.get_user_company(user) or
+                                company == Company.get_user_company(user)])
+        return JsonResponse({'possible_admins': possible_admins}, status=200)
