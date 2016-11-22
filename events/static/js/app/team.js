@@ -10,6 +10,7 @@ import CancelButton from 'material-ui/svg-icons/navigation/cancel';
 import Snackbar from 'material-ui/Snackbar';
 import AssignParticipants from './AssignParticipants';
 import TextField from 'material-ui/TextField';
+import Subheader from 'material-ui/Subheader';
 
 import injectTapEventPlugin from 'react-tap-event-plugin';
 injectTapEventPlugin();
@@ -71,10 +72,16 @@ export default class Team extends React.Component {
         return (
             <MuiThemeProvider muiTheme={getMuiTheme()}>
                 <div>
-                    <h1>{this.state.name}</h1>
                     <div className="team-members">
                         <Paper>
-                            <p className="members-header">Team members</p>
+                            <div className="members-header">
+                                <TextField
+                                    hintText="Hint Text"
+                                    value={this.state.name}
+                                    fullWidth={true}
+                                />
+                            </div>
+                            <Subheader style={{paddingLeft: "40px"}}>Team members</Subheader>
                             <div className="team-members-search">
                                 <TextField
                                     hintText="Search"

@@ -27,7 +27,7 @@ html,body{
   }
   .members-header {
     margin: 0;
-    padding: 5px 0 15px 25px;
+    padding: 5px 40px 15px 25px;
     background: @popover-header;
     color: @rule-color;
     border-radius: 2px 2px 0 0;
@@ -35,6 +35,16 @@ html,body{
     height: 80px;
     line-height: 75px;
     padding-left: 40px;
+    input{
+      font-size: 30px !important;
+      color: @rule-color !important;
+      ~ div hr:first-child {
+        display: none;
+      }
+      ~ div hr:last-child {
+        //border-bottom-color: @rule-color !important;
+      }
+    }
   }
   > div:first-child {
     padding-bottom: 10px;
@@ -55,7 +65,6 @@ html,body{
 }
 
 .team-members-search {
-    margin-top: 10px;
     padding-left: 60px;
   }
 
