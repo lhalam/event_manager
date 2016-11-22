@@ -104,6 +104,113 @@
     width: 100%;
   }
 }
+body {
+  background: #f9f9f9;
+}
+form {
+  margin: 0 auto;
+  max-width: 300px;
+  min-width: 100px;
+  text-align: center;
+}
+li.error {
+  color: #f44336;
+}
+li.success {
+  color: #3c763d;
+}
+.registration_container {
+  margin: 50px auto;
+  background: rgba(245, 245, 245, 0.7);
+  max-width: 400px;
+  min-width: 300px;
+  padding: 0px 0px 20px;
+  border-radius: 3px;
+  position: relative;
+}
+.popover-rules ul {
+  margin-top: 10px;
+}
+.popover-rules ul li {
+  font-size: 15px;
+  padding: 0 25px;
+}
+.popover-rules ul li span {
+  margin-left: 7px;
+}
+.popover-rules ul li span.glyphicon {
+  width: 15px;
+  height: 15px;
+  font-size: 12px;
+  font-weight: normal;
+  margin-left: 0;
+}
+.popover-title {
+  padding-left: 20px;
+}
+.field-wrapper {
+  height: 80px;
+  text-align: center;
+}
+.field-wrapper div:first-child div:last-child {
+  text-align: right;
+}
+.field-wrapper label {
+  font-weight: normal;
+}
+.submit-btn {
+  margin: 20px 0px 10px;
+  min-width: 256px !important;
+}
+.popover-rules {
+  min-width: 270px;
+}
+.popover-rules p {
+  margin: 0;
+  padding: 15px 0 15px 25px;
+  background: #0097a7;
+  color: #fff;
+}
+.popover-rules ul {
+  list-style: none;
+  padding: 0;
+}
+.popover-rules li {
+  line-height: 25px;
+  padding: 0 25px;
+}
+.registration-form-header {
+  margin: 0;
+  padding: 5px 0 15px 25px;
+  background: #0097a7;
+  color: #fff;
+  border-radius: 2px 2px 0 0;
+  font-size: 30px;
+  height: 80px;
+  line-height: 75px;
+  padding-left: 40px;
+}
+.registration-form-header span {
+  font-size: 15px;
+  height: 20px;
+}
+.login {
+  margin-top: 10px;
+}
+.login a:visited {
+  color: #1d67a4;
+}
+.success-screen {
+  text-align: center;
+  margin-top: 50px;
+}
+.success-screen p {
+  font-size: 15px;
+}
+.success-screen-icon {
+  font-size: 100px;
+  color: #63e863;
+}
 html,
 body {
   height: 100%;
@@ -123,4 +230,51 @@ body footer {
 }
 .subheader {
   padding-left: 40px;
+}
+.team-members {
+  min-width: 500px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+.team-members .members-wrap {
+  padding: 10px 40px 30px;
+}
+.team-members .members-header {
+  margin: 0;
+  padding: 5px 40px 15px 25px;
+  background: #0097a7;
+  color: #fff;
+  border-radius: 2px 2px 0 0;
+  font-size: 30px;
+  height: 80px;
+  line-height: 75px;
+  padding-left: 40px;
+}
+.team-members .members-header input {
+  font-size: 30px !important;
+  color: #fff !important;
+}
+.team-members .members-header input ~ div hr:first-child {
+  display: none;
+}
+.team-members > div:first-child {
+  padding-bottom: 10px;
+}
+.members-wrap > div:first-child {
+  max-height: 350px;
+  overflow: auto;
+}
+.members-wrap svg {
+  color: rgba(169, 165, 165, 0.870588) !important;
+}
+.members-wrap svg:hover {
+  color: #747070 !important;
+}
+.team-members-search {
+  padding-left: 60px;
+}
+.add-users-button {
+  display: block;
+  max-width: 200px;
+  margin: 20px auto;
 }

@@ -12,8 +12,7 @@ import AssignParticipants from './AssignParticipants';
 import TextField from 'material-ui/TextField';
 import Subheader from 'material-ui/Subheader';
 
-import injectTapEventPlugin from 'react-tap-event-plugin';
-injectTapEventPlugin();
+
 
 export default class Team extends React.Component {
     constructor(props){
@@ -30,7 +29,10 @@ export default class Team extends React.Component {
         this.handleRequestClose = () => this.setState({openSnackbar: false});
         this.handleAddUsers = (res) => {
             let allMembers = this.state.members.concat(res);
-            this.setState({members: allMembers});
+            this.setState({
+                members: allMembers,
+                searchMembers: allMembers,
+            });
         };
         this.filterMembers = () => {
             let searchMembers = [];
@@ -111,7 +113,7 @@ export default class Team extends React.Component {
                             <div className="add-users-button">
                                 <AssignParticipants
                                     handleAddUsers={this.handleAddUsers}
-                                    url="/api/v1/companies/2/teams/5/user_assignment/"
+                                    url={"/api/v1/companies/" + this.props.params.cid + "/teams/"+this.props.params.tid+"/user_assignment/"}
                                     title = 'Add participants'
                                     hintText = 'Start typing participant name...'
                                     noUsersText = 'All possible users were added to this team.'
