@@ -52,9 +52,9 @@ export default class AssignParticipants extends React.Component {
 
     sendParticipants() {
         let participantsAddCount = this.state.dataToSend['participants'];
-        axios.put(this.props.url, this.state.dataToSend)
+        axios.put(this.props.url, {"members_to_add": participantsAddCount})
             .then(() => {
-                this.props.handleAddUsers(this.state.dataToSend['participants']);
+                this.props.handleAddUsers(participantsAddCount);
                 var successMessage;
                 if (participantsAddCount.length > 1) {
                     successMessage = 'Users were '+this.props.snackbarMessage;
@@ -134,11 +134,6 @@ export default class AssignParticipants extends React.Component {
                         onRequestClose={this.handleRequestClose}
                     />
                     <RaisedButton
-                        style={{
-                            display: 'block',
-                            maxWidth: '158px',
-                            margin: '20px auto'
-                        }}
                         label={this.props.title}
                         primary={true}
                         disabled={this.state.errorMessage ? true : false}

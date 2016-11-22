@@ -149,6 +149,7 @@ export default class Team extends React.Component {
                                     title = 'Add participants'
                                     hintText = 'Start typing participant name...'
                                     noUsersText = 'All possible users were added to this team.'
+                                    snackbarMessage={"successfully added to " + this.state.name + "."}
                                 />
                             </div>
                         </Paper>
@@ -158,7 +159,6 @@ export default class Team extends React.Component {
                         message={this.state.message}
                         autoHideDuration={3000}
                         onRequestClose={this.handleRequestClose}
-                        snackbarMessage={"successfully added to " + this.state.name + "."}
                     />
                 </div>
             </MuiThemeProvider>
