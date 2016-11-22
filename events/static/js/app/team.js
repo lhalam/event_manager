@@ -20,6 +20,7 @@ export default class Team extends React.Component {
         super(props);
         this.state = {
             name: "",
+            changedName: "",
             members: [],
             searchMembers: [],
             openSnackbar: false,
@@ -30,7 +31,10 @@ export default class Team extends React.Component {
         this.handleRequestClose = () => this.setState({openSnackbar: false});
         this.handleAddUsers = (res) => {
             let allMembers = this.state.members.concat(res);
-            this.setState({members: allMembers});
+            this.setState({
+                members: allMembers,
+                searchMembers: allMembers
+            });
         };
         this.filterMembers = () => {
             let searchMembers = [];
@@ -42,6 +46,33 @@ export default class Team extends React.Component {
         };
         this.handleSearchInput = event => {
             this.setState({searchText: event.target.value.toLowerCase().trim()}, () => this.filterMembers());
+        };
+        this.handleNameEdit = event => {
+            this.setState({changedName: event.target.value});
+        };
+        this.handleNameBlur = event => {
+            let currentName = this.state.name;
+            let newName = this.state.changedName;
+            if(newName && newName != this.state.name)
+                axios.put("/api/v1/companies/" + this.props.params.cid + "/teams/" + this.props.params.tid + "/", {
+                        name: newName
+                    })
+                    .then(response => {
+                        this.setState({
+                            name: newName,
+                        });
+                    })
+                    .catch(error => {
+                        this.setState({
+                            changedName: currentName
+                        });
+                    });
+            else {
+                this.setState({
+                    changedName: currentName
+                });
+            }
+
         }
     }
 
@@ -49,9 +80,10 @@ export default class Team extends React.Component {
         axios.get("/api/v1/companies/" + this.props.params.cid + "/teams/" + this.props.params.tid)
             .then((response) => {
                 this.setState({
-                    "name": response.data.name,
-                    "members": response.data.members,
-                    "searchMembers": response.data.members
+                    name: response.data.name,
+                    changedName: response.data.name,
+                    members: response.data.members,
+                    searchMembers: response.data.members
                 });
             });
     }
@@ -76,9 +108,11 @@ export default class Team extends React.Component {
                         <Paper>
                             <div className="members-header">
                                 <TextField
-                                    hintText="Hint Text"
-                                    value={this.state.name}
+                                    id="team-name"
+                                    value={this.state.changedName}
                                     fullWidth={true}
+                                    onChange={this.handleNameEdit}
+                                    onBlur={this.handleNameBlur}
                                 />
                             </div>
                             <Subheader style={{paddingLeft: "40px"}}>Team members</Subheader>
@@ -124,6 +158,7 @@ export default class Team extends React.Component {
                         message={this.state.message}
                         autoHideDuration={3000}
                         onRequestClose={this.handleRequestClose}
+                        snackbarMessage={"successfully added to " + this.state.name + "."}
                     />
                 </div>
             </MuiThemeProvider>
