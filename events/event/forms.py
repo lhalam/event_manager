@@ -26,7 +26,7 @@ class EventCreateForm(forms.ModelForm):
     def clean_location(self):
         data = self.cleaned_data.get('location')
         try:
-            type(data[0]).__name__ == 'float' and type(data[1]).__name__ == 'float'
+            isinstance(data[0], float) and isinstance(data[1], float)
         except:
             raise forms.ValidationError("Enter valid data")
         return data
