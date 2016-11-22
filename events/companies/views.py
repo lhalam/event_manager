@@ -239,3 +239,18 @@ class TeamUserAssignmentView(View):
             user for user in User.get_all_users()
             if user not in team_members and user not in users_not_to_add
             ]
+
+
+class AdminAssignView(View):
+    def get(self, company_id=None):
+        possible_admins = []
+        company = Company.get_by_id(company_id)
+        if not company:
+            possible_admins.extend([{
+                'id': user.id,
+                'username': user.username,
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+            } for user in User.get_all_users().exclude(
+                [instance.user for instance in TeamUserAssignment.objects.all()]
+            )])
