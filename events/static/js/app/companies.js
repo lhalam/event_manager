@@ -90,20 +90,24 @@ export default class CompaniesList extends React.Component {
 
         return (
             <MuiThemeProvider muiTheme={getMuiTheme()}>
-                <Paper
-                    zDepth={2}
-                    style={style.paper}
-                >
-                    {CompanyList}
-                    <RaisedButton
-                        label="Add new company"
-                        primary={true}
-                        onTouchTap={this.newCompanyHandler}
-                    />
-                    <AddCompaniesWindow
-                        open={this.state.open}
-                    />
-                </Paper>
+                <div className="team-members">
+                    <Paper
+                        zDepth={2}
+                        style={style.paper}
+                    >
+                        {CompanyList}
+                        <div className="add-users-button">
+                            <RaisedButton
+                                label="Add new company"
+                                primary={true}
+                                onTouchTap={this.newCompanyHandler}
+                            />
+                        </div>
+                        <AddCompaniesWindow
+                            open={this.state.open}
+                        />
+                    </Paper>
+                </div>
             </MuiThemeProvider>
         )
     }

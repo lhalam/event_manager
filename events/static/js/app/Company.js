@@ -108,14 +108,14 @@ export default class Company extends React.Component {
         if (companyObject['admin']) {
             admin = (
                 <List>
-                    <div className="subheader">
-                        <Subheader>Company Admin</Subheader>
-                    </div>
+                    <Subheader><div className="subheader">Company Admin</div></Subheader>
+                    <div className="paper-element">
                     <ListItem
                         primaryText={companyObject['admin']['first_name']+' '+companyObject['admin']['last_name']}
                         secondaryText={companyObject['admin']['username']}
                         leftAvatar={<Avatar size={32}>{companyObject['admin']['first_name'][0].toUpperCase()}</Avatar>}
                     />
+                    </div>
                 </List>
                 );
         }
@@ -148,16 +148,12 @@ export default class Company extends React.Component {
 
         const teamList = (
             <div className="team-list">
-                <Subheader>Teams</Subheader>
-                <List
-                    style={{
-                        maxHeight: '288px',
-                        overflow: 'auto'
-                    }}
-                >
-
-                    {teams}
-                </List>
+                <Subheader><div className="subheader">Teams</div></Subheader>
+                <div className="members-wrap">
+                    <List>
+                        {teams}
+                    </List>
+                </div>
             </div>
 
 
@@ -185,28 +181,28 @@ export default class Company extends React.Component {
 
         return (
             <MuiThemeProvider>
-                <Paper>
-                    <p>
-                        {companyObject['name']}
-                    </p>
-                    <Subheader>Description</Subheader>
-                    {companyObject['description']}
-                    <Divider/>
-                    {admin}
-                    <Divider/>
-                    {teamList}
-                    <Divider/>
-                    {buttons}
-                    <Dialog
-                        open={this.state.open}
-                        actions={dialogButtons}
-                    >
-                        Are you sure, you want delete this company?
-                    </Dialog>
-                    <AddCompanyWindow
-                        open={this.state.openEdit}
-                    />
-                </Paper>
+                <div className="team-members">
+                    <Paper>
+                        <div className="members-header">
+                            {companyObject['name']}
+                        </div>
+                        <Subheader><div className="subheader">Description</div></Subheader>
+                        <div className="paper-element">{companyObject['description']}</div>
+                        {admin}
+                        {teamList}
+                        <Divider/>
+                        {buttons}
+                        <Dialog
+                            open={this.state.open}
+                            actions={dialogButtons}
+                        >
+                            Are you sure, you want delete this company?
+                        </Dialog>
+                        <AddCompanyWindow
+                            open={this.state.openEdit}
+                        />
+                    </Paper>
+                </div>
             </MuiThemeProvider>
 
         );

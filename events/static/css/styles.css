@@ -229,7 +229,10 @@ body footer {
   height: 250px;
 }
 .subheader {
-  padding-left: 40px;
+  padding: 0 24px;
+}
+.paper-element {
+  padding: 0 40px;
 }
 .team-members {
   min-width: 500px;
@@ -237,7 +240,7 @@ body footer {
   margin: 0 auto;
 }
 .team-members .members-wrap {
-  padding: 10px 40px 30px;
+  padding: 10px 40px 0 40px;
 }
 .team-members .members-header {
   margin: 0;
@@ -261,7 +264,7 @@ body footer {
   padding-bottom: 10px;
 }
 .members-wrap > div:first-child {
-  max-height: 350px;
+  max-height: 288px;
   overflow: auto;
 }
 .members-wrap svg {
