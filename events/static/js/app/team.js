@@ -34,9 +34,7 @@ export default class Team extends React.Component {
         this.filterMembers = () => {
             let searchMembers = [];
             this.state.members.forEach(user => {
-                if(user.first_name.toLowerCase().startsWith(this.state.searchText) ||
-                   user.last_name.toLowerCase().startsWith(this.state.searchText) ||
-                    (user.first_name + " " + user.last_name).toLowerCase().startsWith(this.state.searchText))
+                if((user.first_name + " " + user.last_name).toLowerCase().indexOf(this.state.searchText) != -1)
                     searchMembers.push(user);
             });
             this.setState({searchMembers: searchMembers});
