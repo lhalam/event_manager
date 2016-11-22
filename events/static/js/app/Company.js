@@ -9,6 +9,7 @@ import Subheader from 'material-ui/Subheader';
 import Paper from 'material-ui/Paper';
 import Dialog from 'material-ui/Dialog';
 import Divider from 'material-ui/Divider';
+import TextField from 'material-ui/TextField';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import AddCompanyWindow from './AddCompanyWindow';
 
@@ -21,6 +22,7 @@ export default class Company extends React.Component {
         super(props);
         this.state = {
             company: [],
+            searchTeams: [],
             error: '',
             open: false,
             openEdit: false
@@ -32,6 +34,19 @@ export default class Company extends React.Component {
         this.handleDialogClose = this.handleDialogClose.bind(this);
         this.handleDialogEditOpen = this.handleDialogEditOpen.bind(this);
         this.handleDialogEditClose = this.handleDialogEditClose.bind(this);
+
+        this.handleSearchInput = event => {
+            this.setState({searchText: event.target.value.toLowerCase().trim()}, () => this.filterTeams());
+        };
+
+        this.filterTeams = () => {
+            let searchTeams = [];
+            this.state.company.teams.forEach(team => {
+                if((team.name).toLowerCase().indexOf(this.state.searchText) != -1)
+                    searchTeams.push(team);
+            });
+            this.setState({searchTeams: searchTeams});
+        };
     }
 
     loadCompany() {
@@ -39,7 +54,8 @@ export default class Company extends React.Component {
             .then((response) => {
                 console.log(response.data);
                 this.setState({
-                    company: response.data
+                    company: response.data,
+                    searchTeams: response.data.teams
                 });
 
             })
@@ -134,7 +150,7 @@ export default class Company extends React.Component {
             />
         ];
         if (companyObject['teams']) {
-            teams = companyObject['teams'].map((team) => {
+            teams = this.state.searchTeams.map((team) => {
                 return (
                     <ListItem
                         key={team.id}
@@ -149,6 +165,12 @@ export default class Company extends React.Component {
         const teamList = (
             <div className="team-list">
                 <Subheader><div className="subheader">Teams</div></Subheader>
+                <div className="team-members-search">
+                <TextField
+                    hintText="Search"
+                    onChange={this.handleSearchInput}
+                />
+                </div>
                 <div className="members-wrap">
                     <List>
                         {teams}

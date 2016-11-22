@@ -52,9 +52,10 @@ export default class AssignParticipants extends React.Component {
 
     sendParticipants() {
         let participantsAddCount = this.state.dataToSend['participants'];
-        let sendData = {"members_to_add": this.state.dataToSend['participants']}
+        let sendData = {"members_to_add": this.state.dataToSend['participants']};
         axios.put(this.props.url, sendData)
             .then(() => {
+                this.props.handleAddUsers(participantsAddCount);
                 var successMessage;
                 if (participantsAddCount.length > 1) {
                     successMessage = 'Users were successfully added to event'
@@ -89,7 +90,6 @@ export default class AssignParticipants extends React.Component {
 
     handleRequestSubmitClose() {
         this.sendParticipants();
-        this.props.handleAddUsers(this.state.dataToSend['participants']);
         this.setState({
             open: false,
             dataToSend: {'participants': []},

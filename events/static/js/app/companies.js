@@ -9,6 +9,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import AddCompaniesWindow from './AddCompanyWindow';
 import {List, ListItem} from 'material-ui/List';
 import { hashHistory } from 'react-router'
+import TextField from 'material-ui/TextField';
 
 
 export default class CompaniesList extends React.Component {
@@ -16,11 +17,33 @@ export default class CompaniesList extends React.Component {
         super(props);
         this.state = {
             companies: [],
-            open: false
+            searchCompanies: [],
+            open: false,
+
         };
         this.loadCompanies = this.loadCompanies.bind(this);
         this.newCompanyHandler = this.newCompanyHandler.bind(this);
+        this.handleAdminClick = this.handleAdminClick.bind(this);
+
+
+        this.handleSearchInput = event => {
+            this.setState({searchText: event.target.value.toLowerCase().trim()}, () => this.filterCompanies());
+        };
+
+        this.filterCompanies = () => {
+            let searchCompanies = [];
+            this.state.companies.forEach(company => {
+                if((company.name).toLowerCase().indexOf(this.state.searchText) != -1)
+                    searchCompanies.push(company);
+            });
+            this.setState({searchCompanies: searchCompanies});
+        };
     }
+
+    handleAdminClick(event) {
+        event.stopPropagation();
+    }
+
 
     componentDidMount () {
         this.loadCompanies()
@@ -30,7 +53,10 @@ export default class CompaniesList extends React.Component {
         axios.get('api/v1/companies')
             .then((response) => {
                 console.log(response.data);
-                this.setState(response.data);
+                this.setState({
+                    companies: response.data.companies,
+                    searchCompanies: response.data.companies,
+                });
             })
     }
 
@@ -41,20 +67,12 @@ export default class CompaniesList extends React.Component {
     }
 
     handleCompanyClick(id) {
-        hashHistory.push('/companies/'+id);
+        setTimeout(hashHistory.push('/companies/' + id), 20000);
     }
 
     render() {
-        const style = {
-            paper: {
-                width: '70%',
-                margin: '30px auto'
-            },
-            button: {
-                margin: '0 auto',
-            }
-        };
-        let companies = this.state.companies.map( (companyObject) => {
+
+        let companies = this.state.searchCompanies.map( (companyObject) => {
             return (
                 <ListItem
                     onTouchTap={this.handleCompanyClick.bind(this, companyObject['id'])}
@@ -62,6 +80,7 @@ export default class CompaniesList extends React.Component {
                     primaryText={companyObject['name']}
                 >
                     <Chip
+                        onTouchTap={this.handleAdminClick}
                         style={{
                             float: 'right',
                             margin: '-8px 0'
@@ -80,10 +99,19 @@ export default class CompaniesList extends React.Component {
         });
 
         const CompanyList = (
-          <List
-          >
-              {companies}
-          </List>
+                <div className="companies-list">
+                    <div className="team-members-search">
+                        <TextField
+                            hintText="Search"
+                            onChange={this.handleSearchInput}
+                        />
+                    </div>
+                    <div className="members-wrap">
+                        <List>
+                            {companies}
+                        </List>
+                    </div>
+                </div>
         );
 
 
@@ -93,8 +121,9 @@ export default class CompaniesList extends React.Component {
                 <div className="team-members">
                     <Paper
                         zDepth={2}
-                        style={style.paper}
                     >
+                        <div className="members-header">Companies</div>
+
                         {CompanyList}
                         <div className="add-users-button">
                             <RaisedButton

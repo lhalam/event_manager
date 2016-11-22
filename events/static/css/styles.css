@@ -263,6 +263,9 @@ body footer {
 .team-members > div:first-child {
   padding-bottom: 10px;
 }
+.companies-list {
+  margin-top: 20px;
+}
 .members-wrap > div:first-child {
   max-height: 288px;
   overflow: auto;
