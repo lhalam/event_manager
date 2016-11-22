@@ -22,6 +22,21 @@ class Company(models.Model):
             return None
 
     @staticmethod
+    def to_dict(company):
+        return {
+            "id": company.id,
+            "name": company.name,
+            "description": company.description,
+            "admin": {
+                'id': company.admin.id,
+                'username': company.admin.username,
+                'first_name': company.admin.first_name,
+                'last_name': company.admin.last_name,
+            }
+        }
+
+
+    @staticmethod
     def get_teams(company_id):
         return [team for team in Company.get_by_id(company_id).teams.all()]
 
@@ -62,6 +77,17 @@ class Team(models.Model):
             return Team.objects.get(pk=team_id)
         except Team.DoesNotExist:
             return None
+
+    @staticmethod
+    def to_dict(team):
+        return {
+            'id': team.id,
+            'name': team.name,
+            'company': {
+                'id': team.company.id,
+                'name': team.company.name,
+            }
+        }
 
     @staticmethod
     def get_members(current_team):
