@@ -11,8 +11,6 @@ import Dialog from 'material-ui/Dialog';
 import Divider from 'material-ui/Divider';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import AddCompanyWindow from './AddCompanyWindow';
-import injectTapEventPlugin from 'react-tap-event-plugin';
-injectTapEventPlugin();
 
 
 
