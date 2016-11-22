@@ -21,7 +21,7 @@ parts/
 sdist/
 var/
 node_modules/
-webpack-stats.json
+webpack-stats.json/
 *.egg-info/
 .installed.cfg
 *.egg

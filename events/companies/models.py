@@ -103,6 +103,11 @@ class Team(models.Model):
             members.append(user_object)
         return members
 
+    @staticmethod
+    def remove_user_from_team(team, user):
+        TeamUserAssignment.objects.filter(team=team, user=user).delete()
+        return Team.get_members(team)
+
 
 class TeamUserAssignment(models.Model):
     team = models.ForeignKey(Team, on_delete=models.CASCADE)
