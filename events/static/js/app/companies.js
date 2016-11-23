@@ -76,21 +76,25 @@ export default class CompaniesList extends React.Component {
                     key={companyObject['id']}
                     primaryText={companyObject['name']}
                 >
-                    <Chip
-                        onTouchTap={this.handleAdminClick}
-                        style={{
-                            float: 'right',
-                            margin: '-8px 0'
-                        }}
-                    >
-                            <Avatar size={32}>
-                                {companyObject['admin']['first_name'][0].toUpperCase()}
-                            </Avatar>
-                            {
-                                companyObject['admin']['first_name'] + ' ' +
-                                companyObject['admin']['last_name']
-                            }
-                        </Chip>
+                    <div className="outer-div">
+                        <div className="inner-div">
+                            <Chip
+                                onTouchTap={this.handleAdminClick}
+                                style={{
+                                    float: 'right',
+                                    margin: '-8px 0'
+                                }}
+                            >
+                                    <Avatar size={32}>
+                                        {companyObject['admin']['first_name'][0].toUpperCase()}
+                                    </Avatar>
+                                    {
+                                        companyObject['admin']['first_name'] + ' ' +
+                                        companyObject['admin']['last_name']
+                                    }
+                                </Chip>
+                            </div>
+                        </div>
                     </ListItem>
             );
         });

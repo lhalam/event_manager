@@ -307,3 +307,12 @@ body footer {
   color: #e0e1e2;
   font-size: 13px;
 }
+.outer-div {
+  display: inline;
+  min-width: 200px;
+  width: 250px;
+  float: right;
+}
+.outer-div .inner-div {
+  float: left;
+}
