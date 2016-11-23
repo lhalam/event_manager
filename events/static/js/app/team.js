@@ -11,6 +11,10 @@ import Snackbar from 'material-ui/Snackbar';
 import AssignParticipants from './AssignParticipants';
 import TextField from 'material-ui/TextField';
 import Subheader from 'material-ui/Subheader';
+import RaisedButton from 'material-ui/RaisedButton';
+import Dialog from 'material-ui/Dialog';
+import FlatButton from 'material-ui/FlatButton';
+import { hashHistory } from 'react-router';
 
 import injectTapEventPlugin from 'react-tap-event-plugin';
 injectTapEventPlugin();
@@ -25,9 +29,11 @@ export default class Team extends React.Component {
             searchMembers: [],
             openSnackbar: false,
             message: "",
-            searchText: ""
+            searchText: "",
+            openDialog: false
         };
         this.handleDelete = this.handleDelete.bind(this);
+        this.handleDeleteTeam = this.handleDeleteTeam.bind(this);
         this.handleRequestClose = () => this.setState({openSnackbar: false});
         this.handleAddUsers = (res) => {
             let allMembers = this.state.members.concat(res);
@@ -73,7 +79,14 @@ export default class Team extends React.Component {
                 });
             }
 
-        }
+        };
+        this.handleOpenDialog = () => {
+            this.setState({openDialog: true});
+        };
+
+        this.handleCloseDialog = () => {
+            this.setState({openDialog: false});
+        };
     }
 
     componentDidMount(){
@@ -85,6 +98,9 @@ export default class Team extends React.Component {
                     members: response.data.members,
                     searchMembers: response.data.members
                 });
+            })
+            .catch(error => {
+                hashHistory.push("/");
             });
     }
 
@@ -94,13 +110,42 @@ export default class Team extends React.Component {
             .then((response) => {
                 this.setState({
                     members: response.data['members_to_del'],
+                    searchMembers: response.data['members_to_del'],
                     openSnackbar: true,
                     message: member.first_name + " " + member.last_name + " removed from the team"
                 }, () => this.filterMembers());
+            })
+            .catch(error => {
+                alert("Something wrong happend. Please, try again.")
+            });
+    }
+
+    handleDeleteTeam() {
+        this.handleCloseDialog();
+        axios.delete("/api/v1/companies/" + this.props.params.cid + "/teams/" + this.props.params.tid)
+            .then(response => {
+                hashHistory.push("/");
+            })
+            .catch(error => {
+                alert("Something wrong happend. Please, try again.");
             });
     }
 
     render() {
+        const actions = [
+            <FlatButton
+                label="Cancel"
+                primary={true}
+                onTouchTap={this.handleCloseDialog}
+            />,
+            <RaisedButton
+                className="delete-button"
+                label="Delete"
+                primary={true}
+                style={{backgroundColor: "#f44336", color: "white", marginLeft: "10px"}}
+                onTouchTap={this.handleDeleteTeam}
+            />,
+        ];
         return (
             <MuiThemeProvider muiTheme={getMuiTheme()}>
                 <div>
@@ -123,6 +168,9 @@ export default class Team extends React.Component {
                                 />
                             </div>
                             <div className="members-wrap">
+                                {
+                                    !Boolean(this.state.searchMembers.length) && <p>No members in team</p>
+                                }
                                 <List>
                                     {
                                         this.state.searchMembers.map((member, index) => {
@@ -143,9 +191,15 @@ export default class Team extends React.Component {
                                 </List>
                             </div>
                             <div className="add-users-button">
+                                <RaisedButton
+                                    className="delete-button"
+                                    label="Delete team"
+                                    secondary={true}
+                                    onTouchTap={this.handleOpenDialog}
+                                />
                                 <AssignParticipants
                                     handleAddUsers={this.handleAddUsers}
-                                    url="/api/v1/companies/2/teams/5/user_assignment/"
+                                    url={"/api/v1/companies/"+this.props.params.cid+"/teams/"+this.props.params.tid+"/user_assignment/"}
                                     title = 'Add participants'
                                     hintText = 'Start typing participant name...'
                                     noUsersText = 'All possible users were added to this team.'
@@ -160,6 +214,16 @@ export default class Team extends React.Component {
                         autoHideDuration={3000}
                         onRequestClose={this.handleRequestClose}
                     />
+                    <div>
+                        <Dialog
+                            actions={actions}
+                            modal={true}
+                            open={this.state.openDialog}
+                            onRequestClose={this.handleCloseDialog}
+                        >
+                            Are you sure you want delete the team?
+                        </Dialog>
+                    </div>
                 </div>
             </MuiThemeProvider>
         );

@@ -196,7 +196,11 @@ class TeamView(View):
 class TeamUserAssignmentView(View):
     def get(self, request, company_id, team_id):
         members = []
-        for user in TeamUserAssignmentView.get_users_to_add_list(Team.get_by_id(team_id), company_id):
+        team = Team.get_by_id(team_id)
+        if not team:
+            return TEAM_NOT_EXISTS
+        users = TeamUserAssignmentView.get_users_to_add_list(team, company_id)
+        for user in TeamUserAssignmentView.get_users_to_add_list(team, company_id):
             user_object = {
                 "id": user.id,
                 "first_name": user.first_name,

@@ -7,6 +7,7 @@ import Calendar from './app/calendar'
 import EventList from './app/events'
 import Event from './app/event'
 import Team from './app/team'
+import CreateTeam from './app/AddTeamWindow'
 
 const Home = () => <div><h1>Home</h1></div>
 
@@ -18,6 +19,7 @@ render(
               <Route path = "/events/:event_id" component={Event}/>
               <Route path = "/events" component ={ EventList }/>
               <Route path = "/companies/:cid/teams/:tid" component ={ Team }/>
+              <Route path = "/test" component ={ CreateTeam }/>
           </Route>
       </Router>, document.getElementById("root")
 );

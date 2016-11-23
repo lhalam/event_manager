@@ -31,7 +31,6 @@ export default class AssignParticipants extends React.Component {
 
     componentDidMount(){
         this.loadParticipants();
-        setInterval(this.loadParticipants, 20000);
     };
 
     loadParticipants() {
