@@ -14,8 +14,6 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import AddCompanyWindow from './AddCompanyWindow';
 
 
-
-
 export default class Company extends React.Component {
 
     constructor(props) {
@@ -34,6 +32,7 @@ export default class Company extends React.Component {
         this.handleDialogClose = this.handleDialogClose.bind(this);
         this.handleDialogEditOpen = this.handleDialogEditOpen.bind(this);
         this.handleDialogEditClose = this.handleDialogEditClose.bind(this);
+        this.newDataHandler = this.newDataHandler.bind(this);
 
         this.handleSearchInput = event => {
             this.setState({searchText: event.target.value.toLowerCase().trim()}, () => this.filterTeams());
@@ -107,6 +106,15 @@ export default class Company extends React.Component {
         });
     }
 
+    newDataHandler(newData) {
+        let company = this.state.company;
+        company['name'] = newData['name'];
+        company['description'] = newData['description'];
+        company['admin'] = newData['admin'];
+        this.setState({
+            company: company
+        });
+    }
 
 
     componentDidMount() {
@@ -122,12 +130,13 @@ export default class Company extends React.Component {
         let teams = null;
 
         if (companyObject['admin']) {
+            this.admin_name = companyObject['admin']['first_name']+' '+companyObject['admin']['last_name'];
             admin = (
                 <List>
                     <Subheader><div className="subheader">Company Admin</div></Subheader>
                     <div className="paper-element">
                     <ListItem
-                        primaryText={companyObject['admin']['first_name']+' '+companyObject['admin']['last_name']}
+                        primaryText={this.admin_name}
                         secondaryText={companyObject['admin']['username']}
                         leftAvatar={<Avatar size={32}>{companyObject['admin']['first_name'][0].toUpperCase()}</Avatar>}
                     />
@@ -139,13 +148,12 @@ export default class Company extends React.Component {
         const dialogButtons = [
             <FlatButton
                 keyboardFocused={true}
-                primary={true}
-                label="NO"
+                label="cancel"
                 onTouchTap={this.handleDialogClose}
             />,
             <FlatButton
-                primary={true}
-                label="YES"
+                secondary={true}
+                label="delete"
                 onTouchTap={this.deleteCompany}
             />
         ];
@@ -221,7 +229,14 @@ export default class Company extends React.Component {
                             Are you sure, you want delete this company?
                         </Dialog>
                         <AddCompanyWindow
+                            url={"api/v1/companies/"+this.props.params.company_id+'/'}
+                            method="PUT"
                             open={this.state.openEdit}
+                            handleCompanyClose={this.handleDialogEditClose}
+                            newDataHandler={this.newDataHandler}
+                            currentTitle={companyObject['name']}
+                            currentDescription={companyObject['description']}
+                            currentAdmin={this.admin_name}
                         />
                     </Paper>
                 </div>

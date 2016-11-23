@@ -23,7 +23,9 @@ export default class CompaniesList extends React.Component {
         };
         this.loadCompanies = this.loadCompanies.bind(this);
         this.newCompanyHandler = this.newCompanyHandler.bind(this);
+        this.handleCompanyClose = this.handleCompanyClose.bind(this);
         this.handleAdminClick = this.handleAdminClick.bind(this);
+        this.newDataHandler = this.newDataHandler.bind(this);
 
 
         this.handleSearchInput = event => {
@@ -42,6 +44,10 @@ export default class CompaniesList extends React.Component {
 
     handleAdminClick(event) {
         event.stopPropagation();
+    }
+
+    newDataHandler() {
+        this.loadCompanies()
     }
 
 
@@ -63,6 +69,12 @@ export default class CompaniesList extends React.Component {
     newCompanyHandler() {
         this.setState({
             open: true
+        });
+    }
+
+    handleCompanyClose() {
+        this.setState({
+            open: false
         });
     }
 
@@ -123,7 +135,6 @@ export default class CompaniesList extends React.Component {
                         zDepth={2}
                     >
                         <div className="members-header">Companies</div>
-
                         {CompanyList}
                         <div className="add-users-button">
                             <RaisedButton
@@ -133,7 +144,11 @@ export default class CompaniesList extends React.Component {
                             />
                         </div>
                         <AddCompaniesWindow
+                            url="api/v1/companies/"
+                            method="POST"
                             open={this.state.open}
+                            handleCompanyClose={this.handleCompanyClose}
+                            newDataHandler={this.newDataHandler}
                         />
                     </Paper>
                 </div>

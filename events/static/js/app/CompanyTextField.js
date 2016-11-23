@@ -11,12 +11,10 @@ export default class CompanyTextField extends React.Component {
                 defaultValue={this.props.value}
                 floatingLabelText={this.props.label}
                 onChange={this.props.onChange}
-                ref={this.props.ref}
                 multiLine={this.props.multiLine}
                 rows={this.props.rows}
                 rowsMax={this.props.rowsMax}
                 fullWidth={this.props.fullWidth}
-
             />
 
         );
