@@ -30,8 +30,6 @@ export default class Company extends React.Component {
         this.deleteCompany = this.deleteCompany.bind(this);
         this.handleDialogOpen = this.handleDialogOpen.bind(this);
         this.handleDialogClose = this.handleDialogClose.bind(this);
-        this.handleDialogEditOpen = this.handleDialogEditOpen.bind(this);
-        this.handleDialogEditClose = this.handleDialogEditClose.bind(this);
         this.newDataHandler = this.newDataHandler.bind(this);
 
         this.handleSearchInput = event => {
@@ -74,10 +72,6 @@ export default class Company extends React.Component {
             })
     }
 
-    handleBackButton() {
-        setTimeout(hashHistory.push('/companies'), 500)
-    }
-
     handleTeamClick(team_id, company_id) {
         setTimeout(hashHistory.push('/companies/'+company_id+'/teams/'+team_id), 500)
     }
@@ -88,21 +82,9 @@ export default class Company extends React.Component {
         });
     }
 
-    handleDialogEditOpen() {
-        this.setState({
-            openEdit: true
-        });
-    }
-
     handleDialogClose() {
         this.setState({
             open: false
-        });
-    }
-
-    handleDialogEditClose() {
-        this.setState({
-            openEdit: false
         });
     }
 
@@ -130,13 +112,14 @@ export default class Company extends React.Component {
         let teams = null;
 
         if (companyObject['admin']) {
-            this.admin_name = companyObject['admin']['first_name']+' '+companyObject['admin']['last_name'];
+            this.adminName = companyObject['admin']['first_name']+' '+companyObject['admin']['last_name'];
+            this.adminId = companyObject['admin']['id'];
             admin = (
                 <List>
                     <Subheader><div className="subheader">Company Admin</div></Subheader>
                     <div className="paper-element">
                     <ListItem
-                        primaryText={this.admin_name}
+                        primaryText={this.adminName}
                         secondaryText={companyObject['admin']['username']}
                         leftAvatar={<Avatar size={32}>{companyObject['admin']['first_name'][0].toUpperCase()}</Avatar>}
                     />
@@ -190,16 +173,15 @@ export default class Company extends React.Component {
         );
 
         const buttons = (
-            <CardActions
-            >
-                <FlatButton
-                    label="BACK"
-                    onTouchTap={this.handleBackButton}
-                />
-                <FlatButton
-                    primary={true}
-                    label="EDIT"
-                    onTouchTap={this.handleDialogEditOpen}
+            <CardActions>
+                <AddCompanyWindow
+                    url={"api/v1/companies/"+this.props.params.company_id+'/'}
+                    method="PUT"
+                    newDataHandler={this.newDataHandler}
+                    currentTitle={companyObject['name']}
+                    currentDescription={companyObject['description']}
+                    currentAdmin={this.adminName}
+                    currentAdminId={this.adminId}
                 />
                 <FlatButton
                     secondary={true}
@@ -228,16 +210,6 @@ export default class Company extends React.Component {
                         >
                             Are you sure, you want delete this company?
                         </Dialog>
-                        <AddCompanyWindow
-                            url={"api/v1/companies/"+this.props.params.company_id+'/'}
-                            method="PUT"
-                            open={this.state.openEdit}
-                            handleCompanyClose={this.handleDialogEditClose}
-                            newDataHandler={this.newDataHandler}
-                            currentTitle={companyObject['name']}
-                            currentDescription={companyObject['description']}
-                            currentAdmin={this.admin_name}
-                        />
                     </Paper>
                 </div>
             </MuiThemeProvider>

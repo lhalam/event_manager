@@ -2,6 +2,7 @@ import React from 'react';
 import Dialog from 'material-ui/Dialog';
 import AutoComplete from 'material-ui/AutoComplete';
 import FlatButton from 'material-ui/FlatButton';
+import RaisedButton from 'material-ui/RaisedButton';
 import CompanyTextField from './CompanyTextField';
 import axios from 'axios';
 export default class AddCompanyWindow extends React.Component {
@@ -12,7 +13,8 @@ export default class AddCompanyWindow extends React.Component {
             name: '',
             description: '',
             admin: '',
-            possible_admins: []
+            possible_admins: [],
+            open: false
         };
 
         this.handleTitle = this.handleTitle.bind(this);
@@ -20,6 +22,8 @@ export default class AddCompanyWindow extends React.Component {
         this.handleAdmin = this.handleAdmin.bind(this);
         this.getAdminList = this.getAdminList.bind(this);
         this.sendCompanyData = this.sendCompanyData.bind(this);
+        this.newCompanyHandler = this.newCompanyHandler.bind(this);
+        this.handleCompanyClose = this.handleCompanyClose.bind(this);
     }
 
     handleTitle(event) {
@@ -28,8 +32,23 @@ export default class AddCompanyWindow extends React.Component {
         })
     }
 
-    componentDidMount() {
-        console.log('COMPONENT DID MOUNT');
+    newCompanyHandler() {
+        this.getAdminList();
+        this.setState({
+            open: true,
+            name: this.props.currentTitle,
+            description: this.props.currentDescription,
+            admin: this.props.currentAdminId,
+        });
+    }
+
+    handleCompanyClose() {
+        this.setState({
+            open: false,
+            name: '',
+            description: '',
+            admin: '',
+        });
     }
 
     handleDescription(event) {
@@ -76,10 +95,11 @@ export default class AddCompanyWindow extends React.Component {
             axios.put(this.props.url, newCompanyData)
                 .then((response) => {
                     let admin = newCompanyData['admin'];
-                    let possible_admins = this.state.possible_admins;
-                    newCompanyData['admin'] = possible_admins.filter((userObject) => {
+                    let possibleAdmins = this.state.possible_admins;
+                    newCompanyData['admin'] = possibleAdmins.filter((userObject) => {
                         return userObject['id'] == admin
                     })[0];
+                    console.log('put_data', newCompanyData);
                     this.props.newDataHandler(newCompanyData);
                     console.log(response.status, response.statusText);
                 })
@@ -87,7 +107,7 @@ export default class AddCompanyWindow extends React.Component {
                     console.log(error.response.status, error.response.statusText)
                 })
         }
-        this.props.handleCompanyClose();
+        this.handleCompanyClose();
     }
 
     render() {
@@ -105,10 +125,28 @@ export default class AddCompanyWindow extends React.Component {
         };
 
         let dialogTitle;
+        let button;
+
         if (this.props.method == 'POST') {
-            dialogTitle = 'Create company'
+            dialogTitle = 'Create company';
+            button = (
+                <div className="add-users-button">
+                    <RaisedButton
+                        label="Add new company"
+                        primary={true}
+                        onTouchTap={this.newCompanyHandler}
+                    />
+                </div>
+            );
         } else {
-            dialogTitle = 'Edit company'
+            dialogTitle = 'Edit company';
+            button = (
+                <RaisedButton
+                    primary={true}
+                    label="EDIT"
+                    onTouchTap={this.newCompanyHandler}
+                />
+            );
         }
 
         const styles = {
@@ -129,7 +167,7 @@ export default class AddCompanyWindow extends React.Component {
                 <FlatButton
                     label="Cancel"
                     primary={true}
-                    onTouchTap={this.props.handleCompanyClose}
+                    onTouchTap={this.handleCompanyClose}
 
                 />,
                 <FlatButton
@@ -143,44 +181,46 @@ export default class AddCompanyWindow extends React.Component {
 
 
         return (
-
-            <Dialog
-                open={this.props.open}
-                contentStyle={styles.dialogRoot}
-                actions={standardActions}
-                title={dialogTitle}
-                titleStyle={styles.dialogTitle}
-            >
-                <CompanyTextField
-                    value={this.props.currentTitle}
-                    label='Company title'
-                    ref="title"
-                    onChange={this.handleTitle}
-                />
-                <br/>
-                <CompanyTextField
-                    value={this.props.currentDescription}
-                    label='Company description'
-                    ref="desc"
-                    multiLine={true}
-                    rows={3}
-                    rowsMax={5}
-                    fullWidth={true}
-                    onChange={this.handleDescription}
-                /><br />
-                <AutoComplete
-                    filter={AutoComplete.fuzzyFilter}
-                    floatingLabelText="Admin"
-                    dataSource={dataSource}
-                    dataSourceConfig={dataSourceConfig}
-                    onNewRequest={this.handleAdmin}
-                    searchText={this.props.currentAdmin}
-                    onFocus={this.getAdminList}
-                    openOnFocus={true}
-                    onChange={this.handleAdmin}
-                    ref="admin"
-                />
-            </Dialog>
+            <div style={{display: 'inline'}}>
+                <Dialog
+                    open={this.state.open}
+                    contentStyle={styles.dialogRoot}
+                    actions={standardActions}
+                    title={dialogTitle}
+                    titleStyle={styles.dialogTitle}
+                >
+                    <CompanyTextField
+                        value={this.props.currentTitle}
+                        label='Company title'
+                        ref="title"
+                        onChange={this.handleTitle}
+                    />
+                    <br/>
+                    <CompanyTextField
+                        value={this.props.currentDescription}
+                        label='Company description'
+                        ref="desc"
+                        multiLine={true}
+                        rows={3}
+                        rowsMax={5}
+                        fullWidth={true}
+                        onChange={this.handleDescription}
+                    /><br />
+                    <AutoComplete
+                        filter={AutoComplete.fuzzyFilter}
+                        floatingLabelText="Admin"
+                        dataSource={dataSource}
+                        dataSourceConfig={dataSourceConfig}
+                        onNewRequest={this.handleAdmin}
+                        searchText={this.props.currentAdmin}
+                        onFocus={this.getAdminList}
+                        openOnFocus={true}
+                        onChange={this.handleAdmin}
+                        ref="admin"
+                    />
+                </Dialog>
+                {button}
+            </div>
         );
     }
 }

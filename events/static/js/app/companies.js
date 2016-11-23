@@ -18,12 +18,9 @@ export default class CompaniesList extends React.Component {
         this.state = {
             companies: [],
             searchCompanies: [],
-            open: false,
 
         };
         this.loadCompanies = this.loadCompanies.bind(this);
-        this.newCompanyHandler = this.newCompanyHandler.bind(this);
-        this.handleCompanyClose = this.handleCompanyClose.bind(this);
         this.handleAdminClick = this.handleAdminClick.bind(this);
         this.newDataHandler = this.newDataHandler.bind(this);
 
@@ -64,18 +61,6 @@ export default class CompaniesList extends React.Component {
                     searchCompanies: response.data.companies,
                 });
             })
-    }
-
-    newCompanyHandler() {
-        this.setState({
-            open: true
-        });
-    }
-
-    handleCompanyClose() {
-        this.setState({
-            open: false
-        });
     }
 
     handleCompanyClick(id) {
@@ -136,18 +121,10 @@ export default class CompaniesList extends React.Component {
                     >
                         <div className="members-header">Companies</div>
                         {CompanyList}
-                        <div className="add-users-button">
-                            <RaisedButton
-                                label="Add new company"
-                                primary={true}
-                                onTouchTap={this.newCompanyHandler}
-                            />
-                        </div>
+
                         <AddCompaniesWindow
                             url="api/v1/companies/"
                             method="POST"
-                            open={this.state.open}
-                            handleCompanyClose={this.handleCompanyClose}
                             newDataHandler={this.newDataHandler}
                         />
                     </Paper>
