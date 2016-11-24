@@ -1,7 +1,7 @@
 import json
-import datetime
+from datetime import datetime
 
-from django.utils.timezone import get_current_timezone
+from django.utils.timezone import utc
 from django.http.response import HttpResponseNotFound, HttpResponseForbidden
 from django.http import JsonResponse, HttpResponse
 from django.views.generic.base import View
@@ -11,18 +11,17 @@ from companies.models import TeamUserAssignment
 from .forms import EventCreateForm
 
 # Var for converting string to datetime
-TZ = get_current_timezone()
+TZ = utc
 FORMAT = '%b %d %Y %I:%M%p'
 
 EVENT_NOT_EXISTS = JsonResponse({"error_message": "Such event does not exists"}, status=404)
 PERMISSION_DENIED = JsonResponse({"error_message": "Permission denied"}, status=403)
 INVALID_PAYLOAD = JsonResponse({"error_message": "Invalid payload"}, status=400)
 
-
 class EventView(View):
-    def get(self, request, pk=None):
+    def get(self, request, event_id=None):
         if request.user.is_authenticated:
-            if not pk:
+            if not event_id:
                 response = []
                 user_id = request.user.id
                 eus = EventUserAssignment.objects.filter(user=user_id)
@@ -30,7 +29,7 @@ class EventView(View):
                 return HttpResponse(json.dumps(response), content_type="application/json")
             else:
                 try:
-                    event = Event.objects.get(pk=pk)
+                    event = Event.objects.get(pk=event_id)
                 except:
                     return HttpResponseNotFound('Does not exist')
                 else:
@@ -39,6 +38,25 @@ class EventView(View):
         else:
             return HttpResponseForbidden('Permission denied')
 
+    def post(self, request):
+        if not request.user.is_authenticated:
+            return PERMISSION_DENIED
+        try:
+            event_data = json.loads(request.body.decode())
+        except:
+            return JsonResponse({"error_message": "Problem with JSON load or decode"}, status=400)
+        user = User.get_by_id(request.user.id)
+        event_data['owner'] = user
+        validation_form = EventCreateForm(event_data)
+        if validation_form.is_valid():
+            event = Event.objects.create(**validation_form.data)
+            try:
+                EventUserAssignment.objects.create(user=user, event=event)
+            except:
+                return JsonResponse({"error_message": "Can not create relation between user and event"}, status=401)
+            return JsonResponse({'message': "Event created successfully"}, status=200)
+        return JsonResponse(json.loads(validation_form.errors.as_json()), status=400) 
+
     def put(self, request, pk):
         try:
             event = Event.objects.get(id=pk)
@@ -46,8 +64,8 @@ class EventView(View):
             return HttpResponseNotFound('Does not exist')
         body_unicode = request.body.decode('utf-8')
         data = json.loads(body_unicode)
-        data["start_date"] = TZ.localize(datetime.datetime.strptime(data["start_date"], FORMAT))
-        data["end_date"] = TZ.localize(datetime.datetime.strptime(data["end_date"], FORMAT))
+        data["start_date"] = TZ.localize(datetime.strptime(data["start_date"], FORMAT))
+        data["end_date"] = TZ.localize(datetime.strptime(data["end_date"], FORMAT))
         form = EventCreateForm(data)
         if form.is_valid():
             for k, v in data.items():
@@ -56,6 +74,18 @@ class EventView(View):
             return HttpResponse('ok')
         else:
             return HttpResponse(json.dumps(form.errors.as_json), content_type="application/json")
+
+    def delete(self, request, event_id):
+        if request.user.is_authenticated:
+            event = Event.get_by_id(event_id)
+            if not event:
+                return HttpResponse(status=204)
+            if event.owner.id != request.user.id:
+                return PERMISSION_DENIED
+            event.delete()
+            return JsonResponse({'message': "Event delete successfully"}, status=200)
+        else:
+            return PERMISSION_DENIED
 
 
 class EventUserAssignmentView(View):
