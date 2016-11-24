@@ -49,8 +49,8 @@ class CompanyView(View):
         if not company_form.is_valid() or errors:
             return JsonResponse({'success': False, 'errors': errors}, status=400)
         new_company_data['admin'] = user
-        Company.objects.create(**new_company_data)
-        return CREATED
+        company = Company.objects.create(**new_company_data)
+        return JsonResponse({Company.to_dict(company)}, status=201)
 
     def put(self, request, company_id):
         company = Company.get_by_id(company_id)
@@ -146,17 +146,7 @@ class TeamView(View):
             name=new_team_data.get('name'),
             company=company
         )
-
-        if new_team_data.get('members'):
-            able_to_add = []
-            for user_id in new_team_data.get('members'):
-                user = User.get_by_id(user_id)
-                if not user:
-                    return INVALID_PAYLOAD
-                able_to_add.append(user)
-            for user in able_to_add:
-                TeamUserAssignment.objects.get_or_create(user=user, team=team)
-        return CREATED
+        return JsonResponse({'team_id': team.id}, status=201)
 
     def put(self, request, company_id, team_id):
         existence_error = TeamView.check_company_team_existence(company_id, team_id)
