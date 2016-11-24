@@ -29,10 +29,9 @@ export default class CreateTeam extends React.Component {
         };
 
         this.handleCreateTeam = event => {
-            axios.post(this.props.url, {name: this.state.teamName})
+            axios.post("/api/v1/companies/"+"2"+"/teams/", {name: this.state.teamName})
                 .then(response => {
-                    console.log(response);
-                    //TODO: redirect
+                    hashHistory.push("/companies/"+"2"+"/teams/" + response.data.team_id)
                 })
                 .catch(error => {
                     console.log(error);
@@ -68,6 +67,7 @@ export default class CreateTeam extends React.Component {
                     >
                         <TextField
                             floatingLabelText="Team name"
+                            maxLength={50}
                             onChange={this.handleInput}
                         />
                     </Dialog>

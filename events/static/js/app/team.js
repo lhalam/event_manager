@@ -43,9 +43,12 @@ export default class Team extends React.Component {
             });
         };
         this.filterMembers = () => {
+            let ignoreSymbols = /[`'’!@#$%^&*()_+=\-/\\|,.~;:?№<>"\s]+/g;
+            let searchText = this.state.searchText.replace(ignoreSymbols, "");
             let searchMembers = [];
             this.state.members.forEach(user => {
-                if((user.first_name + " " + user.last_name).toLowerCase().indexOf(this.state.searchText) != -1)
+                if ((user.first_name + user.last_name).replace(ignoreSymbols, "").toLowerCase().indexOf(searchText) != -1 ||
+                    searchText.length < 2)
                     searchMembers.push(user);
             });
             this.setState({searchMembers: searchMembers});
@@ -109,8 +112,8 @@ export default class Team extends React.Component {
             {"member_to_del": member})
             .then((response) => {
                 this.setState({
-                    members: response.data['members_to_del'],
-                    searchMembers: response.data['members_to_del'],
+                    members: response.data['able_to_add'],
+                    searchMembers: response.data['able_to_add'],
                     openSnackbar: true,
                     message: member.first_name + " " + member.last_name + " removed from the team"
                 }, () => this.filterMembers());
@@ -157,6 +160,7 @@ export default class Team extends React.Component {
                                     value={this.state.changedName}
                                     fullWidth={true}
                                     onChange={this.handleNameEdit}
+                                    maxLength={50}
                                     onBlur={this.handleNameBlur}
                                 />
                             </div>
@@ -166,11 +170,15 @@ export default class Team extends React.Component {
                                     hintText="Search"
                                     onChange={this.handleSearchInput}
                                 />
+                                {
+                                    (!Boolean(this.state.members.length) && <p>this.props.emptyList</p>) ||
+                                    (Boolean(this.state.members.length) &&
+                                     !Boolean(this.state.searchMembers.length) &&
+                                     <p>this.props.emptySearch</p>
+                                    )
+                                }
                             </div>
                             <div className="members-wrap">
-                                {
-                                    !Boolean(this.state.searchMembers.length) && <p>No members in team</p>
-                                }
                                 <List>
                                     {
                                         this.state.searchMembers.map((member, index) => {

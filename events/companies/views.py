@@ -156,7 +156,7 @@ class TeamView(View):
                 able_to_add.append(user)
             for user in able_to_add:
                 TeamUserAssignment.objects.get_or_create(user=user, team=team)
-        return CREATED
+        return JsonResponse({'team_id': team.id}, status=201)
 
     def put(self, request, company_id, team_id):
         existence_error = TeamView.check_company_team_existence(company_id, team_id)
@@ -229,7 +229,7 @@ class TeamUserAssignmentView(View):
                 member_to_del = new_team_members.get('member_to_del')
                 able_to_add = Team.remove_user_from_team(team, User.get_by_id(member_to_del['id']))
 
-                return JsonResponse({'members_to_del': able_to_add}, status=200)
+                return JsonResponse({'able_to_add': able_to_add}, status=200)
         else:
             for user in new_team_members.get('members_to_add'):
                 user = User.get_by_id(user.get('id'))
