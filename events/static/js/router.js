@@ -10,6 +10,7 @@ import Calendar from './app/calendar'
 import EventList from './app/events'
 import Event from './app/event'
 import Team from './app/team'
+import CreateTeam from './app/AddTeamWindow'
 import CompaniesList from './app/companies'
 import Company from './app/Company';
 
@@ -25,6 +26,7 @@ render(
               <Route path = "/companies" component ={ CompaniesList }/>
               <Route path = "/companies/:company_id" component ={ Company }/>
               <Route path = "/companies/:cid/teams/:tid" component ={ Team }/>
+              <Route path = "/test" component ={ CreateTeam }/>
           </Route>
       </Router>, document.getElementById("root")
 );

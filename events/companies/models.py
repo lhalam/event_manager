@@ -1,7 +1,6 @@
 from django.db import models
 from registration.models import User
 
-
 class Company(models.Model):
     name = models.CharField(max_length=50, null=False)
     description = models.TextField(max_length=500, null=True, blank=True)

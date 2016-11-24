@@ -54,11 +54,18 @@ html,body{
     input{
       font-size: 30px !important;
       color: @rule-color !important;
+      padding-bottom: 15px !important;
       ~ div hr:first-child {
         display: none;
       }
       ~ div hr:last-child {
         //border-bottom-color: @rule-color !important;
+      }
+      &:hover {
+        cursor: pointer !important;
+      }
+      &:focus:hover {
+        cursor: text !important;
       }
     }
   }
@@ -90,8 +97,21 @@ html,body{
 
 .add-users-button {
     display: block;
-    max-width: 200px;
-    margin: 20px auto;
+    max-width: 100%;
+    margin: 20px 40px;
+    text-align: right;
+    > div:last-child {
+      display: inline-block;
+    }
+    .delete-button {
+      margin-right: 10px;
+    }
+}
+
+.delete-button {
+  button {
+    background-color: @rule-error !important;
+  }
 }
 .main-container{
   min-height:100%;

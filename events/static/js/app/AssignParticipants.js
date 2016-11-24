@@ -5,6 +5,7 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import Snackbar from 'material-ui/Snackbar';
 import ModalWindow from './ModalWindow'
 
+
 export default class AssignParticipants extends React.Component {
     constructor(props) {
         super(props);
@@ -30,7 +31,6 @@ export default class AssignParticipants extends React.Component {
 
     componentDidMount(){
         this.loadParticipants();
-        setInterval(this.loadParticipants, 20000);
     };
 
     loadParticipants() {
@@ -52,15 +52,14 @@ export default class AssignParticipants extends React.Component {
 
     sendParticipants() {
         let participantsAddCount = this.state.dataToSend['participants'];
-        let sendData = {"members_to_add": this.state.dataToSend['participants']};
-        axios.put(this.props.url, sendData)
+        axios.put(this.props.url, {"members_to_add": participantsAddCount})
             .then(() => {
                 this.props.handleAddUsers(participantsAddCount);
                 var successMessage;
                 if (participantsAddCount.length > 1) {
-                    successMessage = 'Users were successfully added to event'
+                    successMessage = 'Users were '+this.props.snackbarMessage;
                 } else {
-                    successMessage = 'User was successfully added to event'
+                    successMessage = 'User was '+this.props.snackbarMessage;
                 }
                 this.setState({
                     message: successMessage,
@@ -114,10 +113,6 @@ export default class AssignParticipants extends React.Component {
 
     render() {
 
-        const title = 'Add participants';
-        const hintText = 'Start typing participant name...';
-        const noUsersText = 'All possible users were added to this event';
-
         return (
             <MuiThemeProvider>
                 <div>
@@ -149,5 +144,3 @@ export default class AssignParticipants extends React.Component {
         );
     }
 }
-
-

@@ -8,8 +8,6 @@ import blue300 from 'material-ui/styles/colors';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 
-
-
 export default class ModalWindow extends React.Component {
 
     constructor(props) {
