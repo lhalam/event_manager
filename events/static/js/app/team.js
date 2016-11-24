@@ -103,7 +103,7 @@ export default class Team extends React.Component {
                     searchMembers: response.data['able_to_add'],
                     openSnackbar: true,
                     message: member.first_name + " " + member.last_name + " removed from the team"
-                }, () => this.filterMembers());
+                }, this.refs.searchField.filterMembers);
             })
             .catch(error => {
                 alert("Something wrong happend. Please, try again.")
@@ -154,6 +154,7 @@ export default class Team extends React.Component {
                             <Subheader style={{paddingLeft: "40px"}}>Team members</Subheader>
                             <div className="team-members-search">
                                 <SearchField
+                                    ref="searchField"
                                     emptyListMessage="No members in team"
                                     emptySearchMessage="No members with such name"
                                     data={this.state.members}
