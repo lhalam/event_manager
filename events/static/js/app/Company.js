@@ -4,11 +4,8 @@ import { hashHistory } from 'react-router'
 import {Card, CardTitle, CardText, CardActions} from 'material-ui/Card';
 import {List, ListItem} from 'material-ui/List';
 import Avatar from 'material-ui/Avatar';
-import FlatButton from 'material-ui/FlatButton';
 import Subheader from 'material-ui/Subheader';
 import Paper from 'material-ui/Paper';
-import Dialog from 'material-ui/Dialog';
-import Divider from 'material-ui/Divider';
 import TextField from 'material-ui/TextField';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import AddCompanyWindow from './AddCompanyWindow';
@@ -27,9 +24,6 @@ export default class Company extends React.Component {
 
         };
         this.loadCompany = this.loadCompany.bind(this);
-        this.deleteCompany = this.deleteCompany.bind(this);
-        this.handleDialogOpen = this.handleDialogOpen.bind(this);
-        this.handleDialogClose = this.handleDialogClose.bind(this);
         this.newDataHandler = this.newDataHandler.bind(this);
 
         this.handleSearchInput = event => {
@@ -64,29 +58,11 @@ export default class Company extends React.Component {
             });
     }
 
-    deleteCompany() {
-        this.handleDialogClose();
-        axios.delete('api/v1/companies/'+this.state.company['id'])
-            .then(() => {
-                hashHistory.push('/companies')
-            })
-    }
 
     handleTeamClick(team_id, company_id) {
         setTimeout(hashHistory.push('/companies/'+company_id+'/teams/'+team_id), 500)
     }
 
-    handleDialogOpen() {
-        this.setState({
-            open: true
-        });
-    }
-
-    handleDialogClose() {
-        this.setState({
-            open: false
-        });
-    }
 
     newDataHandler(newData) {
         let company = this.state.company;
@@ -128,18 +104,6 @@ export default class Company extends React.Component {
                 );
         }
 
-        const dialogButtons = [
-            <FlatButton
-                keyboardFocused={true}
-                label="cancel"
-                onTouchTap={this.handleDialogClose}
-            />,
-            <FlatButton
-                secondary={true}
-                label="delete"
-                onTouchTap={this.deleteCompany}
-            />
-        ];
         if (companyObject['teams']) {
             teams = this.state.searchTeams.map((team) => {
                 return (
@@ -172,25 +136,6 @@ export default class Company extends React.Component {
 
         );
 
-        const buttons = (
-            <CardActions>
-                <AddCompanyWindow
-                    url={"api/v1/companies/"+this.props.params.company_id+'/'}
-                    method="PUT"
-                    newDataHandler={this.newDataHandler}
-                    currentTitle={companyObject['name']}
-                    currentDescription={companyObject['description']}
-                    currentAdmin={this.adminName}
-                    currentAdminId={this.adminId}
-                />
-                <FlatButton
-                    secondary={true}
-                    label="Delete"
-                    onTouchTap={this.handleDialogOpen}
-                />
-            </CardActions>
-        );
-
         return (
             <MuiThemeProvider>
                 <div className="team-members">
@@ -202,14 +147,17 @@ export default class Company extends React.Component {
                         <div className="paper-element">{companyObject['description']}</div>
                         {admin}
                         {teamList}
-                        <Divider/>
-                        {buttons}
-                        <Dialog
-                            open={this.state.open}
-                            actions={dialogButtons}
-                        >
-                            Are you sure, you want delete this company?
-                        </Dialog>
+                        <div className="button-group">
+                            <AddCompanyWindow
+                                url={"api/v1/companies/"+this.props.params.company_id+'/'}
+                                method="PUT"
+                                newDataHandler={this.newDataHandler}
+                                currentTitle={companyObject['name']}
+                                currentDescription={companyObject['description']}
+                                currentAdmin={this.adminName}
+                                currentAdminId={this.adminId}
+                            />
+                        </div>
                     </Paper>
                 </div>
             </MuiThemeProvider>
