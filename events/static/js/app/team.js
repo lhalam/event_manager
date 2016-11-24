@@ -15,6 +15,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import { hashHistory } from 'react-router';
+import SearchField from './SearchField';
 
 import injectTapEventPlugin from 'react-tap-event-plugin';
 injectTapEventPlugin();
@@ -42,20 +43,7 @@ export default class Team extends React.Component {
                 searchMembers: allMembers
             });
         };
-        this.filterMembers = () => {
-            let ignoreSymbols = /[`'’!@#$%^&*()_+=\-/\\|,.~;:?№<>"\s]+/g;
-            let searchText = this.state.searchText.replace(ignoreSymbols, "");
-            let searchMembers = [];
-            this.state.members.forEach(user => {
-                if ((user.first_name + user.last_name).replace(ignoreSymbols, "").toLowerCase().indexOf(searchText) != -1 ||
-                    searchText.length < 2)
-                    searchMembers.push(user);
-            });
-            this.setState({searchMembers: searchMembers});
-        };
-        this.handleSearchInput = event => {
-            this.setState({searchText: event.target.value.toLowerCase().trim()}, () => this.filterMembers());
-        };
+
         this.handleNameEdit = event => {
             this.setState({changedName: event.target.value});
         };
@@ -166,17 +154,14 @@ export default class Team extends React.Component {
                             </div>
                             <Subheader style={{paddingLeft: "40px"}}>Team members</Subheader>
                             <div className="team-members-search">
-                                <TextField
-                                    hintText="Search"
-                                    onChange={this.handleSearchInput}
+                                <SearchField
+                                    emptyListMessage="No members in team"
+                                    emptySearchMessage="No members with such name"
+                                    data={this.state.members}
+                                    dataSearch={this.state.searchMembers}
+                                    keys={["first_name", "last_name"]}
+                                    handleSearch={searchMembers => this.setState({searchMembers: searchMembers}) }
                                 />
-                                {
-                                    (!Boolean(this.state.members.length) && <p>this.props.emptyList</p>) ||
-                                    (Boolean(this.state.members.length) &&
-                                     !Boolean(this.state.searchMembers.length) &&
-                                     <p>this.props.emptySearch</p>
-                                    )
-                                }
                             </div>
                             <div className="members-wrap">
                                 <List>
