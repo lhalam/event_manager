@@ -90,7 +90,7 @@ export default class Team extends React.Component {
                 });
             })
             .catch(error => {
-                hashHistory.push("/");
+                hashHistory.push("/companies/" + this.props.params.cid);
             });
     }
 
@@ -114,7 +114,7 @@ export default class Team extends React.Component {
         this.handleCloseDialog();
         axios.delete("/api/v1/companies/" + this.props.params.cid + "/teams/" + this.props.params.tid)
             .then(response => {
-                hashHistory.push("/");
+                hashHistory.push("/companies/" + this.props.params.cid);
             })
             .catch(error => {
                 alert("Something wrong happend. Please, try again.");
