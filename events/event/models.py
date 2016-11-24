@@ -2,13 +2,12 @@ from django.db import models
 from registration.models import User
 from django.db.models.fields.related import ManyToManyField
 from django.contrib.postgres.fields import ArrayField
-from django.utils.timezone import utc
+from django.utils.timezone import utc as TZ
 
 from datetime import datetime
 
 
 
-TZ = utc
 
 
 class Event(models.Model):
