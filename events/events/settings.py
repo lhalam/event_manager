@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'registration.apps.RegistrationConfig',
     'event.apps.EventConfig',
     'calendars.apps.CalendarsConfig',
+    'comments.apps.CommentsConfig',
     'companies.apps.CompaniesConfig',
     'static_precompiler',
     'webpack_loader',
