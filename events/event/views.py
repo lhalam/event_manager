@@ -20,21 +20,40 @@ INVALID_PAYLOAD = JsonResponse({"error_message": "Invalid payload"}, status=400)
 
 
 class EventView(View):
-    def get(self, request, pk=None):
+    def get(self, request, event_id=None):
         if not request.user.is_authenticated:
             return PERMISSION_DENIED
-        if not pk:
+        if not event_id:
             user_id = request.user.id
             eus = EventUserAssignment.objects.filter(user=user_id)
             response = [item.event.to_dict() for item in eus]
             return HttpResponse(json.dumps(response), content_type="application/json")
-        event = Event.get_by_id(pk)
+        event = Event.get_by_id(event_id)
         if event:
             response = event.to_dict()
             return HttpResponse(json.dumps(response), content_type="application/json")
         else:
             return EVENT_NOT_EXISTS
-            
+
+    def post(self, request):
+        if not request.user.is_authenticated:
+            return PERMISSION_DENIED
+        try:
+            event_data = json.loads(request.body.decode())
+        except:
+            return JsonResponse({"error_message": "Problem with JSON load or decode"}, status=400)
+        user = User.get_by_id(request.user.id)
+        event_data['owner'] = user
+        validation_form = EventCreateForm(event_data)
+        if validation_form.is_valid():
+            event = Event.objects.create(**validation_form.data)
+            try:
+                EventUserAssignment.objects.create(user=user, event=event)
+            except:
+                return JsonResponse({"error_message": "Can not create relation between user and event"}, status=401)
+            return JsonResponse({'message': "Event created successfully"}, status=200)
+        return JsonResponse(json.loads(validation_form.errors.as_json()), status=400)
+
     def put(self, request, pk):
         try:
             event = Event.objects.get(id=pk)
@@ -52,6 +71,18 @@ class EventView(View):
             return HttpResponse('ok')
         else:
             return HttpResponse(json.dumps(form.errors.as_json), content_type="application/json")
+
+    def delete(self, request, event_id):
+        if request.user.is_authenticated:
+            event = Event.get_by_id(event_id)
+            if not event:
+                return HttpResponse(status=204)
+            if event.owner.id != request.user.id:
+                return PERMISSION_DENIED
+            event.delete()
+            return JsonResponse({'message': "Event delete successfully"}, status=200)
+        else:
+            return PERMISSION_DENIED
 
 
 class EventUserAssignmentView(View):

@@ -15,4 +15,5 @@ urlpatterns = [
     url(r'^api/v1/events/', include('event.urls', namespace='event')),
     url(r'^api/v1/calendars/', include('calendars.urls')),
     url(r'^api/v1/companies/', include('companies.urls', namespace='companies')),
+    url(r'^api/v1/comments/', include('comments.urls', namespace='comments')),
 ]

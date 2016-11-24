@@ -21,7 +21,7 @@ parts/
 sdist/
 var/
 node_modules/
-webpack-stats.json
+webpack-stats.json/
 *.egg-info/
 .installed.cfg
 *.egg
@@ -111,3 +111,6 @@ events/.vscode/
 main.js
 node_modules
 webpack-stats.json
+
+#vscode
+events/.vscode/
