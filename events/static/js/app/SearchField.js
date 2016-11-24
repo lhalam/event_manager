@@ -33,10 +33,10 @@ export default class SearchField extends React.Component {
                     onChange={this.handleSearchInput}
                 />
                 {
-                    (!Boolean(this.props.data.length) && <p>{this.props.emptyListMessage}</p>) ||
+                    (!Boolean(this.props.data.length) && <p className="filter-message">{this.props.emptyListMessage}</p>) ||
                     (Boolean(this.props.data.length) &&
                      !Boolean(this.props.dataSearch.length) &&
-                     <p>{this.props.emptySearchMessage}</p>
+                     <p className="filter-message">{this.props.emptySearchMessage}</p>
                     )
                 }
             </div>

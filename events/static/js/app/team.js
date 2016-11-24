@@ -213,6 +213,7 @@ export default class Team extends React.Component {
                             modal={true}
                             open={this.state.openDialog}
                             onRequestClose={this.handleCloseDialog}
+                            contentClassName="dialog-window"
                         >
                             Are you sure you want delete the team?
                         </Dialog>
