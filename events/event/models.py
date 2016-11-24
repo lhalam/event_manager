@@ -65,6 +65,11 @@ class Event(models.Model):
         data['start_date'] = data['start_date'].timestamp()
         data['end_date'] = data['end_date'].timestamp()
         data['created_date'] = data['created_date'].timestamp()
+        user = User.get_by_id(data['owner'])
+        data['owner'] = {
+            'id': user.id,
+            'username': '{} {}'.format(user.first_name, user.last_name)
+        }
         return data
 
 

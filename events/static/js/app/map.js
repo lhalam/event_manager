@@ -52,7 +52,6 @@ class Map extends React.Component{
         this.initMap()
     }
     render(){
-        console.log(this.props)
         return(
             <div id="map" className="map">
             </div>
