@@ -50,7 +50,7 @@ class CompanyView(View):
             return JsonResponse({'success': False, 'errors': errors}, status=400)
         new_company_data['admin'] = user
         company = Company.objects.create(**new_company_data)
-        return JsonResponse({Company.to_dict(company)}, status=201)
+        return JsonResponse(Company.to_dict(company), status=201)
 
     def put(self, request, company_id):
         company = Company.get_by_id(company_id)

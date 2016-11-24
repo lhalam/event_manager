@@ -82,15 +82,16 @@ export default class AddCompanyWindow extends React.Component {
             'name': this.state.name,
             'description': this.state.description
         };
+
         if (this.props.method == "POST") {
             axios.post(this.props.url, newCompanyData)
                 .then((response) => {
-                    this.props.newDataHandler();
-                    console.log(response.status, response.statusText)
+                    this.props.newDataHandler(response.data['id']);
                 })
                 .catch((error) => {
                     console.log(error.response.status, error.response.statusText)
                 })
+
         } else if (this.props.method == "PUT") {
             axios.put(this.props.url, newCompanyData)
                 .then((response) => {
@@ -99,9 +100,7 @@ export default class AddCompanyWindow extends React.Component {
                     newCompanyData['admin'] = possibleAdmins.filter((userObject) => {
                         return userObject['id'] == admin
                     })[0];
-                    console.log('put_data', newCompanyData);
                     this.props.newDataHandler(newCompanyData);
-                    console.log(response.status, response.statusText);
                 })
                 .catch((error) => {
                     console.log(error.response.status, error.response.statusText)
@@ -190,6 +189,7 @@ export default class AddCompanyWindow extends React.Component {
                     titleStyle={styles.dialogTitle}
                 >
                     <CompanyTextField
+                        length={50}
                         value={this.props.currentTitle}
                         label='Company title'
                         ref="title"
@@ -197,6 +197,7 @@ export default class AddCompanyWindow extends React.Component {
                     />
                     <br/>
                     <CompanyTextField
+                        length={500}
                         value={this.props.currentDescription}
                         label='Company description'
                         ref="desc"

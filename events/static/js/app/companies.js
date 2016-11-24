@@ -20,6 +20,9 @@ export default class CompaniesList extends React.Component {
             searchCompanies: [],
 
         };
+
+        const minSearchTextLength = 2;
+
         this.loadCompanies = this.loadCompanies.bind(this);
         this.handleAdminClick = this.handleAdminClick.bind(this);
         this.newDataHandler = this.newDataHandler.bind(this);
@@ -32,7 +35,7 @@ export default class CompaniesList extends React.Component {
         this.filterCompanies = () => {
             let searchCompanies = [];
             this.state.companies.forEach(company => {
-                if((company.name).toLowerCase().indexOf(this.state.searchText) != -1)
+                if((company.name).toLowerCase().indexOf(this.state.searchText) != -1 || this.state.searchText.length < minSearchTextLength)
                     searchCompanies.push(company);
             });
             this.setState({searchCompanies: searchCompanies});
@@ -43,8 +46,8 @@ export default class CompaniesList extends React.Component {
         event.stopPropagation();
     }
 
-    newDataHandler() {
-        this.loadCompanies()
+    newDataHandler(company_id) {
+        hashHistory.push('/companies/'+company_id)
     }
 
 

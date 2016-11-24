@@ -13,6 +13,7 @@ export default class CompanyTextField extends React.Component {
                 onChange={this.props.onChange}
                 multiLine={this.props.multiLine}
                 rows={this.props.rows}
+                maxLength={this.props.length}
                 rowsMax={this.props.rowsMax}
                 fullWidth={this.props.fullWidth}
             />

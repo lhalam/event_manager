@@ -7,6 +7,7 @@ import Avatar from 'material-ui/Avatar';
 import Subheader from 'material-ui/Subheader';
 import Paper from 'material-ui/Paper';
 import TextField from 'material-ui/TextField';
+import RaisedButton from 'material-ui/RaisedButton';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import AddCompanyWindow from './AddCompanyWindow';
 
@@ -23,6 +24,9 @@ export default class Company extends React.Component {
             openEdit: false
 
         };
+
+        const minSearchTextLength = 2;
+
         this.loadCompany = this.loadCompany.bind(this);
         this.newDataHandler = this.newDataHandler.bind(this);
 
@@ -33,7 +37,7 @@ export default class Company extends React.Component {
         this.filterTeams = () => {
             let searchTeams = [];
             this.state.company.teams.forEach(team => {
-                if((team.name).toLowerCase().indexOf(this.state.searchText) != -1)
+                if((team.name).toLowerCase().indexOf(this.state.searchText) != -1 || this.state.searchText.length < minSearchTextLength)
                     searchTeams.push(team);
             });
             this.setState({searchTeams: searchTeams});
@@ -148,6 +152,10 @@ export default class Company extends React.Component {
                         {admin}
                         {teamList}
                         <div className="button-group">
+                            <RaisedButton
+                                label="Add new team"
+                                primary="true"
+                            />
                             <AddCompanyWindow
                                 url={"api/v1/companies/"+this.props.params.company_id+'/'}
                                 method="PUT"
