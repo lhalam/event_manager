@@ -5,11 +5,10 @@ import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import Paper from 'material-ui/Paper';
 import Chip from 'material-ui/Chip';
 import Avatar from 'material-ui/Avatar';
-import RaisedButton from 'material-ui/RaisedButton';
 import AddCompaniesWindow from './AddCompanyWindow';
 import {List, ListItem} from 'material-ui/List';
 import { hashHistory } from 'react-router'
-import TextField from 'material-ui/TextField';
+import SearchField from './SearchField';
 
 
 export default class CompaniesList extends React.Component {
@@ -21,25 +20,10 @@ export default class CompaniesList extends React.Component {
 
         };
 
-        const minSearchTextLength = 2;
-
         this.loadCompanies = this.loadCompanies.bind(this);
         this.handleAdminClick = this.handleAdminClick.bind(this);
         this.newDataHandler = this.newDataHandler.bind(this);
 
-
-        this.handleSearchInput = event => {
-            this.setState({searchText: event.target.value.toLowerCase().trim()}, () => this.filterCompanies());
-        };
-
-        this.filterCompanies = () => {
-            let searchCompanies = [];
-            this.state.companies.forEach(company => {
-                if((company.name).toLowerCase().indexOf(this.state.searchText) != -1 || this.state.searchText.length < minSearchTextLength)
-                    searchCompanies.push(company);
-            });
-            this.setState({searchCompanies: searchCompanies});
-        };
     }
 
     handleAdminClick(event) {
@@ -58,7 +42,6 @@ export default class CompaniesList extends React.Component {
     loadCompanies() {
         axios.get('api/v1/companies')
             .then((response) => {
-                console.log(response.data);
                 this.setState({
                     companies: response.data.companies,
                     searchCompanies: response.data.companies,
@@ -105,10 +88,15 @@ export default class CompaniesList extends React.Component {
         const CompanyList = (
                 <div className="companies-list">
                     <div className="team-members-search">
-                        <TextField
-                            hintText="Search"
-                            onChange={this.handleSearchInput}
-                        />
+                        <SearchField
+                        ref="searchField"
+                        emptyListMessage="No companies"
+                        emptySearchMessage="No companies with such title"
+                        data={this.state.companies}
+                        dataSearch={this.state.searchCompanies}
+                        keys={['name']}
+                        handleSearch={searchMembers => this.setState({searchCompanies: searchMembers}) }
+                    />
                     </div>
                     <div className="members-wrap">
                         <List>

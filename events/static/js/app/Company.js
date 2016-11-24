@@ -6,10 +6,10 @@ import {List, ListItem} from 'material-ui/List';
 import Avatar from 'material-ui/Avatar';
 import Subheader from 'material-ui/Subheader';
 import Paper from 'material-ui/Paper';
-import TextField from 'material-ui/TextField';
-import RaisedButton from 'material-ui/RaisedButton';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import AddCompanyWindow from './AddCompanyWindow';
+import CreateTeam from './AddTeamWindow';
+import SearchField from './SearchField';
 
 
 export default class Company extends React.Component {
@@ -18,6 +18,7 @@ export default class Company extends React.Component {
         super(props);
         this.state = {
             company: [],
+            teams: [],
             searchTeams: [],
             error: '',
             open: false,
@@ -25,37 +26,21 @@ export default class Company extends React.Component {
 
         };
 
-        const minSearchTextLength = 2;
-
         this.loadCompany = this.loadCompany.bind(this);
         this.newDataHandler = this.newDataHandler.bind(this);
-
-        this.handleSearchInput = event => {
-            this.setState({searchText: event.target.value.toLowerCase().trim()}, () => this.filterTeams());
-        };
-
-        this.filterTeams = () => {
-            let searchTeams = [];
-            this.state.company.teams.forEach(team => {
-                if((team.name).toLowerCase().indexOf(this.state.searchText) != -1 || this.state.searchText.length < minSearchTextLength)
-                    searchTeams.push(team);
-            });
-            this.setState({searchTeams: searchTeams});
-        };
     }
 
     loadCompany() {
         axios.get('api/v1/companies/'+this.props.params.company_id)
             .then((response) => {
-                console.log(response.data);
                 this.setState({
                     company: response.data,
-                    searchTeams: response.data.teams
+                    searchTeams: response.data.teams,
+                    teams: response.data.teams
                 });
 
             })
             .catch((error) => {
-                console.log(error.response);
                 this.setState({
                     error: error.response
                 });
@@ -125,10 +110,15 @@ export default class Company extends React.Component {
             <div className="team-list">
                 <Subheader><div className="subheader">Teams</div></Subheader>
                 <div className="team-members-search">
-                <TextField
-                    hintText="Search"
-                    onChange={this.handleSearchInput}
-                />
+                    <SearchField
+                        ref="searchField"
+                        emptyListMessage="No teams in company"
+                        emptySearchMessage="No teams with such title"
+                        data={this.state.teams}
+                        dataSearch={this.state.searchTeams}
+                        keys={['name']}
+                        handleSearch={searchMembers => this.setState({searchTeams: searchMembers}) }
+                    />
                 </div>
                 <div className="members-wrap">
                     <List>
@@ -152,9 +142,9 @@ export default class Company extends React.Component {
                         {admin}
                         {teamList}
                         <div className="button-group">
-                            <RaisedButton
+                            <CreateTeam
                                 label="Add new team"
-                                primary="true"
+                                url={"/companies/"+this.props.params.company_id+"/teams/"}
                             />
                             <AddCompanyWindow
                                 url={"api/v1/companies/"+this.props.params.company_id+'/'}

@@ -7,13 +7,15 @@ export default class SearchField extends React.Component {
         this.state = {
             searchText: ""
         };
+        this.minQueryLength = 2;
         this.filterMembers = () => {
             let ignoreSymbols = /[`'’!@#$%^&*()_+=\-/\\|,.~;:?№<>"\s]+/g;
             let searchText = this.state.searchText.replace(ignoreSymbols, "");
             let searchMembers = [];
             this.props.data.forEach(item => {
+                if (this.props.keys.length == 1) {this.props.keys.unshift("")}
                 if ((this.props.keys.reduce((prev, cur) => { return item[prev] + item[cur] })).replace(ignoreSymbols, "").toLowerCase().indexOf(searchText) != -1 ||
-                    searchText.length < 2)
+                    searchText.length < this.minQueryLength)
                     searchMembers.push(item);
             });
             this.props.handleSearch(searchMembers);
@@ -25,7 +27,7 @@ export default class SearchField extends React.Component {
 
     render(){
         return (
-            <div className="serch-field">
+            <div className="search-field">
                 <TextField
                     hintText="Search"
                     onChange={this.handleSearchInput}

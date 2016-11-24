@@ -263,9 +263,16 @@ body footer {
 .team-members .members-header input {
   font-size: 30px !important;
   color: #fff !important;
+  padding-bottom: 15px !important;
 }
 .team-members .members-header input ~ div hr:first-child {
   display: none;
+}
+.team-members .members-header input:hover {
+  cursor: pointer !important;
+}
+.team-members .members-header input:focus:hover {
+  cursor: text !important;
 }
 .team-members > div:first-child {
   padding-bottom: 10px;
@@ -288,8 +295,18 @@ body footer {
 }
 .add-users-button {
   display: block;
-  max-width: 200px;
-  margin: 20px auto;
+  max-width: 100%;
+  margin: 20px 40px;
+  text-align: right;
+}
+.add-users-button > div:last-child {
+  display: inline-block;
+}
+.add-users-button .delete-button {
+  margin-right: 10px;
+}
+.delete-button button {
+  background-color: #f44336 !important;
 }
 .main-container {
   min-height: 100%;
@@ -315,6 +332,19 @@ body footer {
   color: #e0e1e2;
   font-size: 13px;
 }
+.dialog-window {
+  margin: 0 auto !important;
+  max-width: 500px !important;
+  width: 100% !important;
+}
+.dialog-window label {
+  font-weight: normal;
+}
+.dialog-title {
+  background-color: #0097a7 !important;
+  color: #fff !important;
+  font-size: 30px !important;
+}
 .outer-div {
   display: inline;
   min-width: 200px;
@@ -323,4 +353,11 @@ body footer {
 }
 .outer-div .inner-div {
   float: left;
+}
+.avatar {
+  background-color: #0097a7 !important;
+  color: #fff !important;
+}
+.chip-input {
+  padding-top: 20px !important;
 }

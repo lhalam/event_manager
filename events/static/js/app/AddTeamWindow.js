@@ -29,17 +29,18 @@ export default class CreateTeam extends React.Component {
         };
 
         this.handleCreateTeam = event => {
-            axios.post("/api/v1/companies/"+"2"+"/teams/", {name: this.state.teamName})
+            axios.post('api/v1'+this.props.url, {name: this.state.teamName})
                 .then(response => {
-                    hashHistory.push("/companies/"+"2"+"/teams/" + response.data.team_id)
+                    hashHistory.push(this.props.url + response.data.team_id)
                 })
                 .catch(error => {
-                    console.log(error);
+                    alert(error.response.status + ' ' + error.response.statusText);
                 });
         }
     }
 
     render(){
+
         const actions = [
             <FlatButton
                 label="Cancel"
@@ -56,9 +57,15 @@ export default class CreateTeam extends React.Component {
 
         return (
             <MuiThemeProvider muiTheme={getMuiTheme()}>
-                <div>
-                    <RaisedButton label="Dialog" onTouchTap={this.handleOpen} />
+                <div style={{display: 'inline-block'}}>
+                    <RaisedButton
+                        label={this.props.label}
+                        onTouchTap={this.handleOpen}
+                        primary={true}
+                    />
                     <Dialog
+                        contentClassName={"dialog-window"}
+                        titleClassName={"dialog-title"}
                         title="Create team"
                         actions={actions}
                         modal={false}

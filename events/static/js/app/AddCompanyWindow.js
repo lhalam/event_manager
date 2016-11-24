@@ -70,13 +70,12 @@ export default class AddCompanyWindow extends React.Component {
                 if (possible_admins.length == 0) {
                     this.setState({
                         possible_admins: response.data['possible_admins']
-                    }, () => console.log(this.state.possible_admins));
+                    });
                 }
             });
     }
 
     sendCompanyData() {
-        console.log(this.state.admin, typeof (this.state.admin));
         let newCompanyData = {
             'admin': this.state.admin,
             'name': this.state.name,
@@ -89,12 +88,12 @@ export default class AddCompanyWindow extends React.Component {
                     this.props.newDataHandler(response.data['id']);
                 })
                 .catch((error) => {
-                    console.log(error.response.status, error.response.statusText)
+                    alert(error.response.status+ ' ' + error.response.statusText);
                 })
 
         } else if (this.props.method == "PUT") {
             axios.put(this.props.url, newCompanyData)
-                .then((response) => {
+                .then(() => {
                     let admin = newCompanyData['admin'];
                     let possibleAdmins = this.state.possible_admins;
                     newCompanyData['admin'] = possibleAdmins.filter((userObject) => {
@@ -103,7 +102,7 @@ export default class AddCompanyWindow extends React.Component {
                     this.props.newDataHandler(newCompanyData);
                 })
                 .catch((error) => {
-                    console.log(error.response.status, error.response.statusText)
+                    alert(error.response.status + ' ' + error.response.statusText);
                 })
         }
         this.handleCompanyClose();
@@ -148,20 +147,6 @@ export default class AddCompanyWindow extends React.Component {
             );
         }
 
-        const styles = {
-
-            dialogTitle: {
-                backgroundColor: 'rgb(0, 151, 167)',
-                color: '#f9f9f9',
-                fontSize: '30px'
-            },
-            dialogRoot: {
-                margin: '0 auto',
-                maxWidth: '500px',
-                width: '100%'
-            }
-        };
-
             const standardActions = [
                 <FlatButton
                     label="Cancel"
@@ -183,10 +168,10 @@ export default class AddCompanyWindow extends React.Component {
             <div style={{display: 'inline'}}>
                 <Dialog
                     open={this.state.open}
-                    contentStyle={styles.dialogRoot}
                     actions={standardActions}
                     title={dialogTitle}
-                    titleStyle={styles.dialogTitle}
+                    contentClassName={"dialog-window"}
+                    titleClassName={"dialog-title"}
                 >
                     <CompanyTextField
                         length={50}

@@ -60,26 +60,9 @@ export default class ModalWindow extends React.Component {
         );
 
         const styles = {
-            dialogTitle: {
-                backgroundColor: 'rgb(0, 151, 167)',
-                color: '#f9f9f9',
-                fontSize: '30px'
-            },
-            dialogRoot: {
-                margin: '0 auto',
-                maxWidth: '500px',
-                width: '100%'
-            },
-            dialogBody: {
-                paddingTop: '20px',
-            },
             dialogBodyMenuStyle: {
                 maxHeight: '200px'
             },
-            avatar: {
-                backgroundColor: 'rgb(0, 151, 167)',
-                color: '#f9f9f9',
-            }
         };
 
         const defaultChipRenderer = ({ value, isFocused, isDisabled, handleClick, handleRequestDelete }, key) => (
@@ -90,7 +73,7 @@ export default class ModalWindow extends React.Component {
                onTouchTap={handleClick}
                onRequestDelete={handleRequestDelete}
             >
-               <Avatar style={styles.avatar} size={32}>{value[0].toUpperCase()}</Avatar>
+               <Avatar className={'avatar'} size={32}>{value[0].toUpperCase()}</Avatar>
                {value}
            </Chip>);
 
@@ -100,8 +83,8 @@ export default class ModalWindow extends React.Component {
                     <Dialog
                         open={this.props.open}
                         title={this.props.title}
-                        titleStyle={styles.dialogTitle}
-                        contentStyle={styles.dialogRoot}
+                        contentClassName={"dialog-window"}
+                        titleClassName={"dialog-title"}
                         actions={standardActions}
                         onRequestClose={this.handleRequestClose}
                     >
@@ -115,7 +98,7 @@ export default class ModalWindow extends React.Component {
                             onRequestAdd={this.handleAddChip}
                             onRequestDelete={this.handleDeleteChip}
                             openOnFocus={true}
-                            style={styles.dialogBody}
+                            className="chip-input"
                             menuStyle = {styles.dialogBodyMenuStyle}
                         />
                     </Dialog>
@@ -125,7 +108,7 @@ export default class ModalWindow extends React.Component {
             return (
                 <MuiThemeProvider>
                     <Dialog
-                        contentStyle={styles.dialogRoot}
+                        contentClassName="dialog-window"
                         actions={alertActions}
                         open={this.props.open}
                         onRequestClose={this.handleRequestClose}
