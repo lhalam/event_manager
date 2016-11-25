@@ -4,14 +4,25 @@ import Map from './map'
 import Avatar from 'material-ui/Avatar';
 import {List, ListItem} from 'material-ui/List';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import AssignParticipants from './AssignParticipants';
 
 
 
 class Event extends React.Component{
     constructor(props){
         super(props);
-        this.state = ({events: {}})
+        this.state = ({events: {}});
+        this.handleAddUsers = this.handleAddUsers.bind(this);
     }
+
+    handleAddUsers(users) {
+        let event = this.state.events;
+        let allUsers = this.state.events[0]['participants'].slice();
+        allUsers.push.apply(allUsers, users.map((userObj) => userObj['username']));
+        event[0]['participants'] = allUsers;
+        this.setState({events: event});
+    };
+
     componentDidMount(){
         const url = '/api/v1/events/' + this.props.params.event_id
         axios.get(url) 
@@ -71,6 +82,14 @@ class Event extends React.Component{
                         </List>
                     </div>                               
                     </div>
+                         <AssignParticipants
+                            handleAddUsers={this.handleAddUsers}
+                            url={"/api/v1/events/"+this.props.params.event_id+"/user_assignment/"}
+                            title='Add participants'
+                            hintText='Start typing participant name...'
+                            noUsersText='All possible users were added to this event.'
+                            snackbarMessage="successfully added to event"
+                        />
                 </div>
                 </MuiThemeProvider>
             )
