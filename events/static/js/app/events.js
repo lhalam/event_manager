@@ -1,4 +1,5 @@
 import Map from './map'
+import DialogExampleSimple from './event_form';
 import {Container, Row, Col} from 'react-grid-system';
 import {Link} from 'react-router';
 
@@ -24,16 +25,22 @@ class EventList extends React.Component{
                 <Map events={this.state.events} geo={true} zoom={6}/>
                 <div className="event-list-wrapper">
                     {this.state.events.map(function(event){
-                        return <Link to={`/events/${event.id}`}>
-                        <EventItem key={event.id} event={event}/></Link>
+                        return(
+                                <Link key={event.id} to={`/events/${event.id}`}>
+                                    <EventItem event={event}/>
+                                </Link>
+                        )
+                        
                     })}
                 </div>
+                <DialogExampleSimple />
             </div>
         )
         }else{
             return(
                 <div>
                     Events does not exist
+                    <DialogExampleSimple />
                 </div>
             )
         }
@@ -57,8 +64,11 @@ class EventItem extends React.Component{
                         {this.props.event.place}
                     </div>
                 </Col>
-                <Col xs={3}>Users</Col>
-                
+                <Col xs={3}>
+                    <Link to={this.props.event.owner.id}>
+                        {this.props.event.owner.username}
+                    </Link>
+                </Col>
                 <Col xs={3}>
                     {this.props.event.start_date}
                 </Col>

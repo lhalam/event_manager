@@ -55,13 +55,15 @@ class Event extends React.Component{
                             maxHeight: '216px',
                             overflow: 'auto',
                         }}>
-                            {event[0].participants.map((user) => {
+                            {event[0].participants.map((user, index) => {
                                 return (
-                                <ListItem style={{
+                                <ListItem key={index} style={{
                                     float: 'left',
                                     maxWidth: '400px',
                                 }}>
-                                    <Avatar style={{marginRight: 10}} size={32}>{user[0].toUpperCase()}</Avatar>
+                                    <Avatar style={{marginRight: 10}} 
+                                            size={32}>{user[0].toUpperCase()}
+                                    </Avatar>
                                     {user}
                                 </ListItem>
                                 );
