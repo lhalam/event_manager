@@ -41,9 +41,9 @@ INSTALLED_APPS = [
     'calendars.apps.CalendarsConfig',
     'comments.apps.CommentsConfig',
     'companies.apps.CompaniesConfig',
+    'votings.apps.VotingsConfig',
     'static_precompiler',
     'webpack_loader',
-
 ]
 
 MIDDLEWARE = [
