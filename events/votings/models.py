@@ -8,7 +8,7 @@ from registration.models import User
 class Voting(models.Model):
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True)
-    voting_end = models.DateTimeField(blank=False)
+    end_date = models.DateTimeField(blank=False)
     type = models.CharField(max_length=20, blank=False)
     creation_date = models.DateTimeField(auto_now_add=True)
     event = models.ForeignKey(
