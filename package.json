@@ -38,6 +38,7 @@
     "axios": "^0.15.2"
   },
   "dependencies": {
+    "material-ui-chip-input": "^0.10.0",
     "moment": "^2.16.0",
     "react-grid-system": "^1.5.2"
   }

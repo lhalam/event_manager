@@ -1,5 +1,6 @@
 import Map from './map'
-import DialogExampleSimple from './event_form';
+import CreateEventDialog from './new-event-form.js';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import {Container, Row, Col} from 'react-grid-system';
 import {Link} from 'react-router';
 
@@ -21,6 +22,7 @@ class EventList extends React.Component{
     render(){
         if (this.state.events[0]){
             return(
+            <MuiThemeProvider>
             <div>
                 <Map events={this.state.events} geo={true} zoom={6}/>
                 <div className="event-list-wrapper">
@@ -33,14 +35,14 @@ class EventList extends React.Component{
                         
                     })}
                 </div>
-                <DialogExampleSimple />
+                <CreateEventDialog />
             </div>
+            </MuiThemeProvider>
         )
         }else{
             return(
                 <div>
                     Events does not exist
-                    <DialogExampleSimple />
                 </div>
             )
         }
@@ -65,9 +67,9 @@ class EventItem extends React.Component{
                     </div>
                 </Col>
                 <Col xs={3}>
-                    <Link to={this.props.event.owner.id}>
+                    <p>
                         {this.props.event.owner.username}
-                    </Link>
+                    </p>
                 </Col>
                 <Col xs={3}>
                     {this.props.event.start_date}
