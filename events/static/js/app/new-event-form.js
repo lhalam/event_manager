@@ -3,10 +3,13 @@ import axios from 'axios'
 
 import FloatingActionButton from 'material-ui/FloatingActionButton';
 import ContentAdd from 'material-ui/svg-icons/content/add';
+import DatePicker from 'material-ui/DatePicker';
+import TimePicker from 'material-ui/TimePicker';
 import TextField from 'material-ui/TextField';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
+import {Container, Row, Col} from 'react-grid-system';
 
 
 
@@ -24,61 +27,84 @@ class Form extends React.Component{
         description: ''
       }
     )
-    this.handleCreateNewEvent = this.handleCreateNewEvent.bind(this)
+    this.handleFormSubmit = this.handleFormSubmit.bind(this)
+    this.handleChangeTime = this.handleChangeTime.bind(this)
   }
-  handleCreateNewEvent(){
+  handleFormSubmit(){
     axios.post('/api/v1/events/', this.state)
     .then(function(response){
       document.location.href += `/${response.data}`
     })
   }
+  handleChangeTime(event, value){
+    console.log(event)
+    console.log(value)
+  }
+  componentDidUpdate(){
+    console.log(this.props)
+  }
   render(){
+
     return(
-      <form>
-        <TextField
-          hintText="Title"
-          floatingLabelText="Title"
-          floatingLabelFixed={false}
-          value={this.state.title}
-          onInput={(e)=>this.setState({title: e.target.value})}
-        /><br/>
-        <TextField
-          hintText="Start Date"
-          floatingLabelText="Start Date"
-          floatingLabelFixed={false}
-          value={this.state.start_date}
-          onInput={(e)=>this.setState({start_date: e.target.value})}
-        /><br/>
-        <TextField
-          hintText="End Date"
-          floatingLabelText="End Date"
-          floatingLabelFixed={false}
-          value={this.state.end_date}
-          onInput={(e)=>this.setState({end_date: e.target.value})}
-        /><br/>
-        <TextField
-          hintText="Description"
-          floatingLabelText="Fixed Floating Label Text"
-          floatingLabelFixed={false}
-          value={this.state.description}
-          onInput={(e)=>this.setState({description: e.target.value})}
-        /><br/>
-        <TextField
-          hintText="Location"
-          floatingLabelText="Location"
-          floatingLabelFixed={false}
-          value={this.state.location}
-          onInput={(e)=>this.setState({location: e.target.value})}
-        /><br/>
-        <TextField
-          hintText="Place"
-          floatingLabelText="Place"
-          floatingLabelFixed={false}
-          value={this.state.place}
-          onInput={(e)=>this.setState({place: e.target.value})}
-        /><br/>
-        <input type="button" onClick={this.handleCreateNewEvent} value="Create"/>
-      </form>
+      <div>
+        <form>
+          <TextField
+            floatingLabelText="Title*"
+            floatingLabelFixed={false}
+            value={this.state.title}
+            floatingLabelStyle={{fontWeight: 'normal'}}
+            onInput={(e)=>this.setState({title: e.target.value})}
+          /><br/>
+          <div className="date_time_wrapper">
+              <TimePicker
+                format="24hr"
+                hintText="Start Time*"
+                textFieldStyle={{width: '100px', float: 'right'}}
+                ref="start_time"
+                onChange={this.handleChangeTime}
+              />
+              <DatePicker
+                    hintText="Start Date*"
+                    textFieldStyle={{width: '100px'}}
+                    onChange={this.handleChangeTime}
+              />
+          </div>
+          <div className="date_time_wrapper">
+              <TimePicker
+                    format="24hr"
+                    hintText="End Time*"
+                    textFieldStyle={{width: '100px', float: 'right'}}
+              />
+              <DatePicker
+                    hintText="End Date*"
+                    textFieldStyle={{width: '100px'}}
+              />
+          </div>
+          <TextField
+            floatingLabelText="Location*"
+            floatingLabelFixed={false}
+            value={this.state.location}
+            onInput={(e)=>this.setState({location: e.target.value})}
+          /><br/>
+          <TextField
+            floatingLabelText="Place*"
+            floatingLabelFixed={false}
+            value={this.state.place}
+            onInput={(e)=>this.setState({place: e.target.value})}
+          /><br/>
+          <TextField
+            hintText="Description"
+            multiLine={true}
+            rows={3}
+            rowsMax={10}
+            onInput={(e)=>this.setState({description: e.target.value})}
+          /><br />
+        </form>
+        <div className="form-button">
+          <FlatButton label="Cancel" primary={true} onClick={this.props.handleClose}/>
+          <RaisedButton label="Submit" primary={true} onClick={this.handleFormSubmit}/>
+      </div>
+      </div>
     )
   }
 }
@@ -100,29 +126,12 @@ export default class CreateEventDialog extends React.Component {
     this.setState({open: false});
   };
   render() {
-
-    const actions = [
-      <FlatButton
-        label="Cancel"
-        primary={true}
-        onTouchTap={this.handleClose}
-      />,
-      <FlatButton
-        label="Submit"
-        primary={true}
-        keyboardFocused={false}
-        onTouchTap={this.handleClose}
-        disabled={true}
-      />,
-    ];
-
     return (
       <div>
         <FloatingActionButton onTouchTap={this.handleOpen} className="add_button_wrapper">
           <ContentAdd/>
         </FloatingActionButton>
         <Dialog
-          actions={actions}
           modal={false}
           open={this.state.open}
           title="New Event"
@@ -132,7 +141,7 @@ export default class CreateEventDialog extends React.Component {
           bodyClassName="modal-body"
           bodyStyle={{minHeight: '500px'}}
         >
-          <Form />
+          <Form handleClose={this.handleClose}/>
         </Dialog>
       </div>
     );
