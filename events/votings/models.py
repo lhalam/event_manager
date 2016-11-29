@@ -113,9 +113,9 @@ class Choice(models.Model):
         }
 
     @staticmethod
-    def get_by_id(choice_id):
+    def get_by_id_voting(choice_id, voting):
         try:
-            return Choice.objects.get(pk=choice_id)
+            return voting.choices.all().get(pk=choice_id)
         except Choice.DoesNotExist:
             return None
 

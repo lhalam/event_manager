@@ -82,6 +82,8 @@ class VotingView(View):
                 choice_error = VotingView._validate_date(key, error, choice_json)
             if voting_data['type'] == 'place':
                 choice_error = VotingView._validate_place(key, error, choice_json)
+            if voting_data['type'] == 'custom':
+                choice_error = VotingView._validate_custom(key, error, choice_json)
             if choice_error:
                 choice_errors.update(choice_error)
         return choice_errors
@@ -135,6 +137,13 @@ class VotingView(View):
             return error
 
     @staticmethod
+    def _validate_custom(key, error, choice_json):
+        if 'value' not in choice_json.keys() or not choice_json['value']:
+            error[key].append("'value' is required.")
+        if error[key]:
+            return error
+
+    @staticmethod
     def _prepare_data(i, choice):
         key = 'choice #{}'.format(i + 1)
         error = {key: []}
@@ -147,13 +156,15 @@ class ChoiceView(View):
     def post(self, request, event_id, voting_id, choice_id):
         user = User.get_by_id(request.user.id)
         event = Event.get_by_id(event_id)
-        if not EventUserAssignment.get_by_event_user(event, user):
-            return PERMISSION_DENIED
         voting = Voting.get_by_id(voting_id)
+        if not EventUserAssignment.get_by_event_user(event, user) or not voting:
+            return PERMISSION_DENIED
+        choice = Choice.get_by_id_voting(choice_id, voting)
+        if not choice:
+            return PERMISSION_DENIED
         obj, created = VotingUserAssignment.objects.get_or_create(user=user, voting=voting)
         if not created:
             return PERMISSION_DENIED
-        choice = Choice.get_by_id(choice_id)
         ChoiceUserAssignment.objects.create(user=user, choice=choice)
         choice.votes_count = ChoiceUserAssignment.objects.filter(choice=choice).__len__()
         choice.save()
