@@ -49,6 +49,7 @@ class RegistrationView(View):
                 email=registration_data.get('email'),
                 is_active=False,
                 password=registration_data.get('password'),
+                birth_date=datetime.fromtimestamp(float(registration_data.get('birth_date'))).strftime('%Y-%m-%d')
             )
 
             EmailSender.send_registration_confirm(user)
