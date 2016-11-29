@@ -7,9 +7,6 @@ from django.utils.timezone import utc as TZ
 from datetime import datetime
 
 
-
-
-
 class Event(models.Model):
     title = models.CharField(max_length=200)
     start_date = models.DateTimeField(blank=False)
@@ -79,4 +76,7 @@ class EventUserAssignment(models.Model):
 
     @staticmethod
     def get_by_event_user(event, user):
-        return EventUserAssignment.objects.filter(user=user, event=event)
+        try:
+            return EventUserAssignment.objects.filter(user=user, event=event)
+        except EventUserAssignment.DoesNotExist:
+            return None

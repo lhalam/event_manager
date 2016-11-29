@@ -9,9 +9,9 @@ class VotingModelAdmin(admin.ModelAdmin):
 
 
 class ChoiceModelAdmin(admin.ModelAdmin):
-    list_display = ['date']
-    list_display_links = ['date']
-    search_fields = ['date']
+    list_display = ['id']
+    list_display_links = ['id']
+    search_fields = ['id']
 
 
 class VotingUserAssignmentModelAdmin(admin.ModelAdmin):
