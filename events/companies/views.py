@@ -1,7 +1,6 @@
 import json
 
 from django.views.generic.base import View
-from django.forms import model_to_dict
 from django.http import HttpResponse, JsonResponse
 
 from .forms import CompanyForm, TeamForm
@@ -113,7 +112,13 @@ class TeamView(View):
                 'id': team.pk,
                 'name': team.name,
                 'company': company.name,
-                'members': Team.get_members(team)[:4]
+                'members': Team.get_members(team)[:4],
+                'admin': {
+                    'id': team.admin.id,
+                    'username': team.admin.username,
+                    'first_name': team.admin.first_name,
+                    'last_name': team.admin.last_name,
+                }
             } for team in company.teams.all()]
             return JsonResponse(response, safe=False, status=200)
 
@@ -128,7 +133,13 @@ class TeamView(View):
             'id': team.pk,
             'name': team.name,
             'company': company.name,
-            'members': Team.get_members(team)
+            'members': Team.get_members(team),
+            'admin': {
+                'id': team.admin.id,
+                'username': team.admin.username,
+                'first_name': team.admin.first_name,
+                'last_name': team.admin.last_name,
+            }
         }
         return JsonResponse(response, status=200)
 
@@ -140,12 +151,19 @@ class TeamView(View):
             return PERMISSION_DENIED
         new_team_data = json.loads(request.body.decode())
         team_form = TeamForm(new_team_data)
-        if not team_form.is_valid():
+        errors = team_form.errors
+        if 'admin' not in errors.keys():
+            admin_error = TeamView.validate_team_admin(company, User.get_by_id(new_team_data.get('admin')))
+            if admin_error:
+                errors['admin'] = [admin_error]
+        if not team_form.is_valid() or errors:
             return JsonResponse({'success': False, 'errors': team_form.errors}, status=400)
         team = Team.objects.create(
             name=new_team_data.get('name'),
-            company=company
+            company=company,
+            admin_id=new_team_data.get('admin')
         )
+        TeamUserAssignment.objects.get_or_create(team=team, user_id=new_team_data.get('admin'))
         return JsonResponse({'team_id': team.id}, status=201)
 
     def put(self, request, company_id, team_id):
@@ -157,9 +175,15 @@ class TeamView(View):
             return PERMISSION_DENIED
         upd_team_data = json.loads(request.body.decode())
         team_form = TeamForm(upd_team_data)
-        if not team_form.is_valid():
+        errors = team_form.errors
+        if 'admin' not in errors.keys():
+            admin_error = TeamView.validate_team_admin(company, User.get_by_id(upd_team_data.get('admin')), team_id)
+            if admin_error:
+                errors['admin'] = [admin_error]
+        if not team_form.is_valid() or errors:
             return JsonResponse({'success': False, 'errors': team_form.errors}, status=400)
         Team.objects.filter(pk=team_id).update(**upd_team_data)
+        TeamUserAssignment.objects.get_or_create(team_id=team_id, user_id=upd_team_data.get('admin'))
         return CREATED
 
     def delete(self, request, company_id, team_id):
@@ -182,8 +206,41 @@ class TeamView(View):
             return TEAM_NOT_EXISTS
         return None
 
+    @staticmethod
+    def validate_team_admin(company, admin, team_id=None):
+        try:
+            if team_id:
+                if Team.objects.get(admin_id=admin.id).id != int(team_id):
+                    return 'This user is already admin of another team'
+            else:
+                if Team.objects.get(admin_id=admin.id):
+                    return 'This user is already admin of another team'
+        except Team.DoesNotExist:
+            pass
+        for company in Company.objects.exclude(pk=company.id):
+            for team in company.teams.all():
+                if TeamUserAssignment.get_by_user_team(admin, team=team):
+                    return 'This user is member of another company'
+
 
 class TeamUserAssignmentView(View):
+    def get(self, request, company_id, team_id):
+        members = []
+        team = Team.get_by_id(team_id)
+        if not team:
+            return TEAM_NOT_EXISTS
+        users = TeamUserAssignmentView.get_users_to_add_list(team, company_id)
+        for user in TeamUserAssignmentView.get_users_to_add_list(team, company_id):
+            user_object = {
+                "id": user.id,
+                "first_name": user.first_name,
+                "last_name": user.last_name,
+                "username": user.username
+            }
+            members.append(user_object)
+
+        return JsonResponse({"participants": members}, status=200)
+
     def put(self, request, company_id, team_id):
         existence_error = TeamView.check_company_team_existence(company_id, team_id)
         if existence_error:
@@ -202,12 +259,12 @@ class TeamUserAssignmentView(View):
                 member_to_del = new_team_members.get('member_to_del')
                 able_to_add = Team.remove_user_from_team(team, User.get_by_id(member_to_del['id']))
 
-                return JsonResponse({'members_to_del': able_to_add}, status=200)
+                return JsonResponse({'able_to_add': able_to_add}, status=200)
         else:
-            for user in new_team_members.get('members'):
+            for user in new_team_members.get('members_to_add'):
+                user = User.get_by_id(user.get('id'))
                 if user not in possible_users:
                     return INVALID_PAYLOAD
-                user = User.get_by_id(user.id)
                 able_to_add.append(user)
             for user in able_to_add:
                 TeamUserAssignment.objects.get_or_create(user=user, team=team)
@@ -225,6 +282,7 @@ class TeamUserAssignmentView(View):
                 for member in team.members.all():
                     if member not in users_not_to_add:
                         users_not_to_add.append(member)
+
         return [
             user for user in User.get_all_users()
             if user not in team_members and user not in users_not_to_add
