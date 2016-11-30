@@ -4,15 +4,14 @@ from datetime import datetime
 from datetime import timedelta
 from companies.models import TeamUserAssignment, Team
 
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 from django.template.loader import render_to_string
 from django.core.mail import send_mail
-
-from django.utils import timezone
 
 from events import settings
 
 BIRTHDAY_EVENT__LINK = settings.HOST_NAME + '/#/events/'
+
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
@@ -25,14 +24,13 @@ class Command(BaseCommand):
                 participants.add(team.company.admin.username)
                 event = Event.objects.create(
                     title=user.first_name + "'s " + user.last_name + ' Birth Day',
-                    start_date = (datetime.now().timestamp()),
-                    end_date = ((datetime.now() + timedelta(days=7)).timestamp()),
-                    location = '49.562831, 25.522138',
-                    place = 'Some place',
-                    description = user.first_name + "'s" + user.last_name + ' Birth Day. It`s time to colect some money.',
-                    owner = User.get_by_id(5)
+                    start_date=(datetime.now().timestamp()),
+                    end_date=((datetime.now() + timedelta(days=7)).timestamp()),
+                    location='49.562831, 25.522138',
+                    place='Some place',
+                    description=user.first_name + "'s" + user.last_name + ' Birth Day. It`s time to colect some money.',
+                    owner=team.admin
                 );
-                print(User.objects.get(pk=5).to_dict())
                 try:
                     for participant in participants:
                         EventUserAssignment.objects.create(user=User.objects.get(username=participant), event=event)
