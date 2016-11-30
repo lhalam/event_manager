@@ -78,6 +78,13 @@ class VotingUserAssignment(models.Model):
         except VotingUserAssignment.DoesNotExist:
             return False
 
+    @staticmethod
+    def get_by_user_voting_id(user_id, voting_id):
+        try:
+            return VotingUserAssignment.objects.get(user_id=user_id, voting_id=voting_id)
+        except VotingUserAssignment.DoesNotExist:
+            return None
+
 
 class Choice(models.Model):
     voting = models.ForeignKey(
@@ -123,3 +130,10 @@ class Choice(models.Model):
 class ChoiceUserAssignment(models.Model):
     choice = models.ForeignKey(Choice, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    @staticmethod
+    def get_by_user_choice_id(user_id, choice_id):
+        try:
+            return ChoiceUserAssignment.objects.get(user_id=user_id, choice_id=choice_id)
+        except ChoiceUserAssignment.DoesNotExist:
+            return None

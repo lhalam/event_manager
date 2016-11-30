@@ -19,12 +19,12 @@ class VotingView(View):
             response = [voting.to_dict(request.user) for voting in event.votings.all()]
             if not response:
                 return HttpResponse(status=404)
-            return JsonResponse({"{} votings".format(event.title): response}, status=200)
+            return JsonResponse({"votings": response}, status=200)
 
         voting = Voting.get_by_id(voting_id)
         if not voting:
             return HttpResponse(status=404)
-        return JsonResponse({"{} voting".format(event.title): voting.to_dict(request.user)})
+        return JsonResponse({"voting": voting.to_dict(request.user)})
 
     def delete(self, request, event_id, voting_id):
         voting = Voting.get_by_id(voting_id)
@@ -169,3 +169,12 @@ class ChoiceView(View):
         choice.votes_count = ChoiceUserAssignment.objects.filter(choice=choice).__len__()
         choice.save()
         return JsonResponse({"success": True}, status=200)
+
+    def delete(self, request, event_id, voting_id, choice_id):
+        vote = ChoiceUserAssignment.get_by_user_choice_id(request.user.id, choice_id)
+        voting = VotingUserAssignment.get_by_user_voting_id(request.user.id, Voting.get_by_id(voting_id))
+        if not vote or not voting:
+            return PERMISSION_DENIED
+        vote.delete()
+        voting.delete()
+        return NO_CONTENT
