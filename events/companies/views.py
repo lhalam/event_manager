@@ -289,7 +289,7 @@ class TeamUserAssignmentView(View):
             ]
 
 
-class AdminAssignView(View):
+class CompanyAdminAssignView(View):
     def get(self, request, company_id=None):
         possible_admins = []
         if not company_id:
@@ -308,4 +308,36 @@ class AdminAssignView(View):
             'last_name': user.last_name,
         } for user in User.get_all_users() if not Company.get_user_company(user) or
                                 company == Company.get_user_company(user)])
+        return JsonResponse({'possible_admins': possible_admins}, status=200)
+
+
+class TeamAdminAssignView(View):
+
+    def get(self, request, company_id, team_id=None):
+        company = Company.get_by_id(company_id)
+        if not company:
+            return COMPANY_NOT_EXISTS
+        possible_admins = []
+        if not team_id:
+            possible_admins.extend([{
+                'id': user.id,
+                'username': user.username,
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+            } for user in User.get_all_users() if not Company.get_user_company(user)])
+            for team in company.teams.all():
+                possible_admins.extend([{
+                    'id': user.id,
+                    'username': user.username,
+                    'first_name': user.first_name,
+                    'last_name': user.last_name,
+                } for user in team.members.all() if user != team.admin])
+            return JsonResponse({'possible_admins': possible_admins}, status=200)
+        team = Team.get_by_id(team_id)
+        possible_admins.extend([{
+            'id': user.id,
+            'username': user.username,
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+        } for user in team.members.all() if user not in [team.admin for team in company.teams.exclude(pk=team_id)]])
         return JsonResponse({'possible_admins': possible_admins}, status=200)
