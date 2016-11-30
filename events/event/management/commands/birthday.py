@@ -11,6 +11,7 @@ from django.core.mail import send_mail
 from events import settings
 
 BIRTHDAY_EVENT__LINK = settings.HOST_NAME + '/#/events/'
+DEFAULT_LOCATION = '0,0'
 
 
 class Command(BaseCommand):
@@ -20,15 +21,15 @@ class Command(BaseCommand):
                 participants = set()
                 for member in Team.get_members(team):
                     if member != user.username:
-                        participants.add(member)
+                        participants.add(member.get('username'))
                 participants.add(team.company.admin.username)
                 event = Event.objects.create(
-                    title=user.first_name + "'s " + user.last_name + ' Birth Day',
+                    title=user.first_name + '`s ' + user.last_name + ' Birth Day',
                     start_date=(datetime.now().timestamp()),
                     end_date=((datetime.now() + timedelta(days=7)).timestamp()),
-                    location='49.562831, 25.522138',
-                    place='Some place',
-                    description=user.first_name + "'s" + user.last_name + ' Birth Day. It`s time to colect some money.',
+                    location=DEFAULT_LOCATION,
+                    place=team.company.name,
+                    description=user.first_name + '`s' + user.last_name + ' Birth Day. It`s time to colect some money.',
                     owner=team.admin
                 );
                 try:
@@ -39,4 +40,3 @@ class Command(BaseCommand):
                 subject = 'Birtday Event'
                 message = render_to_string('birthday.txt', {'link': BIRTHDAY_EVENT__LINK + str(event.id), 'event': event.title})
                 sent = send_mail(subject, message, settings.EMAIL_HOST_USER, participants)
-                print(sent)
