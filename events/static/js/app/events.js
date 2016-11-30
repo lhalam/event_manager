@@ -41,9 +41,11 @@ class EventList extends React.Component{
         )
         }else{
             return(
+                <MuiThemeProvider>
                 <div>
-                    Events does not exist
+                    <CreateEventDialog />
                 </div>
+                </MuiThemeProvider>
             )
         }
             

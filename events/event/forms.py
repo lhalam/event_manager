@@ -35,5 +35,5 @@ class EventCreateForm(forms.ModelForm):
     def clean_end_date(self):
         start_date = self.cleaned_data.get('start_date')
         end_date = self.cleaned_data.get('end_date')
-        if float(end_date) - float(start_date) < 60 * 60:
+        if float(end_date) - float(start_date) < 60 * 15:
             raise forms.ValidationError("End date cannot be earlier than Start date")

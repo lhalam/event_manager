@@ -1,6 +1,5 @@
 import React from 'react'
 import axios from 'axios'
-
 import FloatingActionButton from 'material-ui/FloatingActionButton';
 import ContentAdd from 'material-ui/svg-icons/content/add';
 import DatePicker from 'material-ui/DatePicker';
@@ -10,6 +9,8 @@ import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
 import {Container, Row, Col} from 'react-grid-system';
+import Map from './map';
+
 
 
 
@@ -20,15 +21,16 @@ class Form extends React.Component{
     this.state = (
       {
         title: '',
-        start_date: '',
-        end_date: '',
+        start_date: new Date().getTime()/1000,
+        end_date: new Date().getTime()/1000,
         location: '',
         place: '',
         description: ''
       }
     )
     this.handleFormSubmit = this.handleFormSubmit.bind(this)
-    this.handleChangeTime = this.handleChangeTime.bind(this)
+    this.handleStartDateUpdate = this.handleDateUpdate.bind(this)
+    this.handleStartTimeUpdate = this.handleTimeUpdate.bind(this)
   }
   handleFormSubmit(){
     axios.post('/api/v1/events/', this.state)
@@ -36,15 +38,22 @@ class Form extends React.Component{
       document.location.href += `/${response.data}`
     })
   }
-  handleChangeTime(event, value){
-    console.log(event)
-    console.log(value)
+  handleDateUpdate(value, date){
+    let date_time = new Date(date*1000)
+    date_time.setFullYear(value.getFullYear())
+    date_time.setMonth(value.getMonth())
+    date_time.setDate(value.getDate())
+    return date_time.getTime()/1000
   }
-  componentDidUpdate(){
-    console.log(this.props)
+  handleTimeUpdate(value, date){
+    let date_time = new Date(date* 1000)
+    date_time.setHours(value.getHours())
+    date_time.setMinutes(value.getMinutes())
+    date_time.setSeconds(0)
+    date_time.setMilliseconds(0)
+    return date_time.getTime() /1000
   }
   render(){
-
     return(
       <div>
         <form>
@@ -61,31 +70,27 @@ class Form extends React.Component{
                 hintText="Start Time*"
                 textFieldStyle={{width: '100px', float: 'right'}}
                 ref="start_time"
-                onChange={this.handleChangeTime}
+                onChange={(event, value, date=this.state.start_date)=>this.setState({start_date: this.handleTimeUpdate(value, date)})}
               />
               <DatePicker
-                    hintText="Start Date*"
-                    textFieldStyle={{width: '100px'}}
-                    onChange={this.handleChangeTime}
+                hintText="Start Date*"
+                textFieldStyle={{width: '100px'}}
+                onChange={(event, value, date=this.state.start_date)=>this.setState({start_date: this.handleDateUpdate(value, date)})}
               />
           </div>
           <div className="date_time_wrapper">
               <TimePicker
-                    format="24hr"
-                    hintText="End Time*"
-                    textFieldStyle={{width: '100px', float: 'right'}}
+                format="24hr"
+                hintText="End Time*"
+                textFieldStyle={{width: '100px', float: 'right'}}
+                onChange={(event, value, date=this.state.end_date)=>this.setState({end_date: this.handleTimeUpdate(value, date)})}
               />
               <DatePicker
-                    hintText="End Date*"
-                    textFieldStyle={{width: '100px'}}
+                hintText="End Date*"
+                textFieldStyle={{width: '100px'}}
+                onChange={(event, value, date=this.state.end_date)=>this.setState({end_date: this.handleDateUpdate(value, date)})}
               />
           </div>
-          <TextField
-            floatingLabelText="Location*"
-            floatingLabelFixed={false}
-            value={this.state.location}
-            onInput={(e)=>this.setState({location: e.target.value})}
-          /><br/>
           <TextField
             floatingLabelText="Place*"
             floatingLabelFixed={false}
@@ -99,6 +104,9 @@ class Form extends React.Component{
             rowsMax={10}
             onInput={(e)=>this.setState({description: e.target.value})}
           /><br />
+          <div>
+            <Map />
+          </div>
         </form>
         <div className="form-button">
           <FlatButton label="Cancel" primary={true} onClick={this.props.handleClose}/>
@@ -137,7 +145,7 @@ export default class CreateEventDialog extends React.Component {
           title="New Event"
           titleClassName="event_form_header"
           onRequestClose={this.handleClose}
-          contentStyle={{marginTop: '-50px', width:'450px'}}
+          contentStyle={{marginTop: '-50px', width:'400px'}}
           bodyClassName="modal-body"
           bodyStyle={{minHeight: '500px'}}
         >
