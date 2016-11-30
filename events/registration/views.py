@@ -1,9 +1,6 @@
 import json
-import time
+import time, datetime
 
-from datetime import datetime
-
-from django.core.exceptions import PermissionDenied
 from django.views import View
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
@@ -16,7 +13,7 @@ from .forms import RegistrationForm
 from events import settings
 
 CONFIRM_LINK = settings.HOST_NAME + '/registration/confirm/'
-
+MIN_BIRTH_DATE = time.mktime((datetime.datetime.now().date()+datetime.timedelta(days=-356*100)).timetuple())
 
 class EmailSender(object):
     @staticmethod
@@ -38,9 +35,10 @@ class RegistrationView(View):
         registration_data = json.loads(body_unicode)
         registration_form = RegistrationForm(registration_data)
         errors = registration_form.errors
-        if float(registration_data['birth_date']) > time.time():
+        birth_date = float(registration_data.get('birth_date'))
+        if birth_date > time.time() or birth_date < MIN_BIRTH_DATE:
             errors['birth_date'] = ['Birth date is not valid']
-
+        print(datetime.datetime.fromtimestamp(int(birth_date)).strftime('%Y-%m-%d'))
         if registration_form.is_valid() and not errors:
             user = User.objects.create_user(
                 username=registration_data.get('email'),

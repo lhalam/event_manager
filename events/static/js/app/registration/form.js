@@ -36,7 +36,10 @@ export default class Form extends React.Component {
                 {formIsValid: this.validateForm()})
             })
         };
-        this.handleEmail = this.handleEmail.bind(this);
+        this.handleEmail = (value) => {this.setState({email: value, email_error: ""}, () => {this.setState(
+                {formIsValid: this.validateForm()})
+            })
+        };
         this.handlePassword = (value) => {this.setState({password: value}, () => {this.setState(
                 {formIsValid: this.validateForm()})
             })
@@ -92,35 +95,6 @@ export default class Form extends React.Component {
                 this.refs.birth_date.props.validator(this.state.birth_date));
     }
 
-    handleEmail(value) {
-        this.setState({
-            email: value,
-            email_error: ""
-        }, () => {
-            this.setState({formIsValid: this.validateForm()});
-            if (this.validateEmail(value)) {
-                let registration_data = {
-                    first_name: "",
-                    last_name: "",
-                    email: this.state.email,
-                    password: "",
-                    birth_date: ""
-                };
-                registration_data["birth_date"] = new Date("01/01/1997").getTime() / MILLISECONDS;
-                axios.post(this.props.url, registration_data)
-                    .catch((error) => {
-                        if (error.response) {
-                            if (error.response.data.errors.email)
-                                this.setState({
-                                    email_error: error.response.data.errors.email[0]
-                                }, () => this.setState({formIsValid: this.validateForm()}));
-                        }
-                    });
-            }
-        }
-        );
-    }
-
     handleSubmit(event){
         event.preventDefault();
         let registration_data = Object.assign({}, this.state);
@@ -135,7 +109,13 @@ export default class Form extends React.Component {
             .then((response) => this.props.handleSubmit(response.data.message, ""))
             .catch((error) => {
                 if(error.response){
-                    this.props.handleSubmit("", "Oops, something went wrong. Please try again later or contact support.")
+                    if (error.response.data.errors.email) {
+                        this.setState({
+                            email_error: error.response.data.errors.email[0]
+                        }, () => this.setState({formIsValid: this.validateForm()}));
+                    }
+                    else
+                        this.props.handleSubmit("", "Oops, something went wrong. Please try again later or contact support.")
                 }
             });
     }
@@ -170,8 +150,8 @@ export default class Form extends React.Component {
                                          errorEmpty="Email is required"
                                          errorRepeat={this.state.email_error}
                                          validator={this.validateEmail}
-                                         handleChange={this.handleEmail}
                                          value={this.state.email}
+                                         handleChange={this.handleEmail}
                                          type="email"
                                          ref="email"
                         />
