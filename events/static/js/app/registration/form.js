@@ -24,6 +24,7 @@ export default class Form extends React.Component {
             password: "",
             password_confirm: "",
             birth_date: "",
+            birth_date_error: "",
             response_errors: {},
             formIsValid: false,
         };
@@ -48,8 +49,10 @@ export default class Form extends React.Component {
                 {formIsValid: this.validateForm()})
             })
         };
-        this.handleBirthDate = (value) => {this.setState({birth_date: value}, () => {this.setState(
-                {formIsValid: this.validateForm()})
+        this.handleBirthDate = (value) => {this.setState({birth_date: value}, () => {
+                this.setState({
+                    formIsValid: this.validateForm()
+                });
             })
         };
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -59,6 +62,7 @@ export default class Form extends React.Component {
         this.validatePassword = this.validatePassword.bind(this);
         this.checkPasswordRules = this.checkPasswordRules.bind(this);
         this.validatePasswordConfirm = this.validatePasswordConfirm.bind(this);
+        this.validateBirthDate = this.validateBirthDate.bind(this);
     }
 
     validateNotEmpty(value){
@@ -75,6 +79,15 @@ export default class Form extends React.Component {
 
     validatePasswordConfirm(value) {
         return value && this.state.password == value;
+    }
+
+    validateBirthDate(value) {
+        let maxDate = new Date();
+        value = new Date(value);
+        maxDate.setFullYear(maxDate.getFullYear() - 18);
+        let date = new Date(value.getMonth() + "/" + value.getDate() + "/" + value.getFullYear()).getTime();
+        maxDate = new Date(maxDate.getMonth() + "/" + maxDate.getDate() + "/" + maxDate.getFullYear()).getTime();
+        return date <= maxDate;
     }
 
     checkPasswordRules(value){
@@ -126,9 +139,6 @@ export default class Form extends React.Component {
                 <Paper className="registration_container" zDepth={3}>
                     <p className="registration-form-header">Sign Up</p>
                     <form className="registration_form">
-                        {
-                            Boolean(Object.values(this.state.response_errors).length)
-                        }
                         <FloatLabelField title="First name"
                                          errorMessage="First name is required"
                                          validator={this.validateNotEmpty}
@@ -180,8 +190,8 @@ export default class Form extends React.Component {
                         />
 
                         <DateField title="Birth date"
-                                   errorEmpty="Birth date is required"
-                                   validator={this.validateNotEmpty}
+                                   errorEmpty="Your age must be 18 years or older"
+                                   validator={this.validateBirthDate}
                                    handleChange={this.handleBirthDate}
                                    value={this.state.birth_date}
                                    ref="birth_date"
