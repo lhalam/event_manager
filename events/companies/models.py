@@ -49,6 +49,13 @@ class Company(models.Model):
             return first_instance.team.company
         return None
 
+    @staticmethod
+    def is_admin(user):
+        try:
+            return Company.objects.get(admin=user)
+        except :
+            return False
+
 
 class Team(models.Model):
     name = models.CharField(max_length=50, null=False)

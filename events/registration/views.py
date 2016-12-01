@@ -13,18 +13,7 @@ from django.shortcuts import redirect, reverse, render
 
 from .models import User, RegistrationConfirm
 from .forms import RegistrationForm
-from events import settings
-
-CONFIRM_LINK = settings.HOST_NAME + '/registration/confirm/'
-
-
-class EmailSender(object):
-    @staticmethod
-    def send_registration_confirm(user):
-        confirm = RegistrationConfirm.objects.create(user=user)
-        subject = 'Confirm registration'
-        message = render_to_string('email.txt', {'link': CONFIRM_LINK + str(confirm.hash_code), 'name': user.first_name})
-        return send_mail(subject, message, settings.EMAIL_HOST_USER, [user.email]) == 1
+from utils.EmailService import EmailSender
 
 
 class RegistrationView(View):

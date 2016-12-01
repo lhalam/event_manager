@@ -20,8 +20,7 @@ class User(BaseUser):
             'id': self.id,
             'username': self.username,
             'first_name': self.first_name,
-            'last_name': self.last_name,
-            'birth_date': self.birth_date
+            'last_name': self.last_name
         }
         
     @classmethod

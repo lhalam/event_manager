@@ -43,7 +43,7 @@ INSTALLED_APPS = [
     'companies.apps.CompaniesConfig',
     'static_precompiler',
     'webpack_loader',
-
+    'utils',
 ]
 
 MIDDLEWARE = [
