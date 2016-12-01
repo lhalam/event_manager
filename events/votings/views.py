@@ -61,7 +61,7 @@ class VotingView(View):
             end_date=voting_data['end_date']
         )
         for choice in voting_data['choices']:
-            voting.choices.create(value=choice, voting=voting)
+            voting.choices.create(value=choice.replace("\'", "\""), voting=voting)
         return CREATED
 
     @staticmethod
@@ -166,15 +166,19 @@ class ChoiceView(View):
         if not created:
             return PERMISSION_DENIED
         ChoiceUserAssignment.objects.create(user=user, choice=choice)
-        choice.votes_count = ChoiceUserAssignment.objects.filter(choice=choice).__len__()
+        choice.votes_count = len(ChoiceUserAssignment.objects.filter(choice=choice))
         choice.save()
         return JsonResponse({"success": True}, status=200)
 
     def delete(self, request, event_id, voting_id, choice_id):
-        vote = ChoiceUserAssignment.get_by_user_choice_id(request.user.id, choice_id)
-        voting = VotingUserAssignment.get_by_user_voting_id(request.user.id, Voting.get_by_id(voting_id))
-        if not vote or not voting:
+        choice_assign = ChoiceUserAssignment.get_by_user_choice_id(request.user.id, choice_id)
+        voting = Voting.get_by_id(voting_id)
+        voting_assign = VotingUserAssignment.get_by_user_voting_id(request.user.id, Voting.get_by_id(voting_id))
+        if not choice_assign or not voting_assign:
             return PERMISSION_DENIED
-        vote.delete()
-        voting.delete()
+        choice_assign.delete()
+        voting_assign.delete()
+        choice = Choice.get_by_id_voting(choice_id, voting)
+        choice.votes_count = len(ChoiceUserAssignment.objects.filter(choice_id=choice_id))
+        choice.save()
         return NO_CONTENT
