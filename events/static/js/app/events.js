@@ -1,5 +1,5 @@
 import Map from './map'
-import CreateEventDialog from './new-event-form.js';
+import CreateEventDialog from './NewEventForm';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import {Container, Row, Col} from 'react-grid-system';
 import {Link} from 'react-router';

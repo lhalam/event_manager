@@ -64,6 +64,7 @@
   right: 3%;
   bottom: 5%;
   z-index: 500;
+  margin-bottom: 100px;
 }
 .event_form_header {
   padding: 0px;
@@ -75,4 +76,27 @@
   line-height: 75px;
   padding-left: 40px;
   color: #ffffff !important;
+}
+.modal-body {
+  margin: 0px auto;
+  max-width: 450px;
+  min-width: 300px;
+  font-weight: normal;
+  padding: 50px 50px 50px 50px;
+  border-radius: 3px;
+  position: relative;
+  padding: 0px;
+}
+.modal-body form {
+  padding-left: 45px;
+  font-weight: normal;
+}
+.modal-body form label {
+  font-weight: normal;
+}
+.modal-body .form-button {
+  float: right;
+}
+.date_time_wrapper {
+  width: 256px;
 }

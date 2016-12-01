@@ -21,16 +21,17 @@ class Form extends React.Component{
     this.state = (
       {
         title: '',
-        start_date: new Date().getTime()/1000,
-        end_date: new Date().getTime()/1000,
+        start_date: "",
+        end_date: "",
         location: '',
         place: '',
         description: ''
       }
-    )
+    );
     this.handleFormSubmit = this.handleFormSubmit.bind(this)
     this.handleStartDateUpdate = this.handleDateUpdate.bind(this)
     this.handleStartTimeUpdate = this.handleTimeUpdate.bind(this)
+    this.setLocation = this.setLocation.bind(this)
   }
   handleFormSubmit(){
     axios.post('/api/v1/events/', this.state)
@@ -43,7 +44,7 @@ class Form extends React.Component{
     date_time.setFullYear(value.getFullYear())
     date_time.setMonth(value.getMonth())
     date_time.setDate(value.getDate())
-    return date_time.getTime()/1000
+    return String(date_time.getTime()/1000)
   }
   handleTimeUpdate(value, date){
     let date_time = new Date(date* 1000)
@@ -51,7 +52,13 @@ class Form extends React.Component{
     date_time.setMinutes(value.getMinutes())
     date_time.setSeconds(0)
     date_time.setMilliseconds(0)
-    return date_time.getTime() /1000
+    return String(date_time.getTime() /1000)
+  }
+  setLocation(address, location){
+    this.setState({place: address, location: `${location.lat()},${location.lng()}`})
+  }
+  componentDidUpdate(){
+    console.log(this)
   }
   render(){
     return(
@@ -63,18 +70,19 @@ class Form extends React.Component{
             value={this.state.title}
             floatingLabelStyle={{fontWeight: 'normal'}}
             onInput={(e)=>this.setState({title: e.target.value})}
+            style={{width: '100%'}}
           /><br/>
           <div className="date_time_wrapper">
               <TimePicker
                 format="24hr"
                 hintText="Start Time*"
-                textFieldStyle={{width: '100px', float: 'right'}}
+                textFieldStyle={{width: '175px', float: 'right'}}
                 ref="start_time"
                 onChange={(event, value, date=this.state.start_date)=>this.setState({start_date: this.handleTimeUpdate(value, date)})}
               />
               <DatePicker
                 hintText="Start Date*"
-                textFieldStyle={{width: '100px'}}
+                textFieldStyle={{width: '175px'}}
                 onChange={(event, value, date=this.state.start_date)=>this.setState({start_date: this.handleDateUpdate(value, date)})}
               />
           </div>
@@ -82,31 +90,25 @@ class Form extends React.Component{
               <TimePicker
                 format="24hr"
                 hintText="End Time*"
-                textFieldStyle={{width: '100px', float: 'right'}}
+                textFieldStyle={{width: '175px', float: 'right'}}
                 onChange={(event, value, date=this.state.end_date)=>this.setState({end_date: this.handleTimeUpdate(value, date)})}
               />
               <DatePicker
                 hintText="End Date*"
-                textFieldStyle={{width: '100px'}}
+                textFieldStyle={{width: '175px'}}
                 onChange={(event, value, date=this.state.end_date)=>this.setState({end_date: this.handleDateUpdate(value, date)})}
               />
           </div>
           <TextField
-            floatingLabelText="Place*"
-            floatingLabelFixed={false}
-            value={this.state.place}
-            onInput={(e)=>this.setState({place: e.target.value})}
-          /><br/>
-          <TextField
-            hintText="Description"
+            hintText="Description*"
             multiLine={true}
-            rows={3}
-            rowsMax={10}
+            rows={1}
+            rowsMax={3}
             onInput={(e)=>this.setState({description: e.target.value})}
+            style={{width: '100%'}}
           /><br />
-          <div>
-            <Map />
-          </div>
+          <input id="pac-input" className="controls" type="text" placeholder="Address"/>
+          <Map new={true} setLocation={this.setLocation}/>
         </form>
         <div className="form-button">
           <FlatButton label="Cancel" primary={true} onClick={this.props.handleClose}/>
@@ -145,9 +147,9 @@ export default class CreateEventDialog extends React.Component {
           title="New Event"
           titleClassName="event_form_header"
           onRequestClose={this.handleClose}
-          contentStyle={{marginTop: '-50px', width:'400px'}}
+          contentStyle={{marginTop: '-60px', width:'515px'}}
           bodyClassName="modal-body"
-          bodyStyle={{minHeight: '500px'}}
+          bodyStyle={{minHeight: '515px'}}
         >
           <Form handleClose={this.handleClose}/>
         </Dialog>
