@@ -48,7 +48,7 @@ class Voting(models.Model):
             "creation_date": self.creation_date,
             "seconds_left": self.end_date.timestamp()-time.time(),
             "type": self.type,
-            "choices": [choice.to_dict() for choice in self.choices.all()],
+            "choices": [choice.to_dict(user) for choice in self.choices.all()],
             "voters": voters,
             "voted": VotingUserAssignment.check_vote(user, self),
             "votes": VotingUserAssignment.objects.filter(voting=self).__len__()
@@ -105,18 +105,20 @@ class Choice(models.Model):
     value = models.TextField(blank=False)
     creation_date = models.DateTimeField(auto_now_add=True)
 
-    def to_dict(self):
+    def to_dict(self, user):
         voters = [{
             'id': vote.user.id,
             'username': vote.user.username,
             'first_name': vote.user.first_name,
             'last_name': vote.user.last_name
         } for vote in ChoiceUserAssignment.objects.filter(choice=self)]
+        voted = ChoiceUserAssignment.check_vote(user, self)
         return {
             "id": self.pk,
             "votes": self.votes_count,
             "value": self.value,
-            "voters": voters
+            "voters": voters,
+            "voted": voted
         }
 
     @staticmethod
@@ -130,6 +132,14 @@ class Choice(models.Model):
 class ChoiceUserAssignment(models.Model):
     choice = models.ForeignKey(Choice, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    @staticmethod
+    def check_vote(user, choice):
+        try:
+            ChoiceUserAssignment.objects.get(user=user, choice=choice)
+            return True
+        except ChoiceUserAssignment.DoesNotExist:
+            return False
 
     @staticmethod
     def get_by_user_choice_id(user_id, choice_id):
