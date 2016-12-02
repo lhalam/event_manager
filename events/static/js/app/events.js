@@ -55,15 +55,16 @@ class EventList extends React.Component{
 
 class EventItem extends React.Component{
     render(){
-        const url = '#/events/' + this.props.event.id 
+        const date = new Date(this.props.event.start_date * 1000)
+        const url = `#/events/${this.props.event.id}`
         return(
             <div className="event-item-wrapper">
-                <Col xs={4}>
+                <Col xs={3}>
                     <div className="event-title">
                         {this.props.event.title}
                     </div>
                 </Col>
-                <Col xs={2}>
+                <Col xs={3}>
                     <div>
                         {this.props.event.place}
                     </div>
@@ -74,7 +75,7 @@ class EventItem extends React.Component{
                     </p>
                 </Col>
                 <Col xs={3}>
-                    {this.props.event.start_date}
+                    {date.toDateString()}, {date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                 </Col>
             </div>
         )

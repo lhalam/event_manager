@@ -58,7 +58,7 @@ class Form extends React.Component{
     this.setState({place: address, location: `${location.lat()},${location.lng()}`})
   }
   componentDidUpdate(){
-    console.log(this)
+    console.log(this.state)
   }
   render(){
     return(
@@ -76,13 +76,13 @@ class Form extends React.Component{
               <TimePicker
                 format="24hr"
                 hintText="Start Time*"
-                textFieldStyle={{width: '175px', float: 'right'}}
+                textFieldStyle={{width: '210px', float: 'right'}}
                 ref="start_time"
                 onChange={(event, value, date=this.state.start_date)=>this.setState({start_date: this.handleTimeUpdate(value, date)})}
               />
               <DatePicker
                 hintText="Start Date*"
-                textFieldStyle={{width: '175px'}}
+                textFieldStyle={{width: '210px'}}
                 onChange={(event, value, date=this.state.start_date)=>this.setState({start_date: this.handleDateUpdate(value, date)})}
               />
           </div>
@@ -90,12 +90,12 @@ class Form extends React.Component{
               <TimePicker
                 format="24hr"
                 hintText="End Time*"
-                textFieldStyle={{width: '175px', float: 'right'}}
+                textFieldStyle={{width: '210px', float: 'right'}}
                 onChange={(event, value, date=this.state.end_date)=>this.setState({end_date: this.handleTimeUpdate(value, date)})}
               />
               <DatePicker
                 hintText="End Date*"
-                textFieldStyle={{width: '175px'}}
+                textFieldStyle={{width: '210px'}}
                 onChange={(event, value, date=this.state.end_date)=>this.setState({end_date: this.handleDateUpdate(value, date)})}
               />
           </div>
@@ -111,8 +111,8 @@ class Form extends React.Component{
           <Map new={true} setLocation={this.setLocation}/>
         </form>
         <div className="form-button">
-          <FlatButton label="Cancel" primary={true} onClick={this.props.handleClose}/>
-          <RaisedButton label="Submit" primary={true} onClick={this.handleFormSubmit}/>
+          <FlatButton label="Cancel" primary={true} onClick={this.props.handleClose} style={{marginRight: '5px'}}/>
+          <RaisedButton label="Create Event" primary={true} onClick={this.handleFormSubmit}/>
       </div>
       </div>
     )

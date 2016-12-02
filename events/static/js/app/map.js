@@ -13,87 +13,83 @@ class Map extends React.Component{
         var _this = this
         if (this.props.new){
             var map = new google.maps.Map(document.getElementById('map_new'), {
-            center: {lat: -33.8688, lng: 151.2195},
-            zoom: 10,
+            center: {lat: 49, lng: 23},
+            zoom: 7,
             mapTypeId: 'roadmap',
             disableDefaultUI: true
         });
-        if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(function(position) {
-                var pos = {
-                    lat: position.coords.latitude,
-                    lng: position.coords.longitude
-                };
+            if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(function(position) {
+                    var pos = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
 
-                map.setCenter(pos);
-            }, function() {
-                handleLocationError(true, infoWindow, map.getCenter());
-            });
-            } else {
-            handleLocationError(false, infoWindow, map.getCenter());
-            }
-        // Create the search box and link it to the UI element.
-        var input = document.getElementById('pac-input');
-        var searchBox = new google.maps.places.SearchBox(input);
-        map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+                    map.setCenter(pos);
+                }, function() {
+                    handleLocationError(true, infoWindow, map.getCenter());
+                    });
+                    } else {
+                    handleLocationError(false, infoWindow, map.getCenter());
+                    }
+                // Create the search box and link it to the UI element.
+                var input = document.getElementById('pac-input');
+                var searchBox = new google.maps.places.SearchBox(input);
+                map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
 
-        // Bias the SearchBox results towards current map's viewport.
-        map.addListener('bounds_changed', function() {
-          searchBox.setBounds(map.getBounds());
-        });
+                // Bias the SearchBox results towards current map's viewport.
+                map.addListener('bounds_changed', function() {
+                searchBox.setBounds(map.getBounds());
+                });
 
-        var markers = [];
-        // Listen for the event fired when the user selects a prediction and retrieve
-        // more details for that place.
-        searchBox.addListener('places_changed', function() {
-          var places = searchBox.getPlaces();
-          //console.log(places[0].geometry.location.lat())
-          //console.log(places[0].geometry.location.lng())
-          //console.log(places[0].name)
-          //console.log(_this)
-          _this.props.setLocation(places[0].name, places[0].geometry.location)
-          if (places.length == 0) {
-            return;
-          }
+                var markers = [];
+                // Listen for the event fired when the user selects a prediction and retrieve
+                // more details for that place.
+                searchBox.addListener('places_changed', function() {
+                var places = searchBox.getPlaces();
+                _this.props.setLocation(places[0].name, places[0].geometry.location)
+                if (places.length == 0) {
+                    return;
+                }
 
-          // Clear out the old markers.
-          markers.forEach(function(marker) {
-            marker.setMap(null);
-          });
-          markers = [];
+                // Clear out the old markers.
+                markers.forEach(function(marker) {
+                    marker.setMap(null);
+                });
+                markers = [];
 
-          // For each place, get the icon, name and location.
-          var bounds = new google.maps.LatLngBounds();
-          places.forEach(function(place) {
-            if (!place.geometry) {
-              console.log("Returned place contains no geometry");
-              return;
-            }
-            var icon = {
-              url: place.icon,
-              size: new google.maps.Size(71, 71),
-              origin: new google.maps.Point(0, 0),
-              anchor: new google.maps.Point(17, 34),
-              scaledSize: new google.maps.Size(25, 25)
-            };
+                // For each place, get the icon, name and location.
+                var bounds = new google.maps.LatLngBounds();
+                places.forEach(function(place) {
+                    if (!place.geometry) {
+                    console.log("Returned place contains no geometry");
+                    return;
+                    }
+                    var icon = {
+                    url: place.icon,
+                    size: new google.maps.Size(71, 71),
+                    origin: new google.maps.Point(0, 0),
+                    anchor: new google.maps.Point(17, 34),
+                    scaledSize: new google.maps.Size(25, 25)
+                    };
 
-            // Create a marker for each place.
-            markers.push(new google.maps.Marker({
-              map: map,
-              icon: icon,
-              title: place.name,
-              position: place.geometry.location
-            }));
+                    // Create a marker for each place.
+                    markers.push(new google.maps.Marker({
+                    map: map,
+                    icon: icon,
+                    title: place.name,
+                    position: place.geometry.location
+                    }));
 
-            if (place.geometry.viewport) {
-              // Only geocodes have viewport.
-              bounds.union(place.geometry.viewport);
-            } else {
-              bounds.extend(place.geometry.location);
-            }
-          });
-          map.fitBounds(bounds);
-        });
+                    if (place.geometry.viewport) {
+                    // Only geocodes have viewport.
+                    bounds.union(place.geometry.viewport);
+                    } else {
+                    bounds.extend(place.geometry.location);
+                    }
+                });
+                map.fitBounds(bounds);
+                });
         }
         if (this.props.events){
             var x = this.props.events[0].location[0];
@@ -119,6 +115,28 @@ class Map extends React.Component{
                     document.location =  '#/events/' + event.id
                 })
             });
+        }
+        if(this.props.event){
+            console.log(this.props)
+            var location = { lat: this.props.location[0], lng: this.props.location[1] };
+            var map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 15,
+            center: location
+            });
+
+            // Add a marker at the center of the map.
+            addMarker(location, map);
+        }
+
+        // Adds a marker to the map.
+        function addMarker(location, map) {
+            // Add the marker at the clicked location, and add the next-available label
+            // from the array of alphabetical characters.
+            var marker = new google.maps.Marker({
+            position: location,
+            map: map
+            });
+
         }
         if (geo){
             if (navigator.geolocation) {

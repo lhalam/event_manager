@@ -2,10 +2,9 @@ from django.db import models
 from registration.models import User
 from django.db.models.fields.related import ManyToManyField
 from django.contrib.postgres.fields import ArrayField
-from django.utils.timezone import utc as TZ
-
+#from django.utils.timezone import utc as TZ
+from pytz import utc as TZ
 from datetime import datetime
-
 
 
 
@@ -29,8 +28,8 @@ class Event(models.Model):
         return "%s" % self.title
 
     def save(self, *args, **kwargs):
-        self.start_date = TZ.localize(datetime.fromtimestamp(float(self.start_date)))
-        self.end_date = TZ.localize(datetime.fromtimestamp(float(self.end_date)))
+        self.start_date = TZ.localize(datetime.utcfromtimestamp(float(self.start_date)))
+        self.end_date = TZ.localize(datetime.utcfromtimestamp(float(self.end_date)))
         self.location = self.location.split(",")
         super(self.__class__, self).save(*args, **kwargs)
 

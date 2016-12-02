@@ -54,7 +54,6 @@ class EventView(View):
                 return JsonResponse({"error_message": "Can not create relation between user and event"}, status=401)
             return HttpResponse(event.id)
             return JsonResponse({'message': "Event created successfully"}, status=200)
-        print(validation_form.errors.as_json())
         return JsonResponse(json.loads(validation_form.errors.as_json()), status=400)
 
     def put(self, request, pk):
