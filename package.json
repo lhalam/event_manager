@@ -38,6 +38,7 @@
     "axios": "^0.15.2"
   },
   "dependencies": {
+    "jquery-countdown": "^2.2.0",
     "moment": "^2.16.0",
     "react-grid-system": "^1.5.2"
   }

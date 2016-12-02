@@ -3,6 +3,8 @@ import axios from 'axios'
 import Paper from 'material-ui/Paper'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import Chip from 'material-ui/Chip';
+import CountdownTimer from './CountdownTimer';
+import moment from 'moment';
 
 
 export default class Voting extends React.Component {
@@ -22,7 +24,7 @@ export default class Voting extends React.Component {
     }
 
     loadVoting() {
-        axios.get('api/v1/events/'+this.props.params.event_id+'/voting/')
+        axios.get('api/v1/events/'+this.props.params['event_id']+'/voting/')
             .then((response) => {
                 console.log(response.data);
                 this.setState({
@@ -35,7 +37,19 @@ export default class Voting extends React.Component {
     }
 
     makeVote(choice_id, voting_id) {
-        axios.post('api/v1/events/'+this.props.params.event_id+'/voting/'+voting_id+'/choice/'+choice_id+'/vote/')
+        axios.post('api/v1/events/'+this.props.params['event_id']+'/voting/'+voting_id+'/choice/'+choice_id+'/vote/')
+            .then((response) => {
+                alert('successfully voted');
+                console.log(response.data);
+                this.loadVoting();
+            })
+            .catch((error) => {
+                this.loadVoting();
+            })
+    }
+
+    deleteVote(choice_id, voting_id) {
+        axios.delete('api/v1/events/'+this.props.params['event_id']+'/voting/'+voting_id+'/choice/'+choice_id+'/vote/')
             .then((response) => {
                 alert('successfully voted');
                 console.log(response.data);
@@ -47,23 +61,31 @@ export default class Voting extends React.Component {
     }
 
     handleChoiceHover(event, voters) {
-        // console.log(voters, voters.length > 0);
         if (voters.length > 0) {
             console.log(voters.map((voter) => {return voter.username}).join(' '));
         }
 
     }
 
-    handleVote(event, choice_id, voting_id) {
+    handleVote(event, choice_id, voting_id, voted) {
         console.log('event', event);
         event.stopPropagation();
-        this.makeVote(choice_id, voting_id);
+        if (!voted) {
+            this.makeVote(choice_id, voting_id);
+        } else {
+            this.deleteVote(choice_id, voting_id);
+        }
     }
 
     getChoiceFormat(type, choice_value) {
         let choice = JSON.parse(choice_value);
         if (type == "date") {
-            return (Date(choice['start_date']) + " -- " + Date(choice['end_date']));
+            return (
+                this.getDateFormat(
+                    new Date(parseInt(choice['start_date'])*1000),
+                    new Date(parseInt(choice['end_date'])*1000)
+                )
+            );
         } else if (type == "place") {
             return (choice['place']);
         } else {
@@ -72,36 +94,56 @@ export default class Voting extends React.Component {
 
     }
 
+    getDateFormat(startDate, endDate) {
+        let format = 'MMMM Do YYYY, h:mm:ss a';
+        return (
+            'From: ' +
+            moment(startDate)
+                .format(format) +
+            "\nTo: " +
+            moment(endDate)
+                .format(format)
+        );
+
+    }
+
     render() {
 
 
         let votings = this.state.votings.map((voting, i) => {
-            console.log(voting.seconds_left);
-            let choices = voting.choices.map((choice, i) => {
-                let formated_choice = this.getChoiceFormat(voting.type, choice.value);
+            console.log(voting['seconds_left']);
+            let choices = voting['choices'].map((choice, j) => {
+                let formattedChoice = this.getChoiceFormat(voting.type, choice.value);
+                 let chipColor = choice['voted'] ? '#00bcd4' : '#e0e0e0';
                 return (
                     <Chip
-                        onTouchTap={this.handleVote.bind(this, event, choice.id, voting.id)}
-                        key={i}
-                        onMouseEnter={this.handleChoiceHover.bind(this, event, choice.voters)}
+                        backgroundColor={chipColor}
+                        onTouchTap={this.handleVote.bind(this, event, choice.id, voting.id, choice['voted'])}
+                        key={j}
+                        onMouseEnter={this.handleChoiceHover.bind(this, event, choice['voters'])}
                     >
-                        {formated_choice}
+                        {formattedChoice}
                     </Chip>
                 );
             });
 
             return (
-                <MuiThemeProvider>
-                    <div className="voting-wrap" key={i}>
+                <MuiThemeProvider key={i}>
+                    <div className="voting-wrap">
                         <Paper zDepth={1}>
                             <div className="voting-header">
                                 {voting.title}
-                                <div className="voting-timer">{voting.seconds_left}</div>
+                                <div className="voting-timer">
+                                    <CountdownTimer
+                                        id={voting.id}
+                                        secondsLeft={voting['seconds_left']}
+                                    />
+                                </div>
                             </div>
                                 {choices}
                             <p>{voting.description}</p>
-                            <p>{voting.votes}</p>
-                            <p>{voting.voted ? "voted" : "not voted"}</p>
+                            <p>{voting['votes']}</p>
+                            <p>{voting['voted'] ? "voted" : "not voted"}</p>
 
                         </Paper>
                     </div>
