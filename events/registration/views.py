@@ -2,13 +2,12 @@ import json
 import time, datetime
 
 from django.views import View
-from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.http import JsonResponse
 from django.shortcuts import redirect, reverse, render
 
-from .models import User, RegistrationConfirm
+from .models import User, RegistrationConfirm, BannedIP
 from .forms import RegistrationForm
 from events import settings
 
@@ -31,6 +30,19 @@ class RegistrationView(View):
         return render(request, 'registration.html')
 
     def post(self, request):
+        x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+        if x_forwarded_for:
+            ip = x_forwarded_for.split(',')[0]
+        else:
+            ip = request.META.get('REMOTE_ADDR')
+
+        if not BannedIP.check_ip(ip):
+            return JsonResponse({
+                'errors': {
+                    'ban': 'Due to suspicious activity you are banned for 5 minutes'
+                }
+            }, status=400)
+
         body_unicode = request.body.decode('utf-8')
         registration_data = json.loads(body_unicode)
         registration_form = RegistrationForm(registration_data)
@@ -38,7 +50,7 @@ class RegistrationView(View):
         birth_date = float(registration_data.get('birth_date'))
         if birth_date > time.time() or birth_date < MIN_BIRTH_DATE:
             errors['birth_date'] = ['Birth date is not valid']
-        print(datetime.datetime.fromtimestamp(int(birth_date)).strftime('%Y-%m-%d'))
+
         if registration_form.is_valid() and not errors:
             user = User.objects.create_user(
                 username=registration_data.get('email'),
@@ -50,6 +62,7 @@ class RegistrationView(View):
             )
 
             EmailSender.send_registration_confirm(user)
+            BannedIP.clean_ip(ip)
 
             return JsonResponse({'message': 'To finish registration follow instructions in email'}, status=201)
 
