@@ -62,7 +62,6 @@ class RegistrationView(View):
             )
 
             EmailSender.send_registration_confirm(user)
-            BannedIP.clean_ip(ip)
 
             return JsonResponse({'message': 'To finish registration follow instructions in email'}, status=201)
 
@@ -76,4 +75,10 @@ class ConfirmRegistrationView(View):
         if not user:
             return redirect(reverse('reg:main'))
 
+        x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+        if x_forwarded_for:
+            ip = x_forwarded_for.split(',')[0]
+        else:
+            ip = request.META.get('REMOTE_ADDR')
+        BannedIP.clean_ip(ip)
         return redirect(reverse('auth:login'))

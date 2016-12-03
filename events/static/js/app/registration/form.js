@@ -1,13 +1,13 @@
 import React from 'react';
 import FloatLabelField from './float-label-field';
 import DateField from './date-field';
-import Divider from 'material-ui/Divider';
 import RaisedButton from 'material-ui/RaisedButton';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import Paper from 'material-ui/Paper';
 import validator from 'validator';
 import _ from 'underscore';
+import Snackbar from 'material-ui/Snackbar';
 
 var axios = require("axios");
 
@@ -27,6 +27,8 @@ export default class Form extends React.Component {
             birth_date_error: "",
             response_errors: {},
             formIsValid: false,
+            openSnackbar: false,
+            banmessage: ""
         };
         this.handleFirstName = (value) => {
             this.setState({first_name: value}, () => {this.setState(
@@ -55,8 +57,13 @@ export default class Form extends React.Component {
                 });
             })
         };
-        this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleRequestClose = () => {
+            this.setState({
+                openSnackbar: false,
+            });
+        };
 
+        this.handleSubmit = this.handleSubmit.bind(this);
         this.validateNotEmpty = this.validateNotEmpty.bind(this);
         this.validateEmail = this.validateEmail.bind(this);
         this.validatePassword = this.validatePassword.bind(this);
@@ -122,13 +129,24 @@ export default class Form extends React.Component {
             .then((response) => this.props.handleSubmit(response.data.message, ""))
             .catch((error) => {
                 if(error.response){
-                    if (error.response.data.errors.email) {
+                    if(error.response.status == 500) {
                         this.setState({
-                            email_error: error.response.data.errors.email[0]
+                            openSnackbar: false
+                        });
+                        this.props.handleSubmit("", "Oops, something went wrong. Please try again later or contact support.")
+                    }
+                    else if (error.response.data.errors.ban) {
+                        this.setState({
+                            banmessage: error.response.data.errors.ban,
+                            openSnackbar: true
                         }, () => this.setState({formIsValid: this.validateForm()}));
                     }
-                    else
-                        this.props.handleSubmit("", "Oops, something went wrong. Please try again later or contact support.")
+                    else if (error.response.data.errors.email) {
+                        this.setState({
+                            email_error: error.response.data.errors.email[0],
+                            openSnackbar: false
+                        }, () => this.setState({formIsValid: this.validateForm()}));
+                    }
                 }
             });
     }
@@ -206,6 +224,12 @@ export default class Form extends React.Component {
                             />
                         <p className="login">Already a member? <a href="/auth/login">Login</a></p>
                     </form>
+                    <Snackbar
+                        open={this.state.openSnackbar}
+                        message={this.state.banmessage}
+                        autoHideDuration={4000}
+                        onRequestClose={this.handleRequestClose}
+                    />
                 </Paper>
             </MuiThemeProvider>
         );
