@@ -62,6 +62,7 @@ class Team(models.Model):
         through='TeamUserAssignment',
         through_fields=('team', 'user'),
     )
+    admin = models.OneToOneField(User, related_name="ruled_team")
 
     def __str__(self):
         return '{}'.format(self.name)
@@ -111,6 +112,13 @@ class Team(models.Model):
 class TeamUserAssignment(models.Model):
     team = models.ForeignKey(Team, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    @staticmethod
+    def get_by_user_team(user, team):
+        try:
+            return TeamUserAssignment.objects.get(user=user, team=team)
+        except TeamUserAssignment.DoesNotExist:
+            return None
 
     @staticmethod
     def get_all_teams(user):
