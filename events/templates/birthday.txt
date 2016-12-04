@@ -1,0 +1,6 @@
+Hi!
+
+You are invited to {{ event }}.
+Please, follow the link bellow to see more details:
+
+{{ link }}

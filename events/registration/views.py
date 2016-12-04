@@ -9,18 +9,8 @@ from django.shortcuts import redirect, reverse, render
 
 from .models import User, RegistrationConfirm, BannedIP
 from .forms import RegistrationForm
-from events import settings
-
-CONFIRM_LINK = settings.HOST_NAME + '/registration/confirm/'
-MIN_BIRTH_DATE = time.mktime((datetime.datetime.now().date()+datetime.timedelta(days=-356*100)).timetuple())
-
-class EmailSender(object):
-    @staticmethod
-    def send_registration_confirm(user):
-        confirm = RegistrationConfirm.objects.create(user=user)
-        subject = 'Confirm registration'
-        message = render_to_string('email.txt', {'link': CONFIRM_LINK + str(confirm.hash_code), 'name': user.first_name})
-        return send_mail(subject, message, settings.EMAIL_HOST_USER, [user.email]) == 1
+from utils.EmailService import EmailSender
+from dateutil.relativedelta import relativedelta
 
 
 class RegistrationView(View):
@@ -30,11 +20,7 @@ class RegistrationView(View):
         return render(request, 'registration.html')
 
     def post(self, request):
-        x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
-        if x_forwarded_for:
-            ip = x_forwarded_for.split(',')[0]
-        else:
-            ip = request.META.get('REMOTE_ADDR')
+        ip = RegistrationView.get_ip(request)
 
         if not BannedIP.check_ip(ip):
             return JsonResponse({
@@ -48,7 +34,9 @@ class RegistrationView(View):
         registration_form = RegistrationForm(registration_data)
         errors = registration_form.errors
         birth_date = float(registration_data.get('birth_date'))
-        if birth_date > time.time() or birth_date < MIN_BIRTH_DATE:
+        min_birth_date = time.mktime((datetime.datetime.now().date() - relativedelta(years=100)).timetuple())
+        max_birth_date = time.mktime((datetime.datetime.now().date() - relativedelta(years=18)).timetuple())
+        if not (min_birth_date < birth_date < max_birth_date):
             errors['birth_date'] = ['Birth date is not valid']
 
         if registration_form.is_valid() and not errors:
@@ -59,6 +47,7 @@ class RegistrationView(View):
                 email=registration_data.get('email'),
                 is_active=False,
                 password=registration_data.get('password'),
+                birth_date=datetime.datetime.fromtimestamp(birth_date).strftime('%Y-%m-%d')
             )
 
             EmailSender.send_registration_confirm(user)
@@ -66,6 +55,13 @@ class RegistrationView(View):
             return JsonResponse({'message': 'To finish registration follow instructions in email'}, status=201)
 
         return JsonResponse({'errors': errors}, status=400)
+
+    @staticmethod
+    def get_ip(request):
+        x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+        if x_forwarded_for:
+            return x_forwarded_for.split(',')[0]
+        return request.META.get('REMOTE_ADDR')
 
 
 class ConfirmRegistrationView(View):
@@ -75,10 +71,8 @@ class ConfirmRegistrationView(View):
         if not user:
             return redirect(reverse('reg:main'))
 
-        x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
-        if x_forwarded_for:
-            ip = x_forwarded_for.split(',')[0]
-        else:
-            ip = request.META.get('REMOTE_ADDR')
-        BannedIP.clean_ip(ip)
+        ip = RegistrationView.get_ip(request)
+
+        if BannedIP.check_ip(ip):
+            BannedIP.clean_ip(ip)
         return redirect(reverse('auth:login'))

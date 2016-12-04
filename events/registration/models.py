@@ -12,9 +12,20 @@ INVITE_DAYS_TTL = 7
 IP_BAN_TTL = 60 * 5
 MAX_REQUESTS_COUNT = 10
 
+def min_birth_date():
+    return timezone.now().date() + timezone.timedelta(days=-356*18)
 
 class User(BaseUser):
+    birth_date = models.DateField(null=False, default=min_birth_date)
 
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'username': self.username,
+            'first_name': self.first_name,
+            'last_name': self.last_name
+        }
+        
     @classmethod
     def get_all_users(cls):
         return cls.objects.all()
@@ -27,6 +38,11 @@ class User(BaseUser):
             return None
         else:
             return user
+
+    @classmethod
+    def get_nearest_birth_date(cls):
+        birth_date = timezone.now().date() + timezone.timedelta(days=7)
+        return cls.objects.filter(birth_date__month=birth_date.month - 1, birth_date__day=birth_date.day)
 
 
 class RegistrationConfirm(models.Model):
