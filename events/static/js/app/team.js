@@ -151,6 +151,10 @@ export default class Team extends React.Component {
                                     onBlur={this.handleNameBlur}
                                 />
                             </div>
+                            <div className="members-header">
+                                {this.state.name}
+                            </div>
+                            {admin}
                             <Subheader style={{paddingLeft: "40px"}}>Team members</Subheader>
                             <div className="team-members-search">
                                 <SearchField

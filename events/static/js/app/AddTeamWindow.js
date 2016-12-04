@@ -7,13 +7,15 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
 import { hashHistory } from 'react-router';
+import AutoComplete from 'material-ui/AutoComplete';
 
 export default class CreateTeam extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             open: false,
-            teamName: ""
+            teamName: "",
+            possible_admins: []
         };
 
         this.handleOpen = () => {
@@ -39,7 +41,31 @@ export default class CreateTeam extends React.Component {
         }
     }
 
+    getAdminList()  {
+        axios.get(this.props.url+'get_admin')
+            .then((response) => {
+                let possible_admins = this.state.possible_admins;
+                if (possible_admins.length == 0) {
+                    this.setState({
+                        possible_admins: response.data['possible_admins']
+                    });
+                }
+            });
+    }
+
     render(){
+        let possible_admins = this.state.possible_admins;
+        const dataSource = possible_admins.map(userObject => {
+            return {
+                'textKey': userObject['first_name'] + ' ' + userObject['last_name'],
+                'valueKey': userObject['id']
+            }
+        });
+
+        const dataSourceConfig = {
+            text: 'textKey',
+            value: 'valueKey',
+        };
 
         const actions = [
             <FlatButton
@@ -76,6 +102,18 @@ export default class CreateTeam extends React.Component {
                             floatingLabelText="Team name"
                             maxLength={50}
                             onChange={this.handleInput}
+                        />
+                        <AutoComplete
+                            filter={AutoComplete.fuzzyFilter}
+                            floatingLabelText="Admin"
+                            dataSource={dataSource}
+                            dataSourceConfig={dataSourceConfig}
+                            onNewRequest={this.handleAdmin}
+                            searchText={this.props.currentAdmin}
+                            onFocus={this.getAdminList}
+                            openOnFocus={true}
+                            onChange={this.handleAdmin}
+                            ref="admin"
                         />
                     </Dialog>
                 </div>
