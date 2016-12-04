@@ -1,7 +1,6 @@
 from django.db import models
 from registration.models import User
 
-
 class Company(models.Model):
     name = models.CharField(max_length=50, null=False)
     description = models.TextField(max_length=500, null=True, blank=True)
@@ -50,6 +49,13 @@ class Company(models.Model):
             return first_instance.team.company
         return None
 
+    @staticmethod
+    def is_admin(user):
+        try:
+            return Company.objects.get(admin=user)
+        except :
+            return False
+
 
 class Team(models.Model):
     name = models.CharField(max_length=50, null=False)
@@ -63,6 +69,7 @@ class Team(models.Model):
         through='TeamUserAssignment',
         through_fields=('team', 'user'),
     )
+    admin = models.OneToOneField(User, related_name="ruled_team")
 
     def __str__(self):
         return '{}'.format(self.name)
@@ -114,6 +121,13 @@ class TeamUserAssignment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     @staticmethod
+    def get_by_user_team(user, team):
+        try:
+            return TeamUserAssignment.objects.get(user=user, team=team)
+        except TeamUserAssignment.DoesNotExist:
+            return None
+
+    @staticmethod
     def get_all_teams(user):
         try:
             company = Company.objects.get(admin=user)
@@ -121,5 +135,16 @@ class TeamUserAssignment(models.Model):
         except Company.DoesNotExist:
             try:
                 return TeamUserAssignment.objects.get(user=user).team.company.teams.all()
+            except TeamUserAssignment.DoesNotExist:
+                return None
+
+    @staticmethod
+    def get_user_teams(user):
+        try:
+            company = Company.objects.get(admin=user)
+            return [team for team in company.teams.all()]
+        except Company.DoesNotExist:
+            try:
+                return [tua.team for tua in TeamUserAssignment.objects.filter(user=user)]
             except TeamUserAssignment.DoesNotExist:
                 return None
