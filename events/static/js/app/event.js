@@ -30,9 +30,7 @@ class Event extends React.Component{
             this.setState({event: response.data})
         }.bind(this))
     }
-    componentDidUpdate(){
-        console.log(this)
-    }
+
     render(){
         const start_date = new Date(this.state.event.start_date * 1000)
         const end_date = new Date(this.state.event.end_date * 1000)

@@ -120,7 +120,6 @@ class Form extends React.Component{
   }
 
   render(){
-    console.log(this.formValid())
     const title_error = (this.titleError() && this.state.title_changed) ? 'It should be 5 characters' : ''
     const start_date_error = this.startDateError() ? 'Start Date and Time cannot be earlier than now' : ''
     const end_date_error = this.endDateError() ? 'End Date and Time cannot be earlier than Start Date and Time' : ''
