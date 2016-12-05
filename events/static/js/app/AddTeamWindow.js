@@ -32,7 +32,7 @@ export default class CreateTeam extends React.Component {
         };
 
         this.handleCreateTeam = () => {
-            axios.post('/api/v1'+this.props.url, {name: this.state.teamName, admin: this.state.admin})
+            axios.post('/api/v1/'+this.props.url, {name: this.state.teamName, admin: this.state.admin})
                 .then(response => {
                     hashHistory.push(this.props.url + response.data.team_id)
                 })
@@ -42,12 +42,35 @@ export default class CreateTeam extends React.Component {
                 });
         };
 
+        this.handleUpdateTeam = () => {
+            axios.put('/api/v1/'+this.props.url + this.props.tid + "/", {name: this.state.teamName, admin: this.state.admin})
+                .then(response => {
+                    this.handleClose();
+                    let admin_id = this.state.admin;
+                    this.props.updateTeam(this.state.teamName,
+                                          this.state.possible_admins.find(admin => admin.id == admin_id));
+                })
+                .catch(error => {
+                    console.log(error);
+                    alert(error.response.status + ' ' + error.response.statusText);
+                });
+        };
+
         this.getAdminList = this.getAdminList.bind(this);
         this.handleAdmin = this.handleAdmin.bind(this);
+        this.handleAdminInput = this.handleAdminInput.bind(this);
     }
 
+    componentDidMount() {
+        if(this.props.currentTitle && this.props.currentAdminId)
+            this.setState({
+                teamName: this.props.currentTitle,
+                admin: this.props.currentAdminId
+            });
+        this.getAdminList();
+    }
     getAdminList()  {
-        axios.get('/api/v1'+this.props.url+'get_admin')
+        axios.get('/api/v1/'+this.props.url+'get_admin')
             .then((response) => {
                 this.setState({
                     possible_admins: response.data['possible_admins']
@@ -61,6 +84,17 @@ export default class CreateTeam extends React.Component {
             chosen_admin = chosenRequest['valueKey'].toString();
         this.setState({
             admin: chosen_admin
+        });
+    }
+
+    handleAdminInput(input_admin) {
+        let possible_admin = this.state.possible_admins.find(admin => {
+                    return admin.first_name + " " + admin.last_name == input_admin.trim();
+                });
+        if(!possible_admin)
+            possible_admin = {id: ""};
+        this.setState({
+            admin: possible_admin.id
         });
     }
 
@@ -87,8 +121,10 @@ export default class CreateTeam extends React.Component {
             <FlatButton
                 label={this.props.type == "create" ? "Create" : "Edit"}
                 primary={true}
-                disabled={!this.state.teamName.trim().length || !this.state.admin.trim().length}
-                onTouchTap={this.handleCreateTeam}
+                disabled={!this.state.teamName.trim().length || !possible_admins.find(admin => {
+                    return admin.id == this.state.admin;
+                })}
+                onTouchTap={this.props.type == "create" ? this.handleCreateTeam : this.handleUpdateTeam}
             />,
         ];
 
@@ -112,7 +148,7 @@ export default class CreateTeam extends React.Component {
                         <TextField
                             floatingLabelText="Team name"
                             maxLength={50}
-                            defaultValue={this.props.currentDescription}
+                            defaultValue={this.props.currentTitle}
                             onChange={this.handleInput}
                         />
                         <AutoComplete
@@ -124,7 +160,7 @@ export default class CreateTeam extends React.Component {
                             searchText={this.props.currentAdmin}
                             onFocus={this.getAdminList}
                             openOnFocus={true}
-                            onChange={this.handleAdmin}
+                            onUpdateInput={this.handleAdminInput}
                             ref="admin"
                             menuStyle={{maxHeight: "200px", overflow: "auto"}}
                         />

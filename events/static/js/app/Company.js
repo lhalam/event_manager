@@ -144,8 +144,9 @@ export default class Company extends React.Component {
                         <div className="button-group">
                             <CreateTeam
                                 label="Add new team"
-                                url={"/companies/"+this.props.params.company_id+"/teams/"}
+                                url={"companies/"+this.props.params.company_id+"/teams/"}
                                 type="create"
+                                title="Create team"
                             />
                             <AddCompanyWindow
                                 url={"api/v1/companies/"+this.props.params.company_id+'/'}

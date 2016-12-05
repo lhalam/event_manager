@@ -16,7 +16,7 @@ import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import { hashHistory } from 'react-router';
 import SearchField from './SearchField';
-
+import AddTeamWindow from './AddTeamWindow';
 
 
 export default class Team extends React.Component {
@@ -79,6 +79,18 @@ export default class Team extends React.Component {
         this.handleCloseDialog = () => {
             this.setState({openDialog: false});
         };
+
+        this.updateTeam = (teamName, admin) => {
+            let members = this.state.members;
+            members.push(admin);
+            this.setState({
+                name: teamName,
+                changedName: teamName,
+                admin: admin,
+                members: members,
+                searchMembers: members
+            });
+        }
     }
 
     componentDidMount(){
@@ -141,13 +153,15 @@ export default class Team extends React.Component {
         ];
         let admin = this.state.admin;
         let team_admin = null;
+        let admin_name = "";
         if (admin) {
+            admin_name = admin["first_name"] + " " + admin["last_name"];
             team_admin = (
                 <List>
                     <Subheader><div className="subheader">Team Admin</div></Subheader>
                     <div className="paper-element">
                     <ListItem
-                        primaryText={admin["first_name"] + " " + admin["last_name"]}
+                        primaryText={admin_name}
                         secondaryText={admin['username']}
                         leftAvatar={<Avatar size={32}>{admin['first_name'][0].toUpperCase()}</Avatar>}
                     />
@@ -213,15 +227,21 @@ export default class Team extends React.Component {
                                     secondary={true}
                                     onTouchTap={this.handleOpenDialog}
                                 />
-                                <AssignParticipants
-                                    handleAddUsers={this.handleAddUsers}
-                                    url={"/api/v1/companies/" + this.props.params.cid + "/teams/"+
-                                         this.props.params.tid + "/user_assignment/"}
-                                    title = 'Edit'
-                                    hintText = 'Start typing participant name...'
-                                    noUsersText = 'All possible users were added to this team.'
-                                    snackbarMessage={"successfully added to " + this.state.name}
-                                />
+                                {
+                                    admin ?
+                                    <AddTeamWindow
+                                        url={"companies/"+this.props.params.cid+"/teams/"}
+                                        type="edit"
+                                        newDataHandler={this.newDataHandler}
+                                        currentTitle={this.state.name}
+                                        currentAdmin={admin["first_name"] + " " + admin["last_name"]}
+                                        currentAdminId={admin.id}
+                                        updateTeam={this.updateTeam}
+                                        tid={this.props.params.tid}
+                                        label="Edit"
+                                        title="Edit team"
+                                    /> : null
+                                }
                                 <AssignParticipants
                                     handleAddUsers={this.handleAddUsers}
                                     url={"/api/v1/companies/" + this.props.params.cid + "/teams/"+
