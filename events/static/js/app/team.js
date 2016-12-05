@@ -26,6 +26,7 @@ export default class Team extends React.Component {
             name: "",
             changedName: "",
             members: [],
+            admin: null,
             searchMembers: [],
             openSnackbar: false,
             message: "",
@@ -51,11 +52,12 @@ export default class Team extends React.Component {
             let newName = this.state.changedName;
             if(newName && newName != this.state.name)
                 axios.put("/api/v1/companies/" + this.props.params.cid + "/teams/" + this.props.params.tid + "/", {
-                        name: newName
+                        name: newName,
+                        admin:this.state.admin["id"]
                     })
                     .then(response => {
                         this.setState({
-                            name: newName,
+                            name: newName
                         });
                     })
                     .catch(error => {
@@ -86,7 +88,8 @@ export default class Team extends React.Component {
                     name: response.data.name,
                     changedName: response.data.name,
                     members: response.data.members,
-                    searchMembers: response.data.members
+                    searchMembers: response.data.members,
+                    admin: response.data.admin
                 });
             })
             .catch(error => {
@@ -136,6 +139,23 @@ export default class Team extends React.Component {
                 onTouchTap={this.handleDeleteTeam}
             />,
         ];
+        let admin = this.state.admin;
+        let team_admin = null;
+        if (admin) {
+            team_admin = (
+                <List>
+                    <Subheader><div className="subheader">Team Admin</div></Subheader>
+                    <div className="paper-element">
+                    <ListItem
+                        primaryText={admin["first_name"] + " " + admin["last_name"]}
+                        secondaryText={admin['username']}
+                        leftAvatar={<Avatar size={32}>{admin['first_name'][0].toUpperCase()}</Avatar>}
+                    />
+                    </div>
+                </List>
+            );
+        }
+
         return (
             <MuiThemeProvider muiTheme={getMuiTheme()}>
                 <div>
@@ -151,10 +171,8 @@ export default class Team extends React.Component {
                                     onBlur={this.handleNameBlur}
                                 />
                             </div>
-                            <div className="members-header">
-                                {this.state.name}
-                            </div>
-                            {admin}
+                            <Subheader><div className="subheader">Description</div></Subheader>
+                            {team_admin}
                             <Subheader style={{paddingLeft: "40px"}}>Team members</Subheader>
                             <div className="team-members-search">
                                 <SearchField
@@ -177,9 +195,10 @@ export default class Team extends React.Component {
                                                     primaryText={member.first_name + " " + member.last_name}
                                                     leftAvatar={<Avatar>{member.first_name[0]}</Avatar>}
                                                     rightIconButton={
+                                                        admin["username"] != member["username"] ?
                                                         <IconButton onClick={() => this.handleDelete(member)}>
                                                             <CancelButton />
-                                                        </IconButton>
+                                                        </IconButton> : null
                                                     }
                                                 />
                                             );
@@ -196,11 +215,21 @@ export default class Team extends React.Component {
                                 />
                                 <AssignParticipants
                                     handleAddUsers={this.handleAddUsers}
-                                    url={"/api/v1/companies/"+this.props.params.cid+"/teams/"+this.props.params.tid+"/user_assignment/"}
+                                    url={"/api/v1/companies/" + this.props.params.cid + "/teams/"+
+                                         this.props.params.tid + "/user_assignment/"}
+                                    title = 'Edit'
+                                    hintText = 'Start typing participant name...'
+                                    noUsersText = 'All possible users were added to this team.'
+                                    snackbarMessage={"successfully added to " + this.state.name}
+                                />
+                                <AssignParticipants
+                                    handleAddUsers={this.handleAddUsers}
+                                    url={"/api/v1/companies/" + this.props.params.cid + "/teams/"+
+                                         this.props.params.tid + "/user_assignment/"}
                                     title = 'Add participants'
                                     hintText = 'Start typing participant name...'
                                     noUsersText = 'All possible users were added to this team.'
-                                    snackbarMessage={"successfully added to " + this.state.name + "."}
+                                    snackbarMessage={"successfully added to " + this.state.name}
                                 />
                             </div>
                         </Paper>

@@ -15,6 +15,7 @@ export default class CreateTeam extends React.Component {
         this.state = {
             open: false,
             teamName: "",
+            admin: "",
             possible_admins: []
         };
 
@@ -30,35 +31,45 @@ export default class CreateTeam extends React.Component {
             this.setState({teamName: event.target.value})
         };
 
-        this.handleCreateTeam = event => {
-            axios.post('api/v1'+this.props.url, {name: this.state.teamName})
+        this.handleCreateTeam = () => {
+            axios.post('/api/v1'+this.props.url, {name: this.state.teamName, admin: this.state.admin})
                 .then(response => {
                     hashHistory.push(this.props.url + response.data.team_id)
                 })
                 .catch(error => {
+                    console.log(error.response);
                     alert(error.response.status + ' ' + error.response.statusText);
                 });
-        }
+        };
+
+        this.getAdminList = this.getAdminList.bind(this);
+        this.handleAdmin = this.handleAdmin.bind(this);
     }
 
     getAdminList()  {
-        axios.get(this.props.url+'get_admin')
+        axios.get('/api/v1'+this.props.url+'get_admin')
             .then((response) => {
-                let possible_admins = this.state.possible_admins;
-                if (possible_admins.length == 0) {
-                    this.setState({
-                        possible_admins: response.data['possible_admins']
-                    });
-                }
+                this.setState({
+                    possible_admins: response.data['possible_admins']
+                });
             });
+    }
+
+    handleAdmin(chosenRequest) {
+        let chosen_admin = "";
+        if(chosenRequest['valueKey'])
+            chosen_admin = chosenRequest['valueKey'].toString();
+        this.setState({
+            admin: chosen_admin
+        });
     }
 
     render(){
         let possible_admins = this.state.possible_admins;
-        const dataSource = possible_admins.map(userObject => {
+        const dataSource = possible_admins.map(user => {
             return {
-                'textKey': userObject['first_name'] + ' ' + userObject['last_name'],
-                'valueKey': userObject['id']
+                'textKey': user['first_name'] + ' ' + user['last_name'],
+                'valueKey': user['id']
             }
         });
 
@@ -74,9 +85,9 @@ export default class CreateTeam extends React.Component {
                 onTouchTap={this.handleClose}
             />,
             <FlatButton
-                label="Create"
+                label={this.props.type == "create" ? "Create" : "Edit"}
                 primary={true}
-                disabled={!this.state.teamName.trim().length}
+                disabled={!this.state.teamName.trim().length || !this.state.admin.trim().length}
                 onTouchTap={this.handleCreateTeam}
             />,
         ];
@@ -92,7 +103,7 @@ export default class CreateTeam extends React.Component {
                     <Dialog
                         contentClassName={"dialog-window"}
                         titleClassName={"dialog-title"}
-                        title="Create team"
+                        title={this.props.title}
                         actions={actions}
                         modal={false}
                         open={this.state.open}
@@ -101,6 +112,7 @@ export default class CreateTeam extends React.Component {
                         <TextField
                             floatingLabelText="Team name"
                             maxLength={50}
+                            defaultValue={this.props.currentDescription}
                             onChange={this.handleInput}
                         />
                         <AutoComplete
@@ -114,6 +126,7 @@ export default class CreateTeam extends React.Component {
                             openOnFocus={true}
                             onChange={this.handleAdmin}
                             ref="admin"
+                            menuStyle={{maxHeight: "200px", overflow: "auto"}}
                         />
                     </Dialog>
                 </div>
