@@ -107,9 +107,9 @@ class EventUserAssignmentView(View):
         if error:
             return error
         able_to_add = EventUserAssignmentView.get_users_to_add_list(request.user, event)
-        if not event_participants.get('participants'):
+        if not event_participants.get('members_to_add'):
             return INVALID_PAYLOAD
-        for user_object in event_participants.get('participants'):
+        for user_object in event_participants.get('members_to_add'):
             if user_object not in able_to_add:
                 return INVALID_PAYLOAD
             user = User.get_by_id(user_object['id'])

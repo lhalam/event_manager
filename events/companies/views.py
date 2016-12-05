@@ -184,6 +184,23 @@ class TeamView(View):
 
 
 class TeamUserAssignmentView(View):
+    def get(self, request, company_id, team_id):
+        members = []
+        team = Team.get_by_id(team_id)
+        if not team:
+            return TEAM_NOT_EXISTS
+        users = TeamUserAssignmentView.get_users_to_add_list(team, company_id)
+        for user in TeamUserAssignmentView.get_users_to_add_list(team, company_id):
+            user_object = {
+                "id": user.id,
+                "first_name": user.first_name,
+                "last_name": user.last_name,
+                "username": user.username
+            }
+            members.append(user_object)
+
+        return JsonResponse({"participants": members}, status=200)
+
     def put(self, request, company_id, team_id):
         existence_error = TeamView.check_company_team_existence(company_id, team_id)
         if existence_error:
@@ -202,12 +219,12 @@ class TeamUserAssignmentView(View):
                 member_to_del = new_team_members.get('member_to_del')
                 able_to_add = Team.remove_user_from_team(team, User.get_by_id(member_to_del['id']))
 
-                return JsonResponse({'members_to_del': able_to_add}, status=200)
+                return JsonResponse({'able_to_add': able_to_add}, status=200)
         else:
-            for user in new_team_members.get('members'):
+            for user in new_team_members.get('members_to_add'):
+                user = User.get_by_id(user.get('id'))
                 if user not in possible_users:
                     return INVALID_PAYLOAD
-                user = User.get_by_id(user.id)
                 able_to_add.append(user)
             for user in able_to_add:
                 TeamUserAssignment.objects.get_or_create(user=user, team=team)
@@ -225,6 +242,7 @@ class TeamUserAssignmentView(View):
                 for member in team.members.all():
                     if member not in users_not_to_add:
                         users_not_to_add.append(member)
+
         return [
             user for user in User.get_all_users()
             if user not in team_members and user not in users_not_to_add
