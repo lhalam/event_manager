@@ -115,7 +115,8 @@ class Form extends React.Component{
             !this.startDateError() &&
             !this.endDateError() &&
             !this.descriptionError() &&
-            !this.locationError())
+            !this.locationError()
+            )
   }
 
   render(){
