@@ -51,7 +51,7 @@ class Voting(models.Model):
             "choices": [choice.to_dict(user) for choice in self.choices.all()],
             "voters": voters,
             "voted": VotingUserAssignment.check_vote(user, self),
-            "votes": VotingUserAssignment.objects.filter(voting=self).__len__()
+            "votes": VotingUserAssignment.objects.filter(voting=self).count()
         }
 
     @staticmethod
@@ -93,7 +93,6 @@ class Choice(models.Model):
         related_name='choices',
         related_query_name='choice'
     )
-    votes_count = models.IntegerField(default=0)
     voters = models.ManyToManyField(
         User,
         through='ChoiceUserAssignment',
@@ -101,7 +100,7 @@ class Choice(models.Model):
     )
 
     def __str__(self):
-        return '{}: {}, count = {}'.format(self.voting.title, self.id, self.votes_count)
+        return '{}: {}-{}'.format(self.voting.title, self.id, self.voting.type)
     value = models.TextField(blank=False)
     creation_date = models.DateTimeField(auto_now_add=True)
 
@@ -115,7 +114,7 @@ class Choice(models.Model):
         voted = ChoiceUserAssignment.check_vote(user, self)
         return {
             "id": self.pk,
-            "votes": self.votes_count,
+            "votes": ChoiceUserAssignment.objects.filter(choice=self).count(),
             "value": self.value,
             "voters": voters,
             "voted": voted

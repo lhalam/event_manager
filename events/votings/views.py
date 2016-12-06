@@ -99,16 +99,13 @@ class VotingView(View):
             return error
         try:
             start_date = float(choice_json['start_date'])
+            end_date = float(choice_json['end_date'])
             if start_date < time_now:
                 error[key].append("'start_date' can not be earlier than now.")
-        except ValueError:
-            error[key].append("Enter valid 'start_date'")
-        try:
-            end_date = float(choice_json['end_date'])
             if end_date < time_now:
                 error[key].append("'end_date' can not be earlier than now.")
         except ValueError:
-            error[key].append("Enter valid 'end_date'")
+            error[key].append("Enter valid 'date'")
         if error[key]:
             return error
 
@@ -126,12 +123,9 @@ class VotingView(View):
             error[key].append("'place' is required.")
         try:
             float(choice_json['x_coordinate'])
-        except ValueError:
-            error[key].append('Enter valid x coordinate')
-        try:
             float(choice_json['y_coordinate'])
         except ValueError:
-            error[key].append('Enter valid y coordinate')
+            error[key].append('Enter valid coordinates')
 
         if error[key]:
             return error
@@ -166,19 +160,13 @@ class ChoiceView(View):
         if not created:
             return PERMISSION_DENIED
         ChoiceUserAssignment.objects.create(user=user, choice=choice)
-        choice.votes_count = len(ChoiceUserAssignment.objects.filter(choice=choice))
-        choice.save()
         return JsonResponse({"success": True}, status=200)
 
     def delete(self, request, event_id, voting_id, choice_id):
         choice_assign = ChoiceUserAssignment.get_by_user_choice_id(request.user.id, choice_id)
-        voting = Voting.get_by_id(voting_id)
         voting_assign = VotingUserAssignment.get_by_user_voting_id(request.user.id, Voting.get_by_id(voting_id))
         if not choice_assign or not voting_assign:
             return PERMISSION_DENIED
         choice_assign.delete()
         voting_assign.delete()
-        choice = Choice.get_by_id_voting(choice_id, voting)
-        choice.votes_count = len(ChoiceUserAssignment.objects.filter(choice_id=choice_id))
-        choice.save()
         return NO_CONTENT
