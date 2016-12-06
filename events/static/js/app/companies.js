@@ -53,6 +53,13 @@ export default class CompaniesList extends React.Component {
         setTimeout(hashHistory.push('/companies/' + id), 20000);
     }
 
+    getFullName(company) {
+        return (
+            company['admin']['first_name'] + ' ' +
+            company['admin']['last_name']
+        );
+    }
+
     render() {
 
         let companies = this.state.searchCompanies.map( (companyObject) => {
@@ -74,10 +81,7 @@ export default class CompaniesList extends React.Component {
                                     <Avatar size={32}>
                                         {companyObject['admin']['first_name'][0].toUpperCase()}
                                     </Avatar>
-                                    {
-                                        companyObject['admin']['first_name'] + ' ' +
-                                        companyObject['admin']['last_name']
-                                    }
+                                    {this.getFullName(companyObject)}
                                 </Chip>
                             </div>
                         </div>
