@@ -4,6 +4,7 @@ import Paper from 'material-ui/Paper'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import Chip from 'material-ui/Chip';
 import Avatar from 'material-ui/Avatar';
+import RaisedButton from 'material-ui/RaisedButton';
 import CountdownTimer from './CountdownTimer';
 import moment from 'moment';
 import {blue300, indigo900} from 'material-ui/styles/colors';
@@ -60,6 +61,15 @@ export default class Voting extends React.Component {
 
     }
 
+    optionApplyHandler(event, choice_id, voting_id) {
+        axios.post('api/v1/events/'+this.props.params['event_id']+'/voting/'+voting_id+'/choice/'+choice_id+'/set_data/')
+            .then((response) => {
+            console.log(response.data);
+        });
+
+
+    }
+
     handleVote(event, choice_id, voting_id, voted) {
         event.stopPropagation();
         if (!voted) {
@@ -105,11 +115,6 @@ export default class Voting extends React.Component {
         }
     }
 
-    avatarClick(event) {
-        event.stopPropagation();
-        alert('booo!')
-    }
-
     getDateFormat(startDate, endDate) {
         let format = 'MMMM Do YYYY, h:mm:ss a';
         return (
@@ -129,14 +134,14 @@ export default class Voting extends React.Component {
         let votings = this.state.votings.map((voting, i) => {
             console.log(voting['seconds_left']);
             let choices = voting['choices'].sort((prev, next) => {
-                if (prev.votes < next.votes) return 1;
-                if (prev.votes > next.votes) return -1;
-                if (prev.votes == next.votes) return 0;
+                if (prev['votes'] < next['votes']) return 1;
+                if (prev['votes'] > next['votes']) return -1;
+                if (prev['votes'] == next['.vote']) return 0;
             }).map((choice, j) => {
                 let formattedChoice = this.getChoiceFormat(voting.type, choice.value);
                 let chipColor = choice['voted'] ? blue300 : '#e0e0e0';
 
-                return (
+                return [
                         <Chip
                             className="choice-item"
                             data-tip
@@ -164,8 +169,15 @@ export default class Voting extends React.Component {
                                     getContent={this.getTipContent.bind(this, choice['voters'])}
                                 >
                                 </ReactTooltip>
-                        </Chip>
-                );
+                        </Chip>,
+                        <RaisedButton
+                            className="apply-option-button"
+                            label="Apply"
+                            primary={true}
+                            onTouchTap={this.optionApplyHandler.bind(this, event, choice.id, voting.id)}
+                        >
+                        </RaisedButton>
+                ];
             });
 
             return (

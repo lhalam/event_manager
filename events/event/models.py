@@ -26,9 +26,11 @@ class Event(models.Model):
         return "%s" % self.title
 
     def save(self, *args, **kwargs):
-        self.start_date = TZ.localize(datetime.fromtimestamp(float(self.start_date)))
-        self.end_date = TZ.localize(datetime.fromtimestamp(float(self.end_date)))
-        self.location = self.location.split(",")
+        if isinstance(self.start_date, str) and isinstance(self.end_date, str):
+            self.start_date = TZ.localize(datetime.fromtimestamp(float(self.start_date)))
+            self.end_date = TZ.localize(datetime.fromtimestamp(float(self.end_date)))
+        if isinstance(self.location, str):
+            self.location = self.location.split(",")
         super(self.__class__, self).save(*args, **kwargs)
 
     def serialize(self):

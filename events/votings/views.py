@@ -4,7 +4,7 @@ from django.http.response import JsonResponse, HttpResponse
 from .models import Voting, Choice, ChoiceUserAssignment, VotingUserAssignment
 from registration.models import User
 from .forms import VotingForm
-from companies.views import PERMISSION_DENIED, NO_CONTENT, CREATED
+from companies.views import PERMISSION_DENIED, NO_CONTENT, CREATED, INVALID_PAYLOAD
 from event.models import Event, EventUserAssignment
 
 import json
@@ -169,4 +169,26 @@ class ChoiceView(View):
             return PERMISSION_DENIED
         choice_assign.delete()
         voting_assign.delete()
+        return NO_CONTENT
+
+
+class SetEventView(View):
+
+    def post(self, request, event_id, voting_id, choice_id):
+        event = Event.get_by_id(event_id)
+        voting = Voting.get_by_id(voting_id)
+        if not event or not voting:
+            return HttpResponse(status=404)
+        if event.owner_id != request.user.id:
+            return PERMISSION_DENIED
+        choice = json.loads(Choice.get_by_id_voting(choice_id, voting).value.replace("'", "\""))
+        if voting.type == 'date':
+            event.start_date = choice['start_date']
+            event.end_date = choice['end_date']
+        elif voting.type == 'place':
+            event.location = '{},{}'.format(choice['x_coordinate'], choice['y_coordinate'])
+            event.place = choice['place']
+        else:
+            return INVALID_PAYLOAD
+        event.save()
         return NO_CONTENT
