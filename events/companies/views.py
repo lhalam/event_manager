@@ -115,12 +115,7 @@ class TeamView(View):
                 'name': team.name,
                 'company': company.name,
                 'members': Team.get_members(team)[:4],
-                'admin': {
-                    'id': team.admin.id,
-                    'username': team.admin.username,
-                    'first_name': team.admin.first_name,
-                    'last_name': team.admin.last_name,
-                }
+                'admin': team.admin.to_dict()
             } for team in company.teams.all()]
             return JsonResponse(response, safe=False, status=200)
 
@@ -136,12 +131,7 @@ class TeamView(View):
             'name': team.name,
             'company': company.name,
             'members': Team.get_members(team),
-            'admin': {
-                'id': team.admin.id,
-                'username': team.admin.username,
-                'first_name': team.admin.first_name,
-                'last_name': team.admin.last_name,
-            },
+            'admin': team.admin.to_dict(),
             'role': User.get_by_id(request.user.id).get_role_id(company, team)
         }
         return JsonResponse(response, status=200)
@@ -235,13 +225,7 @@ class TeamUserAssignmentView(View):
             return TEAM_NOT_EXISTS
         users = TeamUserAssignmentView.get_users_to_add_list(team, company_id)
         for user in TeamUserAssignmentView.get_users_to_add_list(team, company_id):
-            user_object = {
-                "id": user.id,
-                "first_name": user.first_name,
-                "last_name": user.last_name,
-                "username": user.username
-            }
-            members.append(user_object)
+            members.append(user.to_dict())
 
         return JsonResponse({"participants": members}, status=200)
 
@@ -297,63 +281,30 @@ class CompanyAdminAssignView(View):
     def get(self, request, company_id=None):
         possible_admins = []
         if not company_id:
-            possible_admins.extend([{
-                'id': user.id,
-                'username': user.username,
-                'first_name': user.first_name,
-                'last_name': user.last_name,
-            } for user in User.get_all_users() if not Company.get_user_company(user)])
+            possible_admins.extend([user.to_dict() for user in User.get_all_users()
+                                    if not Company.get_user_company(user)])
             return JsonResponse({'possible_admins': possible_admins}, status=200)
         company = Company.get_by_id(company_id)
-        possible_admins.extend([{
-            'id': user.id,
-            'username': user.username,
-            'first_name': user.first_name,
-            'last_name': user.last_name,
-        } for user in User.get_all_users() if not Company.get_user_company(user) or
+        possible_admins.extend([user.to_dict() for user in User.get_all_users() if not Company.get_user_company(user) or
                                 company == Company.get_user_company(user)])
         return JsonResponse({'possible_admins': possible_admins}, status=200)
 
 
 class TeamAdminAssignView(View):
-
     def get(self, request, company_id, team_id=None):
         company = Company.get_by_id(company_id)
         if not company:
             return COMPANY_NOT_EXISTS
         possible_admins = []
         if not team_id:
-            possible_admins.extend([{
-                'id': user.id,
-                'username': user.username,
-                'first_name': user.first_name,
-                'last_name': user.last_name,
-            } for user in User.get_all_users() if not Company.get_user_company(user)])
+            possible_admins.extend([user.to_dict() for user in User.get_all_users()
+                                    if not Company.get_user_company(user)])
             for team in company.teams.all():
-                possible_admins.extend([{
-                    'id': user.id,
-                    'username': user.username,
-                    'first_name': user.first_name,
-                    'last_name': user.last_name,
-                } for user in team.members.all() if user != team.admin and {
-                    'id': user.id,
-                    'username': user.username,
-                    'first_name': user.first_name,
-                    'last_name': user.last_name,
-                } not in possible_admins])
+                possible_admins.extend([user.to_dict() for user in team.members.all()
+                                        if user != team.admin and user.to_dict() not in possible_admins])
             return JsonResponse({'possible_admins': possible_admins}, status=200)
         team = Team.get_by_id(team_id)
         team_admins = [team.admin for team in company.teams.all()]
-        possible_admins.extend([{
-            'id': user.id,
-            'username': user.username,
-            'first_name': user.first_name,
-            'last_name': user.last_name,
-        } for user in team.members.all() if user not in team_admins])
-        possible_admins.extend([{
-            'id': team.admin.id,
-            'username': team.admin.username,
-            'first_name': team.admin.first_name,
-            'last_name': team.admin.last_name,
-        }])
+        possible_admins.extend([user.to_dict() for user in team.members.all() if user not in team_admins])
+        possible_admins.extend([team.admin.to_dict()])
         return JsonResponse({'possible_admins': possible_admins}, status=200)

@@ -83,7 +83,6 @@ export default class Team extends React.Component {
 
         this.updateTeam = (teamName, admin) => {
             let members = this.state.members;
-            members.push(admin);
             this.setState({
                 name: teamName,
                 changedName: teamName,
@@ -234,19 +233,20 @@ export default class Team extends React.Component {
                                     ) : null
                                 }
                                 {
-                                    this.state.role < 3 ?
-                                    <AddTeamWindow
-                                        url={"companies/"+this.props.params.cid+"/teams/"}
-                                        type="edit"
-                                        newDataHandler={this.newDataHandler}
-                                        currentTitle={this.state.name}
-                                        currentAdmin={admin["first_name"] + " " + admin["last_name"]}
-                                        currentAdminId={admin.id}
-                                        updateTeam={this.updateTeam}
-                                        tid={this.props.params.tid}
-                                        label="Edit"
-                                        title="Edit team"
-                                    /> : null
+                                    this.state.role < 3 ? (
+                                        <AddTeamWindow
+                                            url={"companies/"+this.props.params.cid+"/teams/"}
+                                            type="edit"
+                                            newDataHandler={this.newDataHandler}
+                                            currentTitle={this.state.name}
+                                            currentAdmin={admin["first_name"] + " " + admin["last_name"]}
+                                            currentAdminId={admin.id}
+                                            updateTeam={this.updateTeam}
+                                            tid={this.props.params.tid}
+                                            label="Edit"
+                                            title="Edit team"
+                                        />
+                                    ) : null
                                 }
                                 {
                                     this.state.role < 3 ? (
@@ -259,7 +259,7 @@ export default class Team extends React.Component {
                                             noUsersText = 'All possible users were added to this team.'
                                             snackbarMessage={"successfully added to " + this.state.name}
                                         />
-                                    ): null
+                                    ) : null
                                 }
                             </div>
                         </Paper>

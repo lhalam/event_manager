@@ -12,8 +12,10 @@ INVITE_DAYS_TTL = 7
 IP_BAN_TTL = 60 * 5
 MAX_REQUESTS_COUNT = 10
 
+
 def min_birth_date():
     return timezone.now().date() + timezone.timedelta(days=-356*18)
+
 
 class User(BaseUser):
     birth_date = models.DateField(null=False, default=min_birth_date)
@@ -52,6 +54,7 @@ class User(BaseUser):
         if team and team.admin.id == self.id:
             return 2
         return 3
+
 
 class RegistrationConfirm(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)

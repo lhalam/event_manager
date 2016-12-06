@@ -147,10 +147,11 @@ export default class Company extends React.Component {
                                 url={"companies/"+this.props.params.company_id+"/teams/"}
                                 type="create"
                                 title="Create team"
-                                disabled={role == 2 || role == 3}
+                                admin_select={this.state.role > 1}
+                                disabled={this.state.role > 1}
                             />
                             <AddCompanyWindow
-                                disabled={role == 2 || role == 3}
+                                disabled={this.state.role > 1}
                                 url={"api/v1/companies/"+this.props.params.company_id+'/'}
                                 method="PUT"
                                 newDataHandler={this.newDataHandler}

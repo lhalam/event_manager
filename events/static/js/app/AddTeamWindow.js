@@ -108,9 +108,7 @@ export default class CreateTeam extends React.Component {
 
     render(){
         let possible_admins = this.state.possible_admins;
-        console.log('\n----------------\n');
         const dataSource = possible_admins.map(user => {
-            console.log(user.id, user.username, user.first_name);
             return {
                 'textKey': user['first_name'] + ' ' + user['last_name'],
                 'valueKey': user['id']
