@@ -90,7 +90,7 @@ class Form extends React.Component{
   }
 
   titleError(){
-    return this.state.title.trim().length < 5
+    return this.state.title.trim().length < 1 || this.state.title.trim().length > 20
   }
   
   startDateError(){
@@ -103,7 +103,7 @@ class Form extends React.Component{
   }
 
   descriptionError(){
-    return this.state.description.trim().length < 20
+    return this.state.description.trim().length < 10 || this.state.description.trim().length > 200
   }
 
   locationError(){
@@ -120,10 +120,10 @@ class Form extends React.Component{
   }
 
   render(){
-    const title_error = (this.titleError() && this.state.title_changed) ? 'It should be 5 characters' : ''
-    const start_date_error = this.startDateError() ? 'Start Date and Time cannot be earlier than now' : ''
-    const end_date_error = this.endDateError() ? 'End Date and Time cannot be earlier than Start Date and Time' : ''
-    const description_error = (this.descriptionError() && this.state.description_changed) ? 'It should be 20 characters' : ''
+    const title_error = (this.titleError() && this.state.title_changed) ? 'Cannot be empty and more than 20 characters' : ''
+    const start_date_error = this.startDateError() ? 'Start Date and Time cannot be earlier than now (15 minutes)' : ''
+    const end_date_error = this.endDateError() ? 'End Date and Time cannot be earlier than Start Date and Time (15 minutes)' : ''
+    const description_error = (this.descriptionError() && this.state.description_changed) ? 'Cannot be less 10 and more than 200 characters' : ''
     const location_error = (this.locationError() && this.state.location_changed) ? 'Select Place from a list' : ''
     return(
       <div>
