@@ -3,8 +3,13 @@ import axios from 'axios'
 import Paper from 'material-ui/Paper'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import Chip from 'material-ui/Chip';
+import Avatar from 'material-ui/Avatar';
 import CountdownTimer from './CountdownTimer';
 import moment from 'moment';
+import {blue300, indigo900} from 'material-ui/styles/colors';
+
+import ReactTooltip from 'react-tooltip'
+import {findDOMNode} from 'react-dom'
 
 
 export default class Voting extends React.Component {
@@ -23,13 +28,14 @@ export default class Voting extends React.Component {
 
     }
 
+
     loadVoting() {
         axios.get('api/v1/events/'+this.props.params['event_id']+'/voting/')
             .then((response) => {
                 console.log(response.data);
                 this.setState({
                     votings: response.data["votings"]
-                })
+                });
             })
             .catch((error) => {
                 console.log(error);
@@ -37,38 +43,24 @@ export default class Voting extends React.Component {
     }
 
     makeVote(choice_id, voting_id) {
-        axios.post('api/v1/events/'+this.props.params['event_id']+'/voting/'+voting_id+'/choice/'+choice_id+'/vote/')
+        axios.post('api/v1/events/' + this.props.params['event_id'] + '/voting/' + voting_id + '/choice/' + choice_id + '/vote/')
             .then((response) => {
-                alert('successfully voted');
                 console.log(response.data);
                 this.loadVoting();
-            })
-            .catch((error) => {
-                this.loadVoting();
-            })
+            });
+
     }
 
     deleteVote(choice_id, voting_id) {
         axios.delete('api/v1/events/'+this.props.params['event_id']+'/voting/'+voting_id+'/choice/'+choice_id+'/vote/')
             .then((response) => {
-                alert('successfully voted');
                 console.log(response.data);
                 this.loadVoting();
-            })
-            .catch((error) => {
-                this.loadVoting();
-            })
-    }
-
-    handleChoiceHover(event, voters) {
-        if (voters.length > 0) {
-            console.log(voters.map((voter) => {return voter.username}).join(' '));
-        }
+            });
 
     }
 
     handleVote(event, choice_id, voting_id, voted) {
-        console.log('event', event);
         event.stopPropagation();
         if (!voted) {
             this.makeVote(choice_id, voting_id);
@@ -94,6 +86,30 @@ export default class Voting extends React.Component {
 
     }
 
+    getTipContent(voters) {
+        if (voters.length > 0) {
+            let displayLength = 8;
+            return [
+                voters.slice(0, displayLength).map((voter) => {
+                    return (
+                            <Avatar className="tooltip-avatar" size={32}>
+                                {voter['first_name'][0].toUpperCase()}
+                            </Avatar>
+                    )
+                }),
+            ]
+        } else {
+            return (
+                null
+            )
+        }
+    }
+
+    avatarClick(event) {
+        event.stopPropagation();
+        alert('booo!')
+    }
+
     getDateFormat(startDate, endDate) {
         let format = 'MMMM Do YYYY, h:mm:ss a';
         return (
@@ -112,23 +128,48 @@ export default class Voting extends React.Component {
 
         let votings = this.state.votings.map((voting, i) => {
             console.log(voting['seconds_left']);
-            let choices = voting['choices'].map((choice, j) => {
+            let choices = voting['choices'].sort((prev, next) => {
+                if (prev.votes < next.votes) return 1;
+                if (prev.votes > next.votes) return -1;
+                if (prev.votes == next.votes) return 0;
+            }).map((choice, j) => {
                 let formattedChoice = this.getChoiceFormat(voting.type, choice.value);
-                 let chipColor = choice['voted'] ? '#00bcd4' : '#e0e0e0';
+                let chipColor = choice['voted'] ? blue300 : '#e0e0e0';
+
                 return (
-                    <Chip
-                        backgroundColor={chipColor}
-                        onTouchTap={this.handleVote.bind(this, event, choice.id, voting.id, choice['voted'])}
-                        key={j}
-                        onMouseEnter={this.handleChoiceHover.bind(this, event, choice['voters'])}
-                    >
-                        {formattedChoice}
-                    </Chip>
+                        <Chip
+                            className="choice-item"
+                            data-tip
+                            data-event-off={'active' || 'focused'}
+                            ref='choiceItem'
+                            data-for={choice.id}
+                            backgroundColor={chipColor}
+                            onTouchTap={this.handleVote.bind(this, event, choice.id, voting.id, choice['voted'])}
+                            key={j}
+                        >
+                                <Avatar size={32} color={blue300} backgroundColor={indigo900}>
+                                    {choice.votes}
+                                </Avatar>
+                                {formattedChoice}
+                                <ReactTooltip
+                                    class="tooltip"
+                                    eventOff="onClick"
+                                    key={choice['id'].toString()}
+                                    place="right"
+                                    delayShow={600}
+                                    delayHide={150}
+                                    id={choice['id'].toString()}
+                                    effect='solid'
+                                    type='info'
+                                    getContent={this.getTipContent.bind(this, choice['voters'])}
+                                >
+                                </ReactTooltip>
+                        </Chip>
                 );
             });
 
             return (
-                <MuiThemeProvider key={i}>
+                <div key={i}>
                     <div className="voting-wrap">
                         <Paper zDepth={1}>
                             <div className="voting-header">
@@ -141,21 +182,26 @@ export default class Voting extends React.Component {
                                 </div>
                             </div>
                                 {choices}
+                            <div className="choice-item">
                             <p>{voting.description}</p>
                             <p>{voting['votes']}</p>
                             <p>{voting['voted'] ? "voted" : "not voted"}</p>
+                            </div>
 
                         </Paper>
                     </div>
-                </MuiThemeProvider>
+                </div>
                 )
 
         });
 
         return (
-            <div>
-                {votings}
-            </div>
+            <MuiThemeProvider>
+                <div>
+                    {votings}
+                    <ReactTooltip />
+                </div>
+            </MuiThemeProvider>
         );
     }
 }
