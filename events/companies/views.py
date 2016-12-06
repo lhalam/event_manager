@@ -26,6 +26,7 @@ class CompanyView(View):
                 response = {"companies": [Company.to_dict(company) for company in companies]}
             else:
                 response = {"companies": [Company.to_dict(company)]}
+            response['role'] = User.get_by_id(request.user.id).get_role_id(company)
             return JsonResponse(response, status=200)
 
         company = Company.get_by_id(company_id)
@@ -35,6 +36,7 @@ class CompanyView(View):
             return PERMISSION_DENIED
         response = Company.to_dict(company)
         response['teams'] = [Team.to_dict(team) for team in Company.get_teams(company_id)]
+        response['role'] = User.get_by_id(request.user.id).get_role_id(company)
         return JsonResponse(response, status=200)
 
     def post(self, request):
@@ -139,7 +141,8 @@ class TeamView(View):
                 'username': team.admin.username,
                 'first_name': team.admin.first_name,
                 'last_name': team.admin.last_name,
-            }
+            },
+            'role': User.get_by_id(request.user.id).get_role_id(company, team)
         }
         return JsonResponse(response, status=200)
 
@@ -332,13 +335,25 @@ class TeamAdminAssignView(View):
                     'username': user.username,
                     'first_name': user.first_name,
                     'last_name': user.last_name,
-                } for user in team.members.all() if user != team.admin])
+                } for user in team.members.all() if user != team.admin and {
+                    'id': user.id,
+                    'username': user.username,
+                    'first_name': user.first_name,
+                    'last_name': user.last_name,
+                } not in possible_admins])
             return JsonResponse({'possible_admins': possible_admins}, status=200)
         team = Team.get_by_id(team_id)
+        team_admins = [team.admin for team in company.teams.all()]
         possible_admins.extend([{
             'id': user.id,
             'username': user.username,
             'first_name': user.first_name,
             'last_name': user.last_name,
-        } for user in team.members.all() if user not in [team.admin for team in company.teams.exclude(pk=team_id)]])
+        } for user in team.members.all() if user not in team_admins])
+        possible_admins.extend([{
+            'id': team.admin.id,
+            'username': team.admin.username,
+            'first_name': team.admin.first_name,
+            'last_name': team.admin.last_name,
+        }])
         return JsonResponse({'possible_admins': possible_admins}, status=200)

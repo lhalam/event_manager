@@ -31,7 +31,8 @@ export default class Team extends React.Component {
             openSnackbar: false,
             message: "",
             searchText: "",
-            openDialog: false
+            openDialog: false,
+            role: 3
         };
         this.handleDelete = this.handleDelete.bind(this);
         this.handleDeleteTeam = this.handleDeleteTeam.bind(this);
@@ -101,7 +102,8 @@ export default class Team extends React.Component {
                     changedName: response.data.name,
                     members: response.data.members,
                     searchMembers: response.data.members,
-                    admin: response.data.admin
+                    admin: response.data.admin,
+                    role: response.data.role,
                 });
             })
             .catch(error => {
@@ -209,7 +211,7 @@ export default class Team extends React.Component {
                                                     primaryText={member.first_name + " " + member.last_name}
                                                     leftAvatar={<Avatar>{member.first_name[0]}</Avatar>}
                                                     rightIconButton={
-                                                        admin["username"] != member["username"] ?
+                                                        (admin["username"] != member["username"] && this.state.role < 3) ?
                                                         <IconButton onClick={() => this.handleDelete(member)}>
                                                             <CancelButton />
                                                         </IconButton> : null
@@ -221,14 +223,18 @@ export default class Team extends React.Component {
                                 </List>
                             </div>
                             <div className="add-users-button">
-                                <RaisedButton
-                                    className="delete-button"
-                                    label="Delete team"
-                                    secondary={true}
-                                    onTouchTap={this.handleOpenDialog}
-                                />
                                 {
-                                    admin ?
+                                    this.state.role < 2 ? (
+                                        <RaisedButton
+                                            className="delete-button"
+                                            label="Delete team"
+                                            secondary={true}
+                                            onTouchTap={this.handleOpenDialog}
+                                        />
+                                    ) : null
+                                }
+                                {
+                                    this.state.role < 3 ?
                                     <AddTeamWindow
                                         url={"companies/"+this.props.params.cid+"/teams/"}
                                         type="edit"
@@ -242,15 +248,19 @@ export default class Team extends React.Component {
                                         title="Edit team"
                                     /> : null
                                 }
-                                <AssignParticipants
-                                    handleAddUsers={this.handleAddUsers}
-                                    url={"/api/v1/companies/" + this.props.params.cid + "/teams/"+
-                                         this.props.params.tid + "/user_assignment/"}
-                                    title = 'Add participants'
-                                    hintText = 'Start typing participant name...'
-                                    noUsersText = 'All possible users were added to this team.'
-                                    snackbarMessage={"successfully added to " + this.state.name}
-                                />
+                                {
+                                    this.state.role < 3 ? (
+                                        <AssignParticipants
+                                            handleAddUsers={this.handleAddUsers}
+                                            url={"/api/v1/companies/" + this.props.params.cid + "/teams/"+
+                                                 this.props.params.tid + "/user_assignment/"}
+                                            title = 'Add participants'
+                                            hintText = 'Start typing participant name...'
+                                            noUsersText = 'All possible users were added to this team.'
+                                            snackbarMessage={"successfully added to " + this.state.name}
+                                        />
+                                    ): null
+                                }
                             </div>
                         </Paper>
                     </div>

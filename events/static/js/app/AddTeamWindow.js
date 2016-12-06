@@ -16,7 +16,7 @@ export default class CreateTeam extends React.Component {
             open: false,
             teamName: "",
             admin: "",
-            possible_admins: []
+            possible_admins: [],
         };
 
         this.handleOpen = () => {
@@ -65,12 +65,14 @@ export default class CreateTeam extends React.Component {
         if(this.props.currentTitle && this.props.currentAdminId)
             this.setState({
                 teamName: this.props.currentTitle,
-                admin: this.props.currentAdminId
+                admin: this.props.currentAdminId,
+                isValid: true
             });
         this.getAdminList();
     }
     getAdminList()  {
-        axios.get('/api/v1/'+this.props.url+'get_admin')
+        let url = '/api/v1/'+this.props.url+(this.props.tid ? this.props.tid + "/" : "")+'get_admin';
+        axios.get(url)
             .then((response) => {
                 this.setState({
                     possible_admins: response.data['possible_admins']
@@ -87,6 +89,12 @@ export default class CreateTeam extends React.Component {
         });
     }
 
+    validateForm() {
+        return Boolean(this.state.teamName.trim().length) && (this.state.possible_admins.find(admin => {
+                    return admin.id == this.state.admin;
+                }) || this.state.admin)
+    }
+
     handleAdminInput(input_admin) {
         let possible_admin = this.state.possible_admins.find(admin => {
                     return admin.first_name + " " + admin.last_name == input_admin.trim();
@@ -100,7 +108,9 @@ export default class CreateTeam extends React.Component {
 
     render(){
         let possible_admins = this.state.possible_admins;
+        console.log('\n----------------\n');
         const dataSource = possible_admins.map(user => {
+            console.log(user.id, user.username, user.first_name);
             return {
                 'textKey': user['first_name'] + ' ' + user['last_name'],
                 'valueKey': user['id']
@@ -121,9 +131,7 @@ export default class CreateTeam extends React.Component {
             <FlatButton
                 label={this.props.type == "create" ? "Create" : "Edit"}
                 primary={true}
-                disabled={!this.state.teamName.trim().length || !possible_admins.find(admin => {
-                    return admin.id == this.state.admin;
-                })}
+                disabled={!this.validateForm()}
                 onTouchTap={this.props.type == "create" ? this.handleCreateTeam : this.handleUpdateTeam}
             />,
         ];
@@ -131,11 +139,15 @@ export default class CreateTeam extends React.Component {
         return (
             <MuiThemeProvider muiTheme={getMuiTheme()}>
                 <div style={{display: 'inline-block'}}>
-                    <RaisedButton
-                        label={this.props.label}
-                        onTouchTap={this.handleOpen}
-                        primary={true}
-                    />
+                    {
+                        this.props.disabled ? null : (
+                            <RaisedButton
+                                label={this.props.label}
+                                onTouchTap={this.handleOpen}
+                                primary={true}
+                            />
+                        )
+                    }
                     <Dialog
                         contentClassName={"dialog-window"}
                         titleClassName={"dialog-title"}

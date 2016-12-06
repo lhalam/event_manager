@@ -25,6 +25,14 @@ class User(BaseUser):
         else:
             return user
 
+    def get_role_id(self, company=None, team=None):
+        if self.is_superuser:
+            return 0
+        if company and company.admin.id == self.id:
+            return 1
+        if team and team.admin.id == self.id:
+            return 2
+        return 3
 
 class RegistrationConfirm(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
