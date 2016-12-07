@@ -1,5 +1,4 @@
-@import url(http://fonts.googleapis.com/css?family=Roboto:400,100,100italic,300,300ita‌​lic,400italic,500,500italic,700,700italic,900italic,900);
-
+@import 'colors';
 
 .header{
     color: rgba(0, 0, 0, 0.87);
@@ -26,30 +25,31 @@ h1{
     letter-spacing: 0px;
     font-size: 24px;
     font-weight: 400;
-    color: rgb(255, 255, 255);
+    color:@popover-dialog-header;
     height: 64px;
     line-height: 64px;
     flex: 1 1 0%
 }
 
-form {
-  margin: 0 auto;
-  max-width: 300px;
-  min-width: 100px;
-  text-align: center;
-  font-weight: normal;
+.login_form{
+    margin-top: 30px;
+    text-align: left;
+    font-weight: normal;
+    label{
+        font-weight: normal
+    }
 }
 
 .login_container {
   margin: 50px auto;
-  background: #f9f9f9;
+  background: @body-bg;
   max-width: 400px;
   min-width: 300px;
   padding: 0px 0px 20px;
   border-radius: 3px;
   position: relative;
   color: rgba(0, 0, 0, 0.87);
-  background-color: rgb(255, 255, 255);
+  background-color: @body-bg;
   transition: all 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms;
   box-sizing: border-box;
   font-family: Roboto,sans-serif;
@@ -60,8 +60,8 @@ form {
 .form_header{
     margin: 0;
     padding: 5px 0 15px 25px;
-    background: rgb(0, 151, 167);
-    color: #fff;
+    background: @popover-header;
+    color: @popover-dialog-header;
     border-radius: 2px 2px 0 0;
     font-size: 30px;
     height: 80px;
@@ -73,3 +73,14 @@ form {
   }
 }
 
+.login-error{
+    color: @error-color;
+    text-align: center;
+}
+.login-button{
+    display: block;
+}
+.to_registration{
+    text-align: center;
+    margin-top: 25px;
+}
