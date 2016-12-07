@@ -147,8 +147,8 @@ export default class Company extends React.Component {
                                 url={"companies/"+this.props.params.company_id+"/teams/"}
                                 type="create"
                                 title="Create team"
-                                admin_select={this.state.role > 1}
                                 disabled={this.state.role > 1}
+                                change_admin={this.state.role > 1}
                             />
                             <AddCompanyWindow
                                 disabled={this.state.role > 1}

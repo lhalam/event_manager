@@ -184,6 +184,7 @@ export default class Team extends React.Component {
                                     onChange={this.handleNameEdit}
                                     maxLength={50}
                                     onBlur={this.handleNameBlur}
+                                    disabled={this.state.role > 2}
                                 />
                             </div>
                             <Subheader><div className="subheader">Description</div></Subheader>
@@ -245,6 +246,7 @@ export default class Team extends React.Component {
                                             tid={this.props.params.tid}
                                             label="Edit"
                                             title="Edit team"
+                                            change_admin={this.state.role > 1}
                                         />
                                     ) : null
                                 }

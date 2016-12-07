@@ -173,6 +173,7 @@ export default class CreateTeam extends React.Component {
                             onUpdateInput={this.handleAdminInput}
                             ref="admin"
                             menuStyle={{maxHeight: "200px", overflow: "auto"}}
+                            disabled={this.props.change_admin}
                         />
                     </Dialog>
                 </div>

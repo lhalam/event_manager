@@ -161,11 +161,12 @@ class TeamView(View):
         return JsonResponse({'team_id': team.id}, status=201)
 
     def put(self, request, company_id, team_id):
+
         existence_error = TeamView.check_company_team_existence(company_id, team_id)
         if existence_error:
             return existence_error
         company = Company.get_by_id(company_id)
-        if not CompanyView.check_company_rights(request, company):
+        if not TeamView.check_team_rights(request, team_id) and not CompanyView.check_company_rights(request, company):
             return PERMISSION_DENIED
         upd_team_data = json.loads(request.body.decode())
         team_form = TeamForm(upd_team_data)
@@ -216,6 +217,9 @@ class TeamView(View):
                 if TeamUserAssignment.get_by_user_team(admin, team=team):
                     return 'This user is member of another company'
 
+    @staticmethod
+    def check_team_rights(request, team_id):
+        return request.user.id == Team.get_by_id(team_id).admin.id
 
 class TeamUserAssignmentView(View):
     def get(self, request, company_id, team_id):
@@ -234,7 +238,7 @@ class TeamUserAssignmentView(View):
         if existence_error:
             return existence_error
         company = Company.get_by_id(company_id)
-        if not CompanyView.check_company_rights(request, company):
+        if not TeamView.check_team_rights(request, team_id) and not CompanyView.check_company_rights(request, company):
             return PERMISSION_DENIED
         team = Team.get_by_id(team_id)
         new_team_members = json.loads(request.body.decode())
