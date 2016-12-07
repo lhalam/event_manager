@@ -4,6 +4,7 @@ import Paper from 'material-ui/Paper'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import Chip from 'material-ui/Chip';
 import Avatar from 'material-ui/Avatar';
+import Subheader from 'material-ui/Subheader';
 import RaisedButton from 'material-ui/RaisedButton';
 import CountdownTimer from './CountdownTimer';
 import moment from 'moment';
@@ -59,6 +60,14 @@ export default class Voting extends React.Component {
                 this.loadVoting();
             });
 
+    }
+
+    DeleteVoting(voting_id) {
+        axios.delete('api/v1/events/'+this.props['event_id']+'/voting/'+voting_id)
+            .then((response) => {
+                console.log(response.data);
+                this.loadVoting();
+            });
     }
 
     optionApplyHandler(event, choice_id, voting_id) {
@@ -119,10 +128,10 @@ export default class Voting extends React.Component {
     getDateFormat(startDate, endDate) {
         let format = 'MMMM Do YYYY, h:mm:ss a';
         return (
-            'From: ' +
+
             moment(startDate)
                 .format(format) +
-            "\nTo: " +
+            " - " +
             moment(endDate)
                 .format(format)
         );
@@ -198,13 +207,22 @@ export default class Voting extends React.Component {
                                     />
                                 </div>
                             </div>
-                                {choices}
                             <div className="choice-item">
-                            <p>{voting.description}</p>
-                            <p>{voting['votes']}</p>
-                            <p>{voting['voted'] ? "voted" : "not voted"}</p>
+                                <Subheader>Total votes: {voting['votes']}</Subheader>
+                                <Subheader>You have{voting['voted'] ? "voted" : "not voted yet"}</Subheader>
                             </div>
-
+                            {choices}
+                            <div className="choice-item">
+                                <p>{voting.description}</p>
+                            </div>
+                            <div className="add-users-button">
+                                <RaisedButton
+                                    className="delete-button voting-delete-button"
+                                    label="Delete voting"
+                                    secondary={true}
+                                    onTouchTap={this.DeleteVoting.bind(this, voting.id)}
+                                />
+                            </div>
                         </Paper>
                     </div>
                 </div>

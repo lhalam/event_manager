@@ -46,7 +46,7 @@ class Voting(models.Model):
             "description": self.description,
             "end_date": self.end_date,
             "creation_date": self.creation_date,
-            "seconds_left": self.end_date.timestamp()-time.time(),
+            "seconds_left": int(self.end_date.timestamp()-time.time()),
             "type": self.type,
             "choices": [choice.to_dict(user) for choice in self.choices.all()],
             "voters": voters,

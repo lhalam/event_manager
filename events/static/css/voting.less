@@ -19,8 +19,13 @@
     }
 }
 
+.voting-delete-button {
+  margin-bottom: 10px !important;
+}
+
 .choice-item {
   margin: 20px 40px !important;
+  min-width: 85%;
 }
 
 .tooltip-avatar {
@@ -35,8 +40,12 @@
   max-height: 100px;
 }
 
-.apply-option-button div {
-  display: inline-block;
+.apply-option-button {
+  margin: 5px 40px !important;;
+  div {
+    display: inline-block;
+  }
+
 }
 
 .radio-button-group {
@@ -44,7 +53,7 @@
 }
 
 .voting-form-body {
-  max-height: 370px !important;
+  max-height: 450px !important;
   overflow: auto !important;
 }
 
@@ -52,4 +61,17 @@
     font-size: 12px;
     color: @error-color;
     float: left;
+}
+
+.voting-dialog-window {
+  margin: 0 auto !important;
+  max-width: 520px !important;
+  width: 100% !important;
+  label {
+    font-weight: normal;
+  }
+}
+
+.voting-option {
+  margin-top: 10px !important;
 }
