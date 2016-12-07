@@ -30,6 +30,7 @@
     "webpack": "^1.13.3",
     "webpack-bundle-tracker": "0.0.93",
     "material-ui": "^0.16.1",
+    "material-ui-chip-input": "^0.10.0",
     "react-tap-event-plugin": "^1.0.0",
     "classnames": "^2.2.5",
     "underscore": "^1.8.3",
