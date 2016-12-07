@@ -162,7 +162,7 @@ class Form extends React.Component{
                 onChange={(event, value, date=this.state.end_date)=>this.setState({end_date: this.handleTimeUpdate(value, date)})}
               />
               <DatePicker
-                floatingLabelText="End Time*"
+                floatingLabelText="End Date*"
                 textFieldStyle={{width: '210px'}}
                 defaultDate={new Date(this.state.end_date * 1000)}
                 onChange={(event, value, date=this.state.end_date)=>this.setState({end_date: this.handleDateUpdate(value, date)})}
