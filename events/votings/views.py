@@ -191,4 +191,5 @@ class SetEventView(View):
         else:
             return INVALID_PAYLOAD
         event.save()
+        voting.delete()
         return NO_CONTENT

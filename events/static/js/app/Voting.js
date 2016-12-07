@@ -31,7 +31,7 @@ export default class Voting extends React.Component {
 
 
     loadVoting() {
-        axios.get('api/v1/events/'+this.props.params['event_id']+'/voting/')
+        axios.get('api/v1/events/'+this.props['event_id']+'/voting/')
             .then((response) => {
                 console.log(response.data);
                 this.setState({
@@ -44,7 +44,7 @@ export default class Voting extends React.Component {
     }
 
     makeVote(choice_id, voting_id) {
-        axios.post('api/v1/events/' + this.props.params['event_id'] + '/voting/' + voting_id + '/choice/' + choice_id + '/vote/')
+        axios.post('api/v1/events/' + this.props['event_id'] + '/voting/' + voting_id + '/choice/' + choice_id + '/vote/')
             .then((response) => {
                 console.log(response.data);
                 this.loadVoting();
@@ -53,7 +53,7 @@ export default class Voting extends React.Component {
     }
 
     deleteVote(choice_id, voting_id) {
-        axios.delete('api/v1/events/'+this.props.params['event_id']+'/voting/'+voting_id+'/choice/'+choice_id+'/vote/')
+        axios.delete('api/v1/events/'+this.props['event_id']+'/voting/'+voting_id+'/choice/'+choice_id+'/vote/')
             .then((response) => {
                 console.log(response.data);
                 this.loadVoting();
@@ -62,8 +62,9 @@ export default class Voting extends React.Component {
     }
 
     optionApplyHandler(event, choice_id, voting_id) {
-        axios.post('api/v1/events/'+this.props.params['event_id']+'/voting/'+voting_id+'/choice/'+choice_id+'/set_data/')
+        axios.post('api/v1/events/'+this.props['event_id']+'/voting/'+voting_id+'/choice/'+choice_id+'/set_data/')
             .then((response) => {
+            this.loadVoting();
             console.log(response.data);
         });
 
@@ -140,12 +141,20 @@ export default class Voting extends React.Component {
             }).map((choice, j) => {
                 let formattedChoice = this.getChoiceFormat(voting.type, choice.value);
                 let chipColor = choice['voted'] ? blue300 : '#e0e0e0';
+                let applyButton = (voting['seconds_left'] < 0 && voting['type'] != 'custom') ? (
+                    <RaisedButton
+                        className="apply-option-button"
+                        label="Apply"
+                        primary={true}
+                        onTouchTap={this.optionApplyHandler.bind(this, event, choice.id, voting.id)}
+                    />) : null;
 
                 return [
                         <Chip
                             className="choice-item"
                             data-tip
                             data-event-off={'active' || 'focused'}
+                            disabled={voting['seconds_left'] < 0}
                             ref='choiceItem'
                             data-for={choice.id}
                             backgroundColor={chipColor}
@@ -170,13 +179,9 @@ export default class Voting extends React.Component {
                                 >
                                 </ReactTooltip>
                         </Chip>,
-                        <RaisedButton
-                            className="apply-option-button"
-                            label="Apply"
-                            primary={true}
-                            onTouchTap={this.optionApplyHandler.bind(this, event, choice.id, voting.id)}
-                        >
-                        </RaisedButton>
+                    <div>
+                        {applyButton}
+                    </div>
                 ];
             });
 

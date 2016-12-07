@@ -3,7 +3,7 @@ import Dialog from 'material-ui/Dialog';
 import AutoComplete from 'material-ui/AutoComplete';
 import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
-import CompanyTextField from './CompanyTextField';
+import TextField from 'material-ui/TextField';
 import axios from 'axios';
 export default class AddCompanyWindow extends React.Component {
 
@@ -96,9 +96,9 @@ export default class AddCompanyWindow extends React.Component {
                 .then(() => {
                     let admin = newCompanyData['admin'];
                     let possibleAdmins = this.state.possible_admins;
-                    newCompanyData['admin'] = possibleAdmins.filter((userObject) => {
+                    newCompanyData['admin'] = possibleAdmins.first((userObject) => {
                         return userObject['id'] == admin
-                    })[0];
+                    });
                     this.props.newDataHandler(newCompanyData);
                 })
                 .catch((error) => {
@@ -173,18 +173,18 @@ export default class AddCompanyWindow extends React.Component {
                     contentClassName={"dialog-window"}
                     titleClassName={"dialog-title"}
                 >
-                    <CompanyTextField
-                        length={50}
-                        value={this.props.currentTitle}
-                        label='Company title'
+                    <TextField
+                        maxLength={50}
+                        defaultValue={this.props.currentTitle}
+                        floatingLabelText='Company title'
                         ref="title"
                         onChange={this.handleTitle}
                     />
                     <br/>
-                    <CompanyTextField
-                        length={500}
-                        value={this.props.currentDescription}
-                        label='Company description'
+                    <TextField
+                        maxLength={500}
+                        defaultValue={this.props.currentDescription}
+                        floatingLabelText='Company description'
                         ref="desc"
                         multiLine={true}
                         rows={3}
