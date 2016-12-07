@@ -16,7 +16,7 @@ import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import { hashHistory } from 'react-router';
 import SearchField from './SearchField';
-
+import AddTeamWindow from './AddTeamWindow';
 
 
 export default class Team extends React.Component {
@@ -26,11 +26,13 @@ export default class Team extends React.Component {
             name: "",
             changedName: "",
             members: [],
+            admin: null,
             searchMembers: [],
             openSnackbar: false,
             message: "",
             searchText: "",
-            openDialog: false
+            openDialog: false,
+            role: 3
         };
         this.handleDelete = this.handleDelete.bind(this);
         this.handleDeleteTeam = this.handleDeleteTeam.bind(this);
@@ -51,11 +53,12 @@ export default class Team extends React.Component {
             let newName = this.state.changedName;
             if(newName && newName != this.state.name)
                 axios.put("/api/v1/companies/" + this.props.params.cid + "/teams/" + this.props.params.tid + "/", {
-                        name: newName
+                        name: newName,
+                        admin:this.state.admin["id"]
                     })
                     .then(response => {
                         this.setState({
-                            name: newName,
+                            name: newName
                         });
                     })
                     .catch(error => {
@@ -77,6 +80,17 @@ export default class Team extends React.Component {
         this.handleCloseDialog = () => {
             this.setState({openDialog: false});
         };
+
+        this.updateTeam = (teamName, admin) => {
+            let members = this.state.members;
+            this.setState({
+                name: teamName,
+                changedName: teamName,
+                admin: admin,
+                members: members,
+                searchMembers: members
+            });
+        }
     }
 
     componentDidMount(){
@@ -86,7 +100,9 @@ export default class Team extends React.Component {
                     name: response.data.name,
                     changedName: response.data.name,
                     members: response.data.members,
-                    searchMembers: response.data.members
+                    searchMembers: response.data.members,
+                    admin: response.data.admin,
+                    role: response.data.role,
                 });
             })
             .catch(error => {
@@ -136,6 +152,25 @@ export default class Team extends React.Component {
                 onTouchTap={this.handleDeleteTeam}
             />,
         ];
+        let admin = this.state.admin;
+        let team_admin = null;
+        let admin_name = "";
+        if (admin) {
+            admin_name = admin["first_name"] + " " + admin["last_name"];
+            team_admin = (
+                <List>
+                    <Subheader><div className="subheader">Team Admin</div></Subheader>
+                    <div className="paper-element">
+                    <ListItem
+                        primaryText={admin_name}
+                        secondaryText={admin['username']}
+                        leftAvatar={<Avatar size={32}>{admin['first_name'][0].toUpperCase()}</Avatar>}
+                    />
+                    </div>
+                </List>
+            );
+        }
+
         return (
             <MuiThemeProvider muiTheme={getMuiTheme()}>
                 <div>
@@ -149,8 +184,11 @@ export default class Team extends React.Component {
                                     onChange={this.handleNameEdit}
                                     maxLength={50}
                                     onBlur={this.handleNameBlur}
+                                    disabled={this.state.role > 2}
                                 />
                             </div>
+                            <Subheader><div className="subheader">Description</div></Subheader>
+                            {team_admin}
                             <Subheader style={{paddingLeft: "40px"}}>Team members</Subheader>
                             <div className="team-members-search">
                                 <SearchField
@@ -173,9 +211,10 @@ export default class Team extends React.Component {
                                                     primaryText={member.first_name + " " + member.last_name}
                                                     leftAvatar={<Avatar>{member.first_name[0]}</Avatar>}
                                                     rightIconButton={
+                                                        (admin["username"] != member["username"] && this.state.role < 3) ?
                                                         <IconButton onClick={() => this.handleDelete(member)}>
                                                             <CancelButton />
-                                                        </IconButton>
+                                                        </IconButton> : null
                                                     }
                                                 />
                                             );
@@ -184,20 +223,46 @@ export default class Team extends React.Component {
                                 </List>
                             </div>
                             <div className="add-users-button">
-                                <RaisedButton
-                                    className="delete-button"
-                                    label="Delete team"
-                                    secondary={true}
-                                    onTouchTap={this.handleOpenDialog}
-                                />
-                                <AssignParticipants
-                                    handleAddUsers={this.handleAddUsers}
-                                    url={"/api/v1/companies/"+this.props.params.cid+"/teams/"+this.props.params.tid+"/user_assignment/"}
-                                    title = 'Add participants'
-                                    hintText = 'Start typing participant name...'
-                                    noUsersText = 'All possible users were added to this team.'
-                                    snackbarMessage={"successfully added to " + this.state.name + "."}
-                                />
+                                {
+                                    this.state.role < 2 ? (
+                                        <RaisedButton
+                                            className="delete-button"
+                                            label="Delete team"
+                                            secondary={true}
+                                            onTouchTap={this.handleOpenDialog}
+                                        />
+                                    ) : null
+                                }
+                                {
+                                    this.state.role < 3 ? (
+                                        <AddTeamWindow
+                                            url={"companies/"+this.props.params.cid+"/teams/"}
+                                            type="edit"
+                                            newDataHandler={this.newDataHandler}
+                                            currentTitle={this.state.name}
+                                            currentAdmin={admin["first_name"] + " " + admin["last_name"]}
+                                            currentAdminId={admin.id}
+                                            updateTeam={this.updateTeam}
+                                            tid={this.props.params.tid}
+                                            label="Edit"
+                                            title="Edit team"
+                                            change_admin={this.state.role > 1}
+                                        />
+                                    ) : null
+                                }
+                                {
+                                    this.state.role < 3 ? (
+                                        <AssignParticipants
+                                            handleAddUsers={this.handleAddUsers}
+                                            url={"/api/v1/companies/" + this.props.params.cid + "/teams/"+
+                                                 this.props.params.tid + "/user_assignment/"}
+                                            title = 'Add participants'
+                                            hintText = 'Start typing participant name...'
+                                            noUsersText = 'All possible users were added to this team.'
+                                            snackbarMessage={"successfully added to " + this.state.name}
+                                        />
+                                    ) : null
+                                }
                             </div>
                         </Paper>
                     </div>
