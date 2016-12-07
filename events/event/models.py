@@ -2,11 +2,8 @@ from django.db import models
 from registration.models import User
 from django.db.models.fields.related import ManyToManyField
 from django.contrib.postgres.fields import ArrayField
-#from django.utils.timezone import utc as TZ
 from pytz import utc as TZ
 from datetime import datetime
-
-
 
 
 class Event(models.Model):
@@ -28,9 +25,11 @@ class Event(models.Model):
         return "%s" % self.title
 
     def save(self, *args, **kwargs):
-        self.start_date = TZ.localize(datetime.utcfromtimestamp(float(self.start_date)))
-        self.end_date = TZ.localize(datetime.utcfromtimestamp(float(self.end_date)))
-        self.location = self.location.split(",")
+        if isinstance(self.start_date, str) and isinstance(self.end_date, str):
+            self.start_date = TZ.localize(datetime.utcfromtimestamp(float(self.start_date)))
+            self.end_date = TZ.localize(datetime.utcfromtimestamp(float(self.end_date)))
+        if isinstance(self.location, str):
+            self.location = self.location.split(",")
         super(self.__class__, self).save(*args, **kwargs)
 
     def serialize(self):
@@ -78,4 +77,7 @@ class EventUserAssignment(models.Model):
 
     @staticmethod
     def get_by_event_user(event, user):
-        return EventUserAssignment.objects.filter(user=user, event=event)
+        try:
+            return EventUserAssignment.objects.filter(user=user, event=event)
+        except EventUserAssignment.DoesNotExist:
+            return None

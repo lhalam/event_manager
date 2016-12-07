@@ -6,8 +6,8 @@ import Avatar from 'material-ui/Avatar';
 import {List, ListItem} from 'material-ui/List';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import AssignParticipants from './AssignParticipants';
-
-
+import AddVoting from './AddVoting';
+import Voting from './Voting'
 
 class Event extends React.Component{
     constructor(props){
@@ -47,6 +47,9 @@ class Event extends React.Component{
                         <Map event={true} location={this.state.event.location} geo={false} zoom={13}/>
                     </div>
                     <div className="event-card-body">
+                        <Voting
+                            event_id={this.props.params['event_id']}
+                        />
                     <div>
                         <div className="col-sm-4">
                             <b>Start Date: </b> 
@@ -88,6 +91,11 @@ class Event extends React.Component{
                     </div>                               
                     </div>
                     <div className="add-users-button">
+                        <AddVoting
+                            label="add voting"
+                            event_id={this.props.params['event_id']}
+                            url={"/api/v1/events/"+this.props.params.event_id+"/voting/"}
+                        />
                          <AssignParticipants
                             handleAddUsers={this.handleAddUsers}
                             url={"/api/v1/events/"+this.props.params.event_id+"/user_assignment/"}
