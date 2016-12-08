@@ -29,9 +29,6 @@ export default class DateField extends React.Component {
 
     render() {
         let validationState = this.getValidationState();
-        let maxDate = new Date();
-        let minDate = new Date();
-        minDate.setFullYear(minDate.getFullYear() - 100);
         return (
             <div className="field-wrapper">
                 <DatePicker
@@ -45,8 +42,6 @@ export default class DateField extends React.Component {
                     }
                     className="datepicker"
                     floatingLabelText={this.props.title + " *"}
-                    maxDate={maxDate}
-                    minDate={minDate}
                 />
             </div>
         );

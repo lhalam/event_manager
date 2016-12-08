@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'votings.apps.VotingsConfig',
     'static_precompiler',
     'webpack_loader',
+    'utils',
 ]
 
 MIDDLEWARE = [

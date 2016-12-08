@@ -1,6 +1,7 @@
-const React = require('react');
-const axios = require("axios");
-import Map from './map'
+import React from 'react';
+import axios from 'axios';
+import Map from './map';
+import Comments from './comments'
 import Avatar from 'material-ui/Avatar';
 import {List, ListItem} from 'material-ui/List';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
@@ -45,6 +46,7 @@ class Event extends React.Component{
         if (this.state.event){
             return(
                 <MuiThemeProvider>
+                <div>
                 <div className="event-card">
                     <div className="event-card-header">
                         {this.state.event.title}
@@ -118,6 +120,17 @@ class Event extends React.Component{
                         </b>
                             {this.state.event.description}
                     </div>
+                </div>
+                <div className="comments-container">
+                    <div className="comments-header">
+                        <h1>
+                            Comments
+                        </h1>
+                    </div><hr/>
+                    <div className="comments-body">
+                        <Comments event_id={this.state.event.id}/>
+                    </div>
+                </div>
                 </div>
                 </MuiThemeProvider>
             )

@@ -14,7 +14,7 @@ class CommentView(View):
     def get(self, request, id):
         if not request.user.is_authenticated:
             return HttpResponse('Permission denied', status=403)
-        comments = Comment.objects.filter(event_id=id).order_by('date_add')
+        comments = Comment.objects.filter(event_id=id).order_by('-date_add')
         response = [comment.to_dict() for comment in comments]
         return HttpResponse(json.dumps(response), content_type="text/json")
 
