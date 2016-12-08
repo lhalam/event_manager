@@ -149,7 +149,7 @@ class Form extends React.Component{
                 floatingLabelText="Start Date*"
                 textFieldStyle={{width: '210px'}}
                 defaultDate={new Date(this.state.startDate * 1000)}
-                onChange={(event, value, date=this.state.endDate)=>this.setState({startDate: this.handleDateUpdate(value, date)})}
+                onChange={(event, value, date=this.state.startDate)=>this.setState({startDate: this.handleDateUpdate(value, date)})}
                 />
               <span className="error-message">{startDateError}</span>
           </div>
