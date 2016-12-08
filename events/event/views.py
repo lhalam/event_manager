@@ -43,7 +43,6 @@ class EventView(View):
         except:
             return JsonResponse({"error_message": "Problem with JSON load or decode"}, status=400)
         user = User.get_by_id(request.user.id)
-        print(event_data)
         event_data['owner'] = user
         validation_form = EventCreateForm(event_data)
         if validation_form.is_valid():
@@ -52,8 +51,7 @@ class EventView(View):
                 EventUserAssignment.objects.create(user=user, event=event)
             except:
                 return JsonResponse({"error_message": "Can not create relation between user and event"}, status=401)
-            return HttpResponse(event.id)
-            return JsonResponse({'message': "Event created successfully"}, status=200)
+            return JsonResponse({'message': "Event created successfully", "event_id": event.id}, status=200)
         return JsonResponse(json.loads(validation_form.errors.as_json()), status=400)
 
     def put(self, request, pk):
