@@ -34,7 +34,7 @@ export default class AddVoting extends React.Component {
         }
         ;
 
-        this.handleOpen = () => {this.setState({open: true});};
+        this.handleOpen = () => {this.loadVoting(); this.setState({open: true});};
         this.handleClose = () => {this.setState({open: false, type: ""});};
         this.handleTitle = (event) => {this.setState({title: event.target.value})};
         this.handleDescription = (event) => {this.setState({description: event.target.value})};
@@ -65,7 +65,13 @@ export default class AddVoting extends React.Component {
 
     handleCreateVoting() {
         this.setState({
-            open: false
+            open: false,
+            title: '',
+            description: '',
+            location_changed: false,
+            type: "",
+            choices: [],
+            customValue: ''
         });
         let newVotingData = JSON.stringify({
             "title": this.state.title,
@@ -77,7 +83,6 @@ export default class AddVoting extends React.Component {
         axios.post(this.props.url, newVotingData.toString())
                 .then((response) => {
                     console.log(response.data);
-                    hashHistory('/');
                 })
                 .catch((error) => {
                     console.log(error.response)
@@ -107,7 +112,7 @@ export default class AddVoting extends React.Component {
   handleTimeUpdate(value, date){
     let date_time = new Date(date* 1000)
     date_time.setHours(value.getHours())
-    date_time.setMinutes(value.getMinutes())
+    date_time.setMinutes(value.getMinutes());
     date_time.setSeconds(0)
     date_time.setMilliseconds(0)
     return String(date_time.getTime() /1000)
@@ -128,8 +133,11 @@ export default class AddVoting extends React.Component {
     }
 
     endVotingDateError() {
-        const now = new Date().getTime() / 1000
-        return this.state.votingEndDate < now
+
+        let offset = new Date().getTimezoneOffset() * 60;
+        const now = (new Date().getTime() / 1000);
+        console.log('TIME', offset, now+offset, this.state.votingEndDate );
+        return this.state.votingEndDate < now+offset
     }
 
     handleRadiobuttonSelect (event) {
@@ -305,13 +313,13 @@ export default class AddVoting extends React.Component {
               <div className="date_time_wrapper">
                   <TimePicker
                     format="24hr"
-                    floatingLabelText="End Date*"
+                    floatingLabelText="End Time*"
                     defaultTime={new Date(this.state.end_date * 1000)}
                     textFieldStyle={{width: '210px', float: 'right'}}
                     onChange={(event, value, date=this.state.end_date)=>this.setState({end_date: this.handleTimeUpdate(value, date)})}
                   />
                   <DatePicker
-                    floatingLabelText="End Time*"
+                    floatingLabelText="End Date*"
                     textFieldStyle={{width: '210px'}}
                     defaultDate={new Date(this.state.end_date * 1000)}
                     onChange={(event, value, date=this.state.end_date)=>this.setState({end_date: this.handleDateUpdate(value, date)})}
@@ -339,9 +347,14 @@ export default class AddVoting extends React.Component {
                 let notAccessibleTypes = response.data['votings'].map((voting) => {return voting.type});
                 this.setState({
                     notAccessibleTypes: notAccessibleTypes,
+                    votings: response.data['votings'],
                 });
             })
             .catch((error) => {
+                 this.setState({
+                    notAccessibleTypes: [],
+                    votings: [],
+                });
                 console.log(error);
             })
     }
@@ -372,11 +385,11 @@ export default class AddVoting extends React.Component {
         let choiceBlock;
 
         if (this.state.type == 'custom') {
-            choiceBlock = this.getCustomChoices(3)
+            choiceBlock = this.getCustomChoices()
         } else if (this.state.type == 'place') {
-            choiceBlock = this.getPlaceChoices(3)
+            choiceBlock = this.getPlaceChoices()
         } else if (this.state.type == 'date') {
-            choiceBlock = this.getDateChoices(3)
+            choiceBlock = this.getDateChoices()
         }
 
         return (
@@ -417,13 +430,13 @@ export default class AddVoting extends React.Component {
                         <div className="date_time_wrapper">
                             <TimePicker
                                 format="24hr"
-                                floatingLabelText="End Date*"
+                                floatingLabelText="End Time*"
                                 defaultTime={new Date(this.state.votingEndDate * 1000)}
                                 textFieldStyle={{width: '210px', float: 'right'}}
                                 onChange={(event, value, date=this.state.votingEndDate)=>this.setState({votingEndDate: this.handleTimeUpdate(value, date)})}
                             />
                           <DatePicker
-                                floatingLabelText="End Time*"
+                                floatingLabelText="End Date*"
                                 textFieldStyle={{width: '210px'}}
                                 defaultDate={new Date(this.state.votingEndDate * 1000)}
                                 onChange={(event, value, date=this.state.votingEndDate)=>this.setState({votingEndDate: this.handleDateUpdate(value, date)})}
@@ -437,14 +450,14 @@ export default class AddVoting extends React.Component {
                                 onChange={this.handleRadiobuttonSelect}
                             >
                                 <RadioButton
-                                    value="place"
-                                    label="voting for location of event"
-                                    disabled={this.state.notAccessibleTypes.indexOf('place') != -1}
-                                />
-                                <RadioButton
                                     value="date"
                                     label="voting for date of event"
                                     disabled={this.state.notAccessibleTypes.indexOf('date') != -1}
+                                />
+                                <RadioButton
+                                    value="place"
+                                    label="voting for location of event"
+                                    disabled={this.state.notAccessibleTypes.indexOf('place') != -1}
                                 />
                                 <RadioButton
                                     value="custom"

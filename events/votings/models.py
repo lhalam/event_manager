@@ -5,7 +5,6 @@ from registration.models import User
 from django.utils.timezone import utc as timezone
 
 from datetime import datetime
-import time
 
 
 class Voting(models.Model):
@@ -34,6 +33,7 @@ class Voting(models.Model):
         return '{}'.format(self.title)
 
     def to_dict(self, user):
+        now = datetime.now().timestamp()
         voters = [{
             'id': vote.user.id,
             'username': vote.user.username,
@@ -46,7 +46,7 @@ class Voting(models.Model):
             "description": self.description,
             "end_date": self.end_date,
             "creation_date": self.creation_date,
-            "seconds_left": int(self.end_date.timestamp()-time.time()),
+            "seconds_left": int(self.end_date.timestamp()-now),
             "type": self.type,
             "choices": [choice.to_dict(user) for choice in self.choices.all()],
             "voters": voters,

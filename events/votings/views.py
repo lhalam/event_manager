@@ -17,8 +17,6 @@ class VotingView(View):
         event = Event.get_by_id(event_id)
         if not voting_id:
             response = [voting.to_dict(request.user) for voting in event.votings.all()]
-            if not response:
-                return HttpResponse(status=404)
             return JsonResponse({"votings": response}, status=200)
 
         voting = Voting.get_by_id(voting_id)
@@ -183,8 +181,8 @@ class SetEventView(View):
             return PERMISSION_DENIED
         choice = json.loads(Choice.get_by_id_voting(choice_id, voting).value.replace("'", "\""))
         if voting.type == 'date':
-            event.start_date = choice['start_date']
-            event.end_date = choice['end_date']
+            event.start_date = str(choice['start_date'])
+            event.end_date = str(choice['end_date'])
         elif voting.type == 'place':
             event.location = '{},{}'.format(choice['x_coordinate'], choice['y_coordinate'])
             event.place = choice['place']

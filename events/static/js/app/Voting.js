@@ -2,13 +2,14 @@ import React from 'react';
 import axios from 'axios'
 import Paper from 'material-ui/Paper'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import Chip from 'material-ui/Chip';
 import Avatar from 'material-ui/Avatar';
 import Subheader from 'material-ui/Subheader';
 import RaisedButton from 'material-ui/RaisedButton';
 import CountdownTimer from './CountdownTimer';
 import moment from 'moment';
-import {blue300, indigo900} from 'material-ui/styles/colors';
+import {blue300, indigo900, green300} from 'material-ui/styles/colors';
+import {List, ListItem} from 'material-ui/List';
+import ActionDone from 'material-ui/svg-icons/action/done';
 
 import ReactTooltip from 'react-tooltip'
 import {findDOMNode} from 'react-dom'
@@ -22,14 +23,13 @@ export default class Voting extends React.Component {
         };
 
         this.loadVoting = this.loadVoting.bind(this);
+        this.DeleteVoting = this.DeleteVoting.bind(this);
     }
 
     componentDidMount() {
         this.loadVoting();
-        console.log('Did mount');
-
+        setInterval(() => {this.loadVoting()}, 5000);
     }
-
 
     loadVoting() {
         axios.get('api/v1/events/'+this.props['event_id']+'/voting/')
@@ -40,7 +40,6 @@ export default class Voting extends React.Component {
                 });
             })
             .catch((error) => {
-                console.log(error);
             })
     }
 
@@ -58,35 +57,49 @@ export default class Voting extends React.Component {
             .then((response) => {
                 console.log(response.data);
                 this.loadVoting();
-            });
+            })
+            .catch((error) => {console.log(error)});
 
     }
 
     DeleteVoting(voting_id) {
+        console.log('api/v1/events/'+this.props['event_id']+'/voting/'+voting_id);
         axios.delete('api/v1/events/'+this.props['event_id']+'/voting/'+voting_id)
             .then((response) => {
-                console.log(response.data);
+                console.log('response', response.data);
                 this.loadVoting();
-            });
+            })
+            .catch((error) => {
+                this.loadVoting();
+                console.log(error.response)
+            })
     }
 
     optionApplyHandler(event, choice_id, voting_id) {
         axios.post('api/v1/events/'+this.props['event_id']+'/voting/'+voting_id+'/choice/'+choice_id+'/set_data/')
             .then((response) => {
             this.loadVoting();
-            console.log(response.data);
-        });
-
+            this.props.updateEvent(response.data);
+            console.log('update', response.data);
+            })
+            .catch((error) => {
+                this.loadVoting();
+                console.log(error)
+            });
 
     }
 
-    handleVote(event, choice_id, voting_id, voted) {
+    handleVote(event, choice_id, voting, voted) {
         event.stopPropagation();
-        if (!voted) {
-            this.makeVote(choice_id, voting_id);
+        this.loadVoting();
+        console.log(voting.seconds_left+new Date().getTimezoneOffset()*60);
+        if (!voted && voting['seconds_left']+new Date().getTimezoneOffset()*60 > 0) {
+            this.makeVote(choice_id, voting.id);
+        } else if (voting['seconds_left']+new Date().getTimezoneOffset()*60 > 0) {
+            this.deleteVote(choice_id, voting.id);
         } else {
-            this.deleteVote(choice_id, voting_id);
         }
+
     }
 
     getChoiceFormat(type, choice_value) {
@@ -139,46 +152,45 @@ export default class Voting extends React.Component {
     }
 
     render() {
-
-
         let votings = this.state.votings.map((voting, i) => {
-            console.log(voting['seconds_left']);
+            console.log();
             let choices = voting['choices'].sort((prev, next) => {
                 if (prev['votes'] < next['votes']) return 1;
                 if (prev['votes'] > next['votes']) return -1;
                 if (prev['votes'] == next['.vote']) return 0;
             }).map((choice, j) => {
                 let formattedChoice = this.getChoiceFormat(voting.type, choice.value);
-                let chipColor = choice['voted'] ? blue300 : '#e0e0e0';
-                let applyButton = (voting['seconds_left'] < 0 && voting['type'] != 'custom') ? (
+                let applyButton = (voting['seconds_left']+new Date().getTimezoneOffset()*60 < 0 && voting['type'] != 'custom') ? (
                     <RaisedButton
                         className="apply-option-button"
                         label="Apply"
                         primary={true}
                         onTouchTap={this.optionApplyHandler.bind(this, event, choice.id, voting.id)}
                     />) : null;
-
+                let voted = choice['voted'] ?(<Avatar backgroundColor={green300} icon={<ActionDone />} />) : (<Avatar />);
                 return [
-                        <Chip
+                        <ListItem
                             className="choice-item"
                             data-tip
                             data-event-off={'active' || 'focused'}
-                            disabled={voting['seconds_left'] < 0}
+                            disabled={voting['seconds_left']+new Date().getTimezoneOffset()*60 < 0}
                             ref='choiceItem'
                             data-for={choice.id}
-                            backgroundColor={chipColor}
-                            onTouchTap={this.handleVote.bind(this, event, choice.id, voting.id, choice['voted'])}
+                            onTouchTap={this.handleVote.bind(this, event, choice.id, voting, choice['voted'])}
                             key={j}
-                        >
-                                <Avatar size={32} color={blue300} backgroundColor={indigo900}>
+                            leftAvatar={voted}
+                            rightAvatar={
+                                <Avatar color={'#fff'} backgroundColor={'rgb(0, 151, 167)'}>
                                     {choice.votes}
                                 </Avatar>
+                            }
+                        >
                                 {formattedChoice}
                                 <ReactTooltip
                                     class="tooltip"
                                     eventOff="onClick"
                                     key={choice['id'].toString()}
-                                    place="right"
+                                    place="top"
                                     delayShow={600}
                                     delayHide={150}
                                     id={choice['id'].toString()}
@@ -187,7 +199,7 @@ export default class Voting extends React.Component {
                                     getContent={this.getTipContent.bind(this, choice['voters'])}
                                 >
                                 </ReactTooltip>
-                        </Chip>,
+                        </ListItem>,
                     <div>
                         {applyButton}
                     </div>
@@ -202,14 +214,13 @@ export default class Voting extends React.Component {
                                 {voting.title}
                                 <div className="voting-timer">
                                     <CountdownTimer
-                                        id={voting.id}
-                                        secondsLeft={voting['seconds_left']}
+                                        id={voting.id+voting.title}
+                                        secondsLeft={voting['seconds_left']+new Date().getTimezoneOffset()*60}
                                     />
                                 </div>
                             </div>
                             <div className="choice-item">
                                 <Subheader>Total votes: {voting['votes']}</Subheader>
-                                <Subheader>You have{voting['voted'] ? "voted" : "not voted yet"}</Subheader>
                             </div>
                             {choices}
                             <div className="choice-item">

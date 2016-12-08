@@ -13,7 +13,15 @@ class Event extends React.Component{
         super(props);
         this.state = ({event: false});
         this.handleAddUsers = this.handleAddUsers.bind(this);
+        this.updateData = this.updateData.bind(this);
     }
+
+    updateData (data) {
+        console.log('UPDATE DATA', data);
+        this.setState({
+            event: data
+        });
+    };
 
     handleAddUsers(users) {
         let event = this.state.event;
@@ -47,6 +55,7 @@ class Event extends React.Component{
                     <div className="event-card-body">
                         <Voting
                             event_id={this.props.params['event_id']}
+                            updateEvent={this.updateData}
                         />
                     <div>
                         <div className="col-sm-4">
