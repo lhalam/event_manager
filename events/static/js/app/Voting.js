@@ -12,7 +12,6 @@ import {List, ListItem} from 'material-ui/List';
 import ActionDone from 'material-ui/svg-icons/action/done';
 
 import ReactTooltip from 'react-tooltip'
-import {findDOMNode} from 'react-dom'
 
 
 export default class Voting extends React.Component {
@@ -34,9 +33,9 @@ export default class Voting extends React.Component {
     loadVoting() {
         axios.get('api/v1/events/'+this.props['event_id']+'/voting/')
             .then((response) => {
-                console.log(response.data);
                 this.setState({
-                    votings: response.data["votings"]
+                    votings: response.data["votings"],
+                    owner: response.data["owner"]
                 });
             })
             .catch((error) => {
@@ -46,9 +45,9 @@ export default class Voting extends React.Component {
     makeVote(choice_id, voting_id) {
         axios.post('api/v1/events/' + this.props['event_id'] + '/voting/' + voting_id + '/choice/' + choice_id + '/vote/')
             .then((response) => {
-                console.log(response.data);
                 this.loadVoting();
-            });
+            })
+            .catch((error) => console.log(error));
 
     }
 
@@ -63,27 +62,22 @@ export default class Voting extends React.Component {
     }
 
     DeleteVoting(voting_id) {
-        console.log('api/v1/events/'+this.props['event_id']+'/voting/'+voting_id);
         axios.delete('api/v1/events/'+this.props['event_id']+'/voting/'+voting_id)
             .then((response) => {
-                console.log('response', response.data);
                 this.loadVoting();
             })
             .catch((error) => {
                 this.loadVoting();
-                console.log(error.response)
+                console.log(error)
             })
     }
 
     optionApplyHandler(event, choice_id, voting_id) {
         axios.post('api/v1/events/'+this.props['event_id']+'/voting/'+voting_id+'/choice/'+choice_id+'/set_data/')
             .then((response) => {
-            this.loadVoting();
             this.props.updateEvent(response.data);
-            console.log('update', response.data);
             })
             .catch((error) => {
-                this.loadVoting();
                 console.log(error)
             });
 
@@ -92,7 +86,6 @@ export default class Voting extends React.Component {
     handleVote(event, choice_id, voting, voted) {
         event.stopPropagation();
         this.loadVoting();
-        console.log(voting.seconds_left+new Date().getTimezoneOffset()*60);
         if (!voted && voting['seconds_left']+new Date().getTimezoneOffset()*60 > 0) {
             this.makeVote(choice_id, voting.id);
         } else if (voting['seconds_left']+new Date().getTimezoneOffset()*60 > 0) {
@@ -153,14 +146,16 @@ export default class Voting extends React.Component {
 
     render() {
         let votings = this.state.votings.map((voting, i) => {
-            console.log();
             let choices = voting['choices'].sort((prev, next) => {
                 if (prev['votes'] < next['votes']) return 1;
                 if (prev['votes'] > next['votes']) return -1;
                 if (prev['votes'] == next['.vote']) return 0;
             }).map((choice, j) => {
                 let formattedChoice = this.getChoiceFormat(voting.type, choice.value);
-                let applyButton = (voting['seconds_left']+new Date().getTimezoneOffset()*60 < 0 && voting['type'] != 'custom') ? (
+                let applyButton = (
+                    voting['seconds_left']+new Date().getTimezoneOffset()*60 < 0
+                    && voting['type'] != 'custom'
+                    && this.state.owner) ? (
                     <RaisedButton
                         className="apply-option-button"
                         label="Apply"
@@ -226,14 +221,18 @@ export default class Voting extends React.Component {
                             <div className="choice-item">
                                 <p>{voting.description}</p>
                             </div>
-                            <div className="add-users-button">
-                                <RaisedButton
-                                    className="delete-button voting-delete-button"
-                                    label="Delete voting"
-                                    secondary={true}
-                                    onTouchTap={this.DeleteVoting.bind(this, voting.id)}
-                                />
-                            </div>
+                            {
+                                this.state.owner ? (
+                                    <div className="add-users-button">
+                                        <RaisedButton
+                                            className="delete-button voting-delete-button"
+                                            label="Delete voting"
+                                            secondary={true}
+                                            onTouchTap={this.DeleteVoting.bind(this, voting.id)}
+                                        />
+                                    </div>
+                                ) : null
+                            }
                         </Paper>
                     </div>
                 </div>

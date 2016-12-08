@@ -17,7 +17,10 @@ class VotingView(View):
         event = Event.get_by_id(event_id)
         if not voting_id:
             response = [voting.to_dict(request.user) for voting in event.votings.all()]
-            return JsonResponse({"votings": response}, status=200)
+            return JsonResponse({
+                "votings": response,
+                "owner": event.owner_id == request.user.id
+            }, status=200)
 
         voting = Voting.get_by_id(voting_id)
         if not voting:
@@ -190,4 +193,4 @@ class SetEventView(View):
             return INVALID_PAYLOAD
         event.save()
         voting.delete()
-        return NO_CONTENT
+        return JsonResponse(event.to_dict(), status=201)

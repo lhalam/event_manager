@@ -18,7 +18,7 @@ class Event extends React.Component{
     }
 
     updateData (data) {
-        console.log('UPDATE DATA', data);
+        data['is_owner'] = true;
         this.setState({
             event: data
         });
@@ -100,11 +100,11 @@ class Event extends React.Component{
                     </div>                               
                     </div>
                     <div className="add-users-button">
-                        <AddVoting
+                        { this.state.event['is_owner'] ? (<AddVoting
                             label="add voting"
                             event_id={this.props.params['event_id']}
                             url={"/api/v1/events/"+this.props.params.event_id+"/voting/"}
-                        />
+                        />) : null}
                          <AssignParticipants
                             handleAddUsers={this.handleAddUsers}
                             url={"/api/v1/events/"+this.props.params.event_id+"/user_assignment/"}

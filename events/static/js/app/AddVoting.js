@@ -91,9 +91,9 @@ export default class AddVoting extends React.Component {
 
     initialDate() {
         const date = new Date();
-        date.setMinutes(0)
-        date.setSeconds(0)
-        date.setMilliseconds(0)
+        date.setMinutes(0);
+        date.setSeconds(0);
+        date.setMilliseconds(0);
         return {
             start_date: date.setHours(date.getHours() + 2),
             end_date: date.setHours(date.getHours() + 1),
@@ -102,21 +102,21 @@ export default class AddVoting extends React.Component {
 
 
     handleDateUpdate(value, date){
-    let date_time = new Date(date*1000)
-    date_time.setFullYear(value.getFullYear())
-    date_time.setMonth(value.getMonth())
-    date_time.setDate(value.getDate())
-    return String(date_time.getTime()/1000)
+        let date_time = new Date(date*1000);
+        date_time.setFullYear(value.getFullYear());
+        date_time.setMonth(value.getMonth());
+        date_time.setDate(value.getDate());
+        return String(date_time.getTime()/1000)
     }
 
-  handleTimeUpdate(value, date){
-    let date_time = new Date(date* 1000)
-    date_time.setHours(value.getHours())
-    date_time.setMinutes(value.getMinutes());
-    date_time.setSeconds(0)
-    date_time.setMilliseconds(0)
-    return String(date_time.getTime() /1000)
-  }
+    handleTimeUpdate(value, date){
+        let date_time = new Date(date* 1000);
+        date_time.setHours(value.getHours());
+        date_time.setMinutes(value.getMinutes());
+        date_time.setSeconds(0);
+        date_time.setMilliseconds(0);
+        return String(date_time.getTime() /1000)
+    }
 
     setLocation(address, location){
         this.setState({place: address, xCoordinate: location.lat(), yCoordinate: location.lng()})
@@ -124,7 +124,7 @@ export default class AddVoting extends React.Component {
 
 
     startDateError(){
-        const now = new Date().getTime() / 1000
+        const now = new Date().getTime() / 1000;
         return this.state.start_date - now < 60 * 15
     }
 
@@ -136,7 +136,6 @@ export default class AddVoting extends React.Component {
 
         let offset = new Date().getTimezoneOffset() * 60;
         const now = (new Date().getTime() / 1000);
-        console.log('TIME', offset, now+offset, this.state.votingEndDate );
         return this.state.votingEndDate < now+offset
     }
 
@@ -224,7 +223,10 @@ export default class AddVoting extends React.Component {
 
 
     getPlaceChoices () {
-        const location_error = (!Boolean(this.state.xCoordinate && this.state.yCoordinate) && this.state.location_changed) ? 'Select Place from a list' : ''
+        const location_error = (
+            !Boolean(this.state.xCoordinate && this.state.yCoordinate)
+            && this.state.location_changed
+        ) ? 'Select Place from a list' : '';
         let choices = this.state.choices.map((choice, i) => {
             return (
                 <Chip
@@ -411,14 +413,13 @@ export default class AddVoting extends React.Component {
                         onRequestClose={this.handleClose}
                     >
                         <TextField
-                            maxLength={50}
+                            maxLength={30}
                             floatingLabelText='Voting title'
                             ref="title"
                             onChange={this.handleTitle}
                         />
                         <br/>
                         <TextField
-                            maxLength={500}
                             floatingLabelText='Voting description'
                             ref="desc"
                             multiLine={true}
@@ -430,13 +431,13 @@ export default class AddVoting extends React.Component {
                         <div className="date_time_wrapper">
                             <TimePicker
                                 format="24hr"
-                                floatingLabelText="End Time*"
+                                floatingLabelText="Time of voting ending*"
                                 defaultTime={new Date(this.state.votingEndDate * 1000)}
                                 textFieldStyle={{width: '210px', float: 'right'}}
                                 onChange={(event, value, date=this.state.votingEndDate)=>this.setState({votingEndDate: this.handleTimeUpdate(value, date)})}
                             />
                           <DatePicker
-                                floatingLabelText="End Date*"
+                                floatingLabelText="Date of voting ending*"
                                 textFieldStyle={{width: '210px'}}
                                 defaultDate={new Date(this.state.votingEndDate * 1000)}
                                 onChange={(event, value, date=this.state.votingEndDate)=>this.setState({votingEndDate: this.handleDateUpdate(value, date)})}
@@ -451,17 +452,17 @@ export default class AddVoting extends React.Component {
                             >
                                 <RadioButton
                                     value="date"
-                                    label="voting for date of event"
+                                    label=" Start voting for date of event"
                                     disabled={this.state.notAccessibleTypes.indexOf('date') != -1}
                                 />
                                 <RadioButton
                                     value="place"
-                                    label="voting for location of event"
+                                    label="Start voting for location of event"
                                     disabled={this.state.notAccessibleTypes.indexOf('place') != -1}
                                 />
                                 <RadioButton
                                     value="custom"
-                                    label="voting for custom needs"
+                                    label="Start voting for other purposes"
                                 />
                             </RadioButtonGroup>
                         </div>
