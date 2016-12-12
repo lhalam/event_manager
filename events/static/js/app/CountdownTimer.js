@@ -30,7 +30,7 @@ export default class CountdownTimer extends React.Component {
 
     render() {
         return (
-            <div id={this.props.id}></div>
+            <div className="time-left" id={this.props.id}></div>
         )
     }
 }

@@ -15,6 +15,7 @@ class Event extends React.Component{
         this.state = ({event: false});
         this.handleAddUsers = this.handleAddUsers.bind(this);
         this.updateData = this.updateData.bind(this);
+        this.updateVotingData = this.updateVotingData.bind(this);
     }
 
     updateData (data) {
@@ -23,6 +24,12 @@ class Event extends React.Component{
             event: data
         });
     };
+
+    updateVotingData (votings) {
+        this.refs['voting'].setState({
+            votings: votings
+        });
+    }
 
     handleAddUsers(users) {
         let event = this.state.event;
@@ -56,8 +63,10 @@ class Event extends React.Component{
                     </div>
                     <div className="event-card-body">
                         <Voting
+                            ref="voting"
                             event_id={this.props.params['event_id']}
                             updateEvent={this.updateData}
+                            renewVotings={this.updateVotingData}
                         />
                     <div>
                         <div className="col-sm-4">
@@ -104,6 +113,7 @@ class Event extends React.Component{
                             label="add voting"
                             event_id={this.props.params['event_id']}
                             url={"/api/v1/events/"+this.props.params.event_id+"/voting/"}
+                            renewVotings={this.updateVotingData}
                         />) : null}
                          <AssignParticipants
                             handleAddUsers={this.handleAddUsers}

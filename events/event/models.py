@@ -25,7 +25,7 @@ class Event(models.Model):
         return "%s" % self.title
 
     def save(self, *args, **kwargs):
-        if isinstance(self.start_date, str) and isinstance(self.end_date, str):
+        if not isinstance(self.start_date, datetime) and not isinstance(self.end_date, datetime):
             self.start_date = TZ.localize(datetime.utcfromtimestamp(float(self.start_date)))
             self.end_date = TZ.localize(datetime.utcfromtimestamp(float(self.end_date)))
         if isinstance(self.location, str):

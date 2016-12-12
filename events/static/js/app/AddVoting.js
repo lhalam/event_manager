@@ -81,12 +81,8 @@ export default class AddVoting extends React.Component {
             "choices": this.state.choices.map((choice) => {return JSON.stringify(choice)})
         });
         axios.post(this.props.url, newVotingData.toString())
-                .then((response) => {
-                    console.log(response.data);
-                })
-                .catch((error) => {
-                    console.log(error.response)
-                })
+                .then((response) => {this.props.renewVotings(response.data['votings'])})
+                .catch((error) => {console.log(error.response)})
     }
 
     initialDate() {
@@ -133,10 +129,8 @@ export default class AddVoting extends React.Component {
     }
 
     endVotingDateError() {
-
-        let offset = new Date().getTimezoneOffset() * 60;
         const now = (new Date().getTime() / 1000);
-        return this.state.votingEndDate < now+offset
+        return this.state.votingEndDate < now
     }
 
     handleRadiobuttonSelect (event) {

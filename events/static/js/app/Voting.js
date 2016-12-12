@@ -27,7 +27,6 @@ export default class Voting extends React.Component {
 
     componentDidMount() {
         this.loadVoting();
-        setInterval(() => {this.loadVoting()}, 5000);
     }
 
     loadVoting() {
@@ -45,7 +44,7 @@ export default class Voting extends React.Component {
     makeVote(choice_id, voting_id) {
         axios.post('api/v1/events/' + this.props['event_id'] + '/voting/' + voting_id + '/choice/' + choice_id + '/vote/')
             .then((response) => {
-                this.loadVoting();
+                this.props.renewVotings(response.data['votings']);
             })
             .catch((error) => console.log(error));
 
@@ -54,8 +53,7 @@ export default class Voting extends React.Component {
     deleteVote(choice_id, voting_id) {
         axios.delete('api/v1/events/'+this.props['event_id']+'/voting/'+voting_id+'/choice/'+choice_id+'/vote/')
             .then((response) => {
-                console.log(response.data);
-                this.loadVoting();
+                this.props.renewVotings(response.data['votings']);
             })
             .catch((error) => {console.log(error)});
 
@@ -64,7 +62,7 @@ export default class Voting extends React.Component {
     DeleteVoting(voting_id) {
         axios.delete('api/v1/events/'+this.props['event_id']+'/voting/'+voting_id)
             .then((response) => {
-                this.loadVoting();
+                this.props.renewVotings(response.data['votings']);
             })
             .catch((error) => {
                 this.loadVoting();
@@ -75,7 +73,8 @@ export default class Voting extends React.Component {
     optionApplyHandler(event, choice_id, voting_id) {
         axios.post('api/v1/events/'+this.props['event_id']+'/voting/'+voting_id+'/choice/'+choice_id+'/set_data/')
             .then((response) => {
-            this.props.updateEvent(response.data);
+            this.props.updateEvent(response.data['event']);
+            this.props.renewVotings(response.data['votings']);
             })
             .catch((error) => {
                 console.log(error)
@@ -153,7 +152,7 @@ export default class Voting extends React.Component {
             }).map((choice, j) => {
                 let formattedChoice = this.getChoiceFormat(voting.type, choice.value);
                 let applyButton = (
-                    voting['seconds_left']+new Date().getTimezoneOffset()*60 < 0
+                    voting['seconds_left'] < 0
                     && voting['type'] != 'custom'
                     && this.state.owner) ? (
                     <RaisedButton
@@ -207,15 +206,16 @@ export default class Voting extends React.Component {
                         <Paper zDepth={1}>
                             <div className="voting-header">
                                 {voting.title}
-                                <div className="voting-timer">
-                                    <CountdownTimer
-                                        id={voting.id+voting.title}
-                                        secondsLeft={voting['seconds_left']+new Date().getTimezoneOffset()*60}
-                                    />
-                                </div>
                             </div>
                             <div className="choice-item">
                                 <Subheader>Total votes: {voting['votes']}</Subheader>
+                                <Subheader>Time left: {
+                                    <CountdownTimer
+                                        id={`voting-${voting.id}`}
+                                        secondsLeft={voting['seconds_left']}
+                                    />
+                                }</Subheader>
+
                             </div>
                             {choices}
                             <div className="choice-item">

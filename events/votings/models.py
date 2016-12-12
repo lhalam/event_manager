@@ -26,7 +26,7 @@ class Voting(models.Model):
     )
 
     def save(self, *args, **kwargs):
-        self.end_date = timezone.localize(datetime.fromtimestamp(float(self.end_date)))
+        self.end_date = timezone.localize(datetime.utcfromtimestamp(float(self.end_date)))
         super(self.__class__, self).save(*args, **kwargs)
 
     def __str__(self):

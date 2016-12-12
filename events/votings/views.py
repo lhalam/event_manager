@@ -4,7 +4,7 @@ from django.http.response import JsonResponse, HttpResponse
 from .models import Voting, Choice, ChoiceUserAssignment, VotingUserAssignment
 from registration.models import User
 from .forms import VotingForm
-from companies.views import PERMISSION_DENIED, NO_CONTENT, CREATED, INVALID_PAYLOAD
+from companies.views import PERMISSION_DENIED, NO_CONTENT, INVALID_PAYLOAD
 from event.models import Event, EventUserAssignment
 
 import json
@@ -35,7 +35,9 @@ class VotingView(View):
         if request.user.id != event.owner_id:
             return PERMISSION_DENIED
         voting.delete()
-        return NO_CONTENT
+        return JsonResponse({
+            "votings": [voting.to_dict(request.user) for voting in event.votings.all()]
+        }, status=201)
 
     def post(self, request, event_id):
         event = Event.get_by_id(event_id)
@@ -63,7 +65,9 @@ class VotingView(View):
         )
         for choice in voting_data['choices']:
             voting.choices.create(value=choice.replace("\'", "\""), voting=voting)
-        return CREATED
+        return JsonResponse({
+            "votings": [voting.to_dict(request.user) for voting in event.votings.all()]
+        }, status=201)
 
     @staticmethod
     def _validate_uniqueness(voting_type, event):
@@ -161,16 +165,21 @@ class ChoiceView(View):
         if not created:
             return PERMISSION_DENIED
         ChoiceUserAssignment.objects.create(user=user, choice=choice)
-        return JsonResponse({"success": True}, status=200)
+        return JsonResponse({
+            "votings": [voting.to_dict(request.user) for voting in event.votings.all()]
+        }, status=201)
 
     def delete(self, request, event_id, voting_id, choice_id):
         choice_assign = ChoiceUserAssignment.get_by_user_choice_id(request.user.id, choice_id)
-        voting_assign = VotingUserAssignment.get_by_user_voting_id(request.user.id, Voting.get_by_id(voting_id))
+        voting_assign = VotingUserAssignment.get_by_user_voting_id(request.user.id,
+                                                                   Voting.get_by_id(voting_id))
         if not choice_assign or not voting_assign:
             return PERMISSION_DENIED
         choice_assign.delete()
         voting_assign.delete()
-        return NO_CONTENT
+        return JsonResponse({
+            "votings": [voting.to_dict(request.user) for voting in Event.get_by_id(event_id).votings.all()]
+        }, status=201)
 
 
 class SetEventView(View):
@@ -193,4 +202,5 @@ class SetEventView(View):
             return INVALID_PAYLOAD
         event.save()
         voting.delete()
-        return JsonResponse(event.to_dict(), status=201)
+        votings = [voting.to_dict(request.user) for voting in event.votings.all()]
+        return JsonResponse({"event": event.to_dict(), "votings": votings}, status=201)
