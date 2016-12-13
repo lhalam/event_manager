@@ -113,7 +113,7 @@ class CommentList extends React.Component{
 class CommentItem extends React.Component{
     constructor(props){
         super(props);
-        this.state= ({showForm: false})
+        this.state= ({showForm: false, showBody: true})
     }
     render(){
         const date = new Date(this.props.comment.date * 1000);
@@ -121,21 +121,11 @@ class CommentItem extends React.Component{
         const commentForm = this.state.showForm ? <CommentForm 
             parrent_comment={this.props.comment.id}
             getComments={this.props.getComments}/> : null;
-        return(
-            <div className="comment-wrapper">
-                <div className="author-avatar">
-                    <img src="http://www.nlsgrp.co/wp-content/uploads/2016/06/Avatar-Matt-3.png" />
-                </div>
-                <div className="comment">
-                    <div className="comment-header">
-                        <b>{this.props.comment.author.name}</b>
-                        <p>{dateString}</p>
-                    </div>
-                    <div className="comment-body">
-                        {this.props.comment.text}
-                    </div>
-                    <a onClick={()=>this.setState({showForm: !this.state.showForm})}>Comment</a>
-                    {commentForm}
+        console.log(this.state)
+        let body = ""
+        if (this.state.showBody){
+            body = (
+            <div>
                     <div className="comment-child">
                         {
                             this.props.comment.children.map((comment)=>{
@@ -146,6 +136,34 @@ class CommentItem extends React.Component{
                                     />})
                         }
                     </div>
+                    </div>
+        )
+        }
+        return(
+            <div className="comment-wrapper">
+                <div className="author-avatar">
+                    <img src="http://www.nlsgrp.co/wp-content/uploads/2016/06/Avatar-Matt-3.png" />
+                </div>
+                <div className="comment">
+                    <div className="comment-header">
+                        <b>{this.props.comment.author.name}</b>
+                        {
+                            this.props.comment.children[0] ? (
+                                <a 
+                                    className={this.state.showBody? 'show-body': 'hide-body'}
+                                    onClick={()=>this.setState({showBody: !this.state.showBody})}>
+                                </a>
+                            ): null
+                        }
+                        
+                        <p>{dateString}</p>
+                        <div className="comment-body">
+                        {this.props.comment.text}
+                    </div>
+                    <a onClick={()=>this.setState({showForm: !this.state.showForm})}>Comment</a>
+                    {commentForm}
+                    </div>
+                    {body}
                 </div>
             </div>
         )
