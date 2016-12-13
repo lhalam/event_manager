@@ -113,7 +113,7 @@ class CommentList extends React.Component{
 class CommentItem extends React.Component{
     constructor(props){
         super(props);
-        this.state= ({showForm: false, showBody: true})
+        this.state= ({showForm: false, showBody: true, showDeleteButton: false})
     }
     render(){
         const date = new Date(this.props.comment.date * 1000);
@@ -121,10 +121,9 @@ class CommentItem extends React.Component{
         const commentForm = this.state.showForm ? <CommentForm 
             parrent_comment={this.props.comment.id}
             getComments={this.props.getComments}/> : null;
-        console.log(this.state)
-        let body = ""
+        let child = ""
         if (this.state.showBody){
-            body = (
+            child = (
             <div>
                     <div className="comment-child">
                         {
@@ -145,25 +144,32 @@ class CommentItem extends React.Component{
                     <img src="http://www.nlsgrp.co/wp-content/uploads/2016/06/Avatar-Matt-3.png" />
                 </div>
                 <div className="comment">
-                    <div className="comment-header">
+                    <div 
+                        className="comment-header"
+                        onMouseOver={()=>this.setState({showDeleteButton: true})}
+                        >
                         <b>{this.props.comment.author.name}</b>
                         {
+                            this.state.showDeleteButton ? <a>
+                                <i className="glyphicon glyphicon-remove" /></a>:
+                            null
+                        }
+                        {
                             this.props.comment.children[0] ? (
-                                <a 
+                                <a href=""
                                     className={this.state.showBody? 'show-body': 'hide-body'}
                                     onClick={()=>this.setState({showBody: !this.state.showBody})}>
                                 </a>
                             ): null
                         }
-                        
                         <p>{dateString}</p>
-                        <div className="comment-body">
+                    </div>
+                    <div className="comment-body">
                         {this.props.comment.text}
                     </div>
-                    <a onClick={()=>this.setState({showForm: !this.state.showForm})}>Comment</a>
-                    {commentForm}
-                    </div>
-                    {body}
+                    <a onClick={()=>this.setState({showForm: !this.state.showForm})}>Answer</a>
+                        {commentForm}
+                    {child}
                 </div>
             </div>
         )
