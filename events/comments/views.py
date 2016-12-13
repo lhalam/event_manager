@@ -34,10 +34,11 @@ class CommentView(View):
         return HttpResponse('Ok')
 
     def delete(self, request, id=None):
-        if not request.user:
+        if not request.user.is_superuser:
             return HttpResponse('Permission denied', status=403)
         try:
             Comment.objects.get(id=id).delete()
+            print('Deleted')
         except:
             return HttpResponse('Not Found', status=404)
         return HttpResponse('Ok')
