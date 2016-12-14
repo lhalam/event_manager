@@ -1,14 +1,15 @@
 import json
 import datetime
-
+from threading import Thread
 from django.utils.timezone import get_current_timezone
-from django.http.response import HttpResponseNotFound, HttpResponseForbidden
+from django.http.response import HttpResponseNotFound
 from django.http import JsonResponse, HttpResponse
 from django.views.generic.base import View
 
 from .models import Event, EventUserAssignment, User
 from companies.models import TeamUserAssignment
 from .forms import EventCreateForm
+from utils.EmailService import EmailSender
 
 # Var for converting string to datetime
 TZ = get_current_timezone()
@@ -116,6 +117,10 @@ class EventUserAssignmentView(View):
             user_to_add.append(user)
         for user in user_to_add:
             EventUserAssignment.objects.get_or_create(user=user, event=event)
+        recipient_list = [user.to_dict().get('username') for user in user_to_add]
+        thread = Thread(target=EmailSender.send_event_invite, args=(event, recipient_list, 'Event invite'))
+        thread.daemon = True
+        thread.start()
         return HttpResponse(status=204)
 
     @staticmethod

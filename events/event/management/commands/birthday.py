@@ -34,7 +34,7 @@ class BirthDay(object):
             except:
                 print('Can not create relation between user: {0} and event: {1}'.format(participant, event))
 
-            EmailSender.send_birthday_invite(event, [user.get('username') for user in participants])
+            EmailSender.send_event_invite(event, [user.get('username') for user in participants], 'Birthday Event')
 
     @staticmethod
     def team_member_birthday(user):
