@@ -1,12 +1,4 @@
-@body-bg: #f9f9f9;
-@form-bg: rgba(245, 245, 245, 0.7);
-@rule-error: #f44336;
-@rule-success: #3c763d;
-@success-screen-icon: #63e863;
-@popover-header: rgb(0, 151, 167);
-@link-color: #1d67a4;
-@rule-color:  #fff;
-@submit-btn-bg: rgb(0, 151, 167);
+@import "colors";
 
 body {
   background: @body-bg;
@@ -20,11 +12,11 @@ form {
 }
 
 li.error {
-    color: @rule-error
+    color: @error-color
 }
 
 li.success {
-    color: @rule-success;
+    color: @success-color;
 }
 
 .registration_container {
@@ -81,7 +73,7 @@ li.success {
     margin: 0;
     padding: 15px 0 15px 25px;
     background: @popover-header;
-    color: @rule-color;
+    color: @popover-dialog-header;
   }
 
   ul{
@@ -99,7 +91,7 @@ li.success {
   margin: 0;
   padding: 5px 0 15px 25px;
   background: @popover-header;
-  color: @rule-color;
+  color: @popover-dialog-header;
   border-radius: 2px 2px 0 0;
   font-size: 30px;
   height: 80px;

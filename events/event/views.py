@@ -51,7 +51,7 @@ class EventView(View):
                 EventUserAssignment.objects.create(user=user, event=event)
             except:
                 return JsonResponse({"error_message": "Can not create relation between user and event"}, status=401)
-            return JsonResponse({'message': "Event created successfully"}, status=200)
+            return JsonResponse({'message': "Event created successfully", "event_id": event.id}, status=200)
         return JsonResponse(json.loads(validation_form.errors.as_json()), status=400)
 
     def put(self, request, pk):
@@ -105,9 +105,9 @@ class EventUserAssignmentView(View):
         if error:
             return error
         able_to_add = EventUserAssignmentView.get_users_to_add_list(request.user, event)
-        if not event_participants.get('participants'):
+        if not event_participants.get('members_to_add'):
             return INVALID_PAYLOAD
-        for user_object in event_participants.get('participants'):
+        for user_object in event_participants.get('members_to_add'):
             if user_object not in able_to_add:
                 return INVALID_PAYLOAD
             user = User.get_by_id(user_object['id'])
