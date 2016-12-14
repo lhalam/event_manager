@@ -31,9 +31,8 @@ class Company(models.Model):
                 'username': company.admin.username,
                 'first_name': company.admin.first_name,
                 'last_name': company.admin.last_name,
-            }
+            },
         }
-
 
     @staticmethod
     def get_teams(company_id):

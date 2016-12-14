@@ -17,6 +17,7 @@ export default class CompaniesList extends React.Component {
         this.state = {
             companies: [],
             searchCompanies: [],
+            role: 3,
 
         };
 
@@ -45,6 +46,7 @@ export default class CompaniesList extends React.Component {
                 this.setState({
                     companies: response.data.companies,
                     searchCompanies: response.data.companies,
+                    role: response.data.role,
                 });
             })
     }
@@ -120,12 +122,15 @@ export default class CompaniesList extends React.Component {
                     >
                         <div className="members-header">Companies</div>
                         {CompanyList}
-
-                        <AddCompaniesWindow
-                            url="api/v1/companies/"
-                            method="POST"
-                            newDataHandler={this.newDataHandler}
-                        />
+                        {
+                            this.state.role < 1 ? (
+                                < AddCompaniesWindow
+                                url="api/v1/companies/"
+                                method="POST"
+                                newDataHandler={this.newDataHandler}
+                                />
+                            ): null
+                        }
                     </Paper>
                 </div>
             </MuiThemeProvider>

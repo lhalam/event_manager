@@ -205,7 +205,9 @@ export default class AddCompanyWindow extends React.Component {
                         ref="admin"
                     />
                 </Dialog>
-                {button}
+                {
+                    this.props.disabled ? null : button
+                }
             </div>
         );
     }

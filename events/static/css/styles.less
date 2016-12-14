@@ -107,8 +107,11 @@ html,body{
     max-width: 100%;
     margin: 20px 40px;
     text-align: right;
-    > div:last-child {
+    > div:not(:first-child) {
       display: inline-block;
+    }
+    > div:last-child {
+      margin-left: 10px;
     }
     .delete-button {
       margin-right: 10px;
