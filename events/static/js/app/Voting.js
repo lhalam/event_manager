@@ -5,7 +5,7 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import Avatar from 'material-ui/Avatar';
 import Subheader from 'material-ui/Subheader';
 import RaisedButton from 'material-ui/RaisedButton';
-import CountdownTimer from './CountdownTimer';
+import CountdownTimer from './Countdown/CountdownTimer';
 import moment from 'moment';
 import {blue300, indigo900, green300} from 'material-ui/styles/colors';
 import {List, ListItem} from 'material-ui/List';
@@ -53,7 +53,9 @@ export default class Voting extends React.Component {
     deleteVote(choice_id, voting_id) {
         axios.delete('api/v1/events/'+this.props['event_id']+'/voting/'+voting_id+'/choice/'+choice_id+'/vote/')
             .then((response) => {
-                this.props.renewVotings(response.data['votings']);
+                this.setState({
+                    votings: response.data["votings"],
+                });
             })
             .catch((error) => {console.log(error)});
 
@@ -62,10 +64,11 @@ export default class Voting extends React.Component {
     DeleteVoting(voting_id) {
         axios.delete('api/v1/events/'+this.props['event_id']+'/voting/'+voting_id)
             .then((response) => {
-                this.props.renewVotings(response.data['votings']);
+                this.setState({
+                    votings: response.data["votings"]
+                });
             })
             .catch((error) => {
-                this.loadVoting();
                 console.log(error)
             })
     }
@@ -85,9 +88,9 @@ export default class Voting extends React.Component {
     handleVote(event, choice_id, voting, voted) {
         event.stopPropagation();
         this.loadVoting();
-        if (!voted && voting['seconds_left']+new Date().getTimezoneOffset()*60 > 0) {
+        if (!voted && voting['seconds_left'] > 0) {
             this.makeVote(choice_id, voting.id);
-        } else if (voting['seconds_left']+new Date().getTimezoneOffset()*60 > 0) {
+        } else if (voting['seconds_left'] > 0) {
             this.deleteVote(choice_id, voting.id);
         } else {
         }
@@ -167,7 +170,7 @@ export default class Voting extends React.Component {
                             className="choice-item"
                             data-tip
                             data-event-off={'active' || 'focused'}
-                            disabled={voting['seconds_left']+new Date().getTimezoneOffset()*60 < 0}
+                            disabled={voting['seconds_left'] < 0}
                             ref='choiceItem'
                             data-for={choice.id}
                             onTouchTap={this.handleVote.bind(this, event, choice.id, voting, choice['voted'])}
@@ -209,13 +212,15 @@ export default class Voting extends React.Component {
                             </div>
                             <div className="choice-item">
                                 <Subheader>Total votes: {voting['votes']}</Subheader>
-                                <Subheader>Time left: {
-                                    <CountdownTimer
-                                        id={`voting-${voting.id}`}
-                                        secondsLeft={voting['seconds_left']}
-                                    />
+                                <Subheader>{
+                                    <div className='time-left'>
+                                        <CountdownTimer
+                                            secondsLeft={voting['seconds_left']}
+                                            prefix="Time left"
+                                            finalMessage="Time for voting passed"
+                                        />
+                                    </div>
                                 }</Subheader>
-
                             </div>
                             {choices}
                             <div className="choice-item">
