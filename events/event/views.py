@@ -51,7 +51,7 @@ class EventView(View):
                 EventUserAssignment.objects.create(user=user, event=event)
             except:
                 return JsonResponse({"error_message": "Can not create relation between user and event"}, status=401)
-            return JsonResponse({'message': "Event created successfully"}, status=200)
+            return JsonResponse({'message': "Event created successfully", "event_id": event.id}, status=200)
         return JsonResponse(json.loads(validation_form.errors.as_json()), status=400)
 
     def put(self, request, pk):
