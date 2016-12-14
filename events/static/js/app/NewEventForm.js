@@ -21,14 +21,14 @@ class Form extends React.Component{
     this.state = (
       {
         title: '',
-        start_date: this.initialDate().start_date / 1000,
-        end_date: this.initialDate().end_date / 1000,
+        startDate: this.initialDate().startDate / 1000,
+        endDate: this.initialDate().endDate / 1000,
         location: '',
         place: '',
         description: '',
-        title_changed: false,
-        description_changed: false,
-        location_changed: false
+        titleChanged: false,
+        descriptionChanged: false,
+        locationChanged: false
       }
     );
     this.initialDate = this.initialDate.bind(this)
@@ -49,40 +49,40 @@ class Form extends React.Component{
     date.setSeconds(0)
     date.setMilliseconds(0)
     return {
-      start_date: date.setHours(date.getHours() + 2),
-      end_date: date.setHours(date.getHours() + 1),
+      startDate: date.setHours(date.getHours() + 2),
+      endDate: date.setHours(date.getHours() + 1),
     }
   }
 
   handleFormSubmit(){
     axios.post('/api/v1/events/', {
       title: this.state.title,
-      start_date: this.state.start_date,
-      end_date: this.state.end_date,
+      start_date: this.state.startDate,
+      end_date: this.state.endDate,
       location: this.state.location,
       place: this.state.place,
       description: this.state.description
     })
     .then(function(response){
-      document.location.href += `/${response.data}`
+      document.location.href += `/${response.data.event_id}`
     })
   }
 
   handleDateUpdate(value, date){
-    let date_time = new Date(date*1000)
-    date_time.setFullYear(value.getFullYear())
-    date_time.setMonth(value.getMonth())
-    date_time.setDate(value.getDate())
-    return String(date_time.getTime()/1000)
+    let dateTime = new Date(date*1000)
+    dateTime.setFullYear(value.getFullYear())
+    dateTime.setMonth(value.getMonth())
+    dateTime.setDate(value.getDate())
+    return String(dateTime.getTime()/1000)
   }
 
   handleTimeUpdate(value, date){
-    let date_time = new Date(date* 1000)
-    date_time.setHours(value.getHours())
-    date_time.setMinutes(value.getMinutes())
-    date_time.setSeconds(0)
-    date_time.setMilliseconds(0)
-    return String(date_time.getTime() /1000)
+    let dateTime = new Date(date* 1000)
+    dateTime.setHours(value.getHours())
+    dateTime.setMinutes(value.getMinutes())
+    dateTime.setSeconds(0)
+    dateTime.setMilliseconds(0)
+    return String(dateTime.getTime() /1000)
   }
 
   setLocation(address, location){
@@ -95,11 +95,11 @@ class Form extends React.Component{
   
   startDateError(){
     const now = new Date().getTime() / 1000
-    return this.state.start_date - now < 60 * 15
+    return this.state.startDate - now < 60 * 15
   }
 
   endDateError(){
-    return this.state.end_date - this.state.start_date < 60 * 15
+    return this.state.endDate - this.state.startDate < 60 * 15
   }
 
   descriptionError(){
@@ -120,21 +120,21 @@ class Form extends React.Component{
   }
 
   render(){
-    const title_error = (this.titleError() && this.state.title_changed) ? 'Cannot be empty and more than 20 characters' : ''
-    const start_date_error = this.startDateError() ? 'Start Date and Time cannot be earlier than now (15 minutes)' : ''
-    const end_date_error = this.endDateError() ? 'End Date and Time cannot be earlier than Start Date and Time (15 minutes)' : ''
-    const description_error = (this.descriptionError() && this.state.description_changed) ? 'Cannot be less 10 and more than 200 characters' : ''
-    const location_error = (this.locationError() && this.state.location_changed) ? 'Select Place from a list' : ''
+    const titleError = (this.titleError() && this.state.titleChanged) ? 'Cannot be empty and more than 20 characters' : ''
+    const startDateError = this.startDateError() ? 'Start Date and Time cannot be earlier than now (15 minutes)' : ''
+    const endDateError = this.endDateError() ? 'End Date and Time cannot be earlier than Start Date and Time (15 minutes)' : ''
+    const descriptionError = (this.descriptionError() && this.state.descriptionChanged) ? 'Cannot be less 10 and more than 200 characters' : ''
+    const locationError = (this.locationError() && this.state.locationChanged) ? 'Select Place from a list' : ''
     return(
       <div>
         <form className="eventForm">
           <TextField
             floatingLabelText="Title*"
-            errorText={title_error}
+            errorText={titleError}
             floatingLabelFixed={false}
             value={this.state.title}
             onChange={(e)=>this.setState({title: e.target.value})}
-            onBlur={()=>this.setState({title_changed: true})}
+            onBlur={()=>this.setState({titleChanged: true})}
             style={{width: '100%'}}
           /><br/>
           <div className="date_time_wrapper" onBlur={this.startDateError}>
@@ -142,41 +142,41 @@ class Form extends React.Component{
                 format="24hr"
                 floatingLabelText="Start Time*"
                 textFieldStyle={{width: '210px', float: 'right'}}
-                defaultTime={new Date(this.state.start_date * 1000)}
-                onChange={(event, value, date=this.state.start_date)=>this.setState({start_date: this.handleTimeUpdate(value, date)})}
+                defaultTime={new Date(this.state.startDate * 1000)}
+                onChange={(event, value, date=this.state.startDate)=>this.setState({startDate: this.handleTimeUpdate(value, date)})}
               />
               <DatePicker
                 floatingLabelText="Start Date*"
                 textFieldStyle={{width: '210px'}}
-                defaultDate={new Date(this.state.start_date * 1000)}
-                onChange={(event, value, date=this.state.end_date)=>this.setState({start_date: this.handleDateUpdate(value, date)})}
+                defaultDate={new Date(this.state.startDate * 1000)}
+                onChange={(event, value, date=this.state.startDate)=>this.setState({startDate: this.handleDateUpdate(value, date)})}
                 />
-              <span className="error-message">{start_date_error}</span>
+              <span className="error-message">{startDateError}</span>
           </div>
           <div className="date_time_wrapper">
               <TimePicker
                 format="24hr"
                 floatingLabelText="End Time*"
-                defaultTime={new Date(this.state.end_date * 1000)}
+                defaultTime={new Date(this.state.endDate * 1000)}
                 textFieldStyle={{width: '210px', float: 'right'}}
-                onChange={(event, value, date=this.state.end_date)=>this.setState({end_date: this.handleTimeUpdate(value, date)})}
+                onChange={(event, value, date=this.state.endDate)=>this.setState({endDate: this.handleTimeUpdate(value, date)})}
               />
               <DatePicker
                 floatingLabelText="End Date*"
                 textFieldStyle={{width: '210px'}}
-                defaultDate={new Date(this.state.end_date * 1000)}
-                onChange={(event, value, date=this.state.end_date)=>this.setState({end_date: this.handleDateUpdate(value, date)})}
+                defaultDate={new Date(this.state.endDate * 1000)}
+                onChange={(event, value, date=this.state.endDate)=>this.setState({endDate: this.handleDateUpdate(value, date)})}
               />
-              <span className="error-message">{end_date_error}</span>
+              <span className="error-message">{endDateError}</span>
           </div>
           <TextField
             hintText="Description*"
-            errorText={description_error}
+            errorText={descriptionError}
             multiLine={true}
             rows={1}
             rowsMax={2}
             onInput={(e)=>this.setState({description: e.target.value})}
-            onBlur={()=>this.setState({description_changed: true})}
+            onBlur={()=>this.setState({descriptionChanged: true})}
             style={{width: '100%'}}
           /><br />
           <div>
@@ -184,10 +184,10 @@ class Form extends React.Component{
                   className="controls" 
                   type="text" 
                   placeholder="Address" 
-                  onBlur={()=>this.setState({location_changed: true})}
+                  onBlur={()=>this.setState({locationChanged: true})}
               />
             <Map new={true} setLocation={this.setLocation}/>
-            <span className="error-message">{location_error}</span>
+            <span className="error-message">{locationError}</span>
           </div>
         </form>
         <div className="form-button">

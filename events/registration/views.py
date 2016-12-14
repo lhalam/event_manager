@@ -1,9 +1,8 @@
 import json
-import time, datetime
+import time
+import datetime
 
 from django.views import View
-from django.core.mail import send_mail
-from django.template.loader import render_to_string
 from django.http import JsonResponse
 from django.shortcuts import redirect, reverse, render
 
