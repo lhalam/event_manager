@@ -143,7 +143,6 @@ class TeamView(View):
         if not CompanyView.check_company_rights(request, company):
             return PERMISSION_DENIED
         new_team_data = json.loads(request.body.decode())
-        print(new_team_data)
         team_form = TeamForm(new_team_data)
         errors = team_form.errors
         if 'admin' not in errors.keys():
