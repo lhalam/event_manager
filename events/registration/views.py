@@ -1,9 +1,8 @@
 import json
-import time, datetime
+import time
+import datetime
 
 from django.views import View
-from django.core.mail import send_mail
-from django.template.loader import render_to_string
 from django.http import JsonResponse
 from django.shortcuts import redirect, reverse, render
 
@@ -36,7 +35,7 @@ class RegistrationView(View):
         birth_date = float(registration_data.get('birth_date'))
         min_birth_date = time.mktime((datetime.datetime.now().date() - relativedelta(years=100)).timetuple())
         max_birth_date = time.mktime((datetime.datetime.now().date() - relativedelta(years=18)).timetuple())
-        if not (min_birth_date < birth_date < max_birth_date):
+        if not (min_birth_date <= birth_date <= max_birth_date):
             errors['birth_date'] = ['Birth date is not valid']
 
         if registration_form.is_valid() and not errors:
