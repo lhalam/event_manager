@@ -14,7 +14,7 @@ class CommentView(View):
     def get(self, request, id):
         if not request.user.is_authenticated:
             return HttpResponse('Permission denied', status=403)
-        comments = Comment.objects.filter(event_id=id).order_by('date_add')
+        comments = Comment.objects.filter(event_id=id).order_by('-date_add')
         response = [comment.to_dict() for comment in comments]
         return HttpResponse(json.dumps(response), content_type="text/json")
 
@@ -34,10 +34,11 @@ class CommentView(View):
         return HttpResponse('Ok')
 
     def delete(self, request, id=None):
-        if not request.user:
+        if not request.user.is_superuser:
             return HttpResponse('Permission denied', status=403)
         try:
             Comment.objects.get(id=id).delete()
+            print('Deleted')
         except:
             return HttpResponse('Not Found', status=404)
         return HttpResponse('Ok')

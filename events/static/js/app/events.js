@@ -1,4 +1,6 @@
 import Map from './map'
+import CreateEventDialog from './NewEventForm';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import {Container, Row, Col} from 'react-grid-system';
 import {Link} from 'react-router';
 
@@ -20,21 +22,30 @@ class EventList extends React.Component{
     render(){
         if (this.state.events[0]){
             return(
+            <MuiThemeProvider>
             <div>
                 <Map events={this.state.events} geo={true} zoom={6}/>
                 <div className="event-list-wrapper">
                     {this.state.events.map(function(event){
-                        return <Link to={`/events/${event.id}`}>
-                        <EventItem key={event.id} event={event}/></Link>
+                        return(
+                                <Link key={event.id} to={`/events/${event.id}`}>
+                                    <EventItem event={event}/>
+                                </Link>
+                        )
+                        
                     })}
                 </div>
+                <CreateEventDialog />
             </div>
+            </MuiThemeProvider>
         )
         }else{
             return(
+                <MuiThemeProvider>
                 <div>
-                    Events does not exist
+                    <CreateEventDialog />
                 </div>
+                </MuiThemeProvider>
             )
         }
             
@@ -44,23 +55,27 @@ class EventList extends React.Component{
 
 class EventItem extends React.Component{
     render(){
-        const url = '#/events/' + this.props.event.id 
+        const date = new Date(this.props.event.start_date * 1000)
+        const url = `#/events/${this.props.event.id}`
         return(
             <div className="event-item-wrapper">
-                <Col xs={4}>
+                <Col xs={3}>
                     <div className="event-title">
                         {this.props.event.title}
                     </div>
                 </Col>
-                <Col xs={2}>
+                <Col xs={3}>
                     <div>
                         {this.props.event.place}
                     </div>
                 </Col>
-                <Col xs={3}>Users</Col>
-                
                 <Col xs={3}>
-                    {this.props.event.start_date}
+                    <p>
+                        {this.props.event.owner.username}
+                    </p>
+                </Col>
+                <Col xs={3}>
+                    {date.toDateString()}, {date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                 </Col>
             </div>
         )
