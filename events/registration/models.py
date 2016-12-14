@@ -5,12 +5,17 @@ from django.utils import timezone
 from django.contrib.auth.models import User as BaseUser
 from django.core.exceptions import PermissionDenied
 
+import datetime
 from datetime import timedelta
 
 INVITE_DAYS_TTL = 7
+IP_BAN_TTL = 60 * 5
+MAX_REQUESTS_COUNT = 10
+
 
 def min_birth_date():
     return timezone.now().date() + timezone.timedelta(days=-356*18)
+
 
 class User(BaseUser):
     birth_date = models.DateField(null=False, default=min_birth_date)
@@ -74,3 +79,39 @@ class RegistrationConfirm(models.Model):
         confirm.save()
 
         return confirm.user
+
+
+class BannedIP(models.Model):
+    ip = models.GenericIPAddressField(protocol='both', unpack_ipv4=True)
+    added = models.DateTimeField(null=True)
+    requests_count = models.IntegerField(default=1)
+
+    @staticmethod
+    def check_ip(ip):
+        try:
+            current_ip = BannedIP.objects.get(ip=ip)
+            if current_ip.added and current_ip.added + timedelta(seconds=IP_BAN_TTL) < timezone.now():
+                current_ip.delete()
+                return True
+
+            if current_ip.requests_count < MAX_REQUESTS_COUNT:
+                current_ip.requests_count += 1
+                current_ip.save()
+                return True
+
+            if current_ip.requests_count == MAX_REQUESTS_COUNT:
+                current_ip.added = timezone.now()
+            current_ip.requests_count += 1
+            current_ip.save()
+            return False
+
+        except models.ObjectDoesNotExist:
+            BannedIP.objects.create(ip=ip)
+            return True
+
+    @staticmethod
+    def clean_ip(ip):
+        try:
+            BannedIP.objects.get(ip=ip).delete()
+        except:
+            pass

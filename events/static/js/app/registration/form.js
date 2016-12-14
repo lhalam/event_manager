@@ -1,13 +1,13 @@
 import React from 'react';
 import FloatLabelField from './float-label-field';
 import DateField from './date-field';
-import Divider from 'material-ui/Divider';
 import RaisedButton from 'material-ui/RaisedButton';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import Paper from 'material-ui/Paper';
 import validator from 'validator';
 import _ from 'underscore';
+import Snackbar from 'material-ui/Snackbar';
 
 var axios = require("axios");
 
@@ -24,8 +24,11 @@ export default class Form extends React.Component {
             password: "",
             password_confirm: "",
             birth_date: "",
+            birth_date_error: "",
             response_errors: {},
             formIsValid: false,
+            openSnackbar: false,
+            banmessage: ""
         };
         this.handleFirstName = (value) => {
             this.setState({first_name: value}, () => {this.setState(
@@ -36,7 +39,10 @@ export default class Form extends React.Component {
                 {formIsValid: this.validateForm()})
             })
         };
-        this.handleEmail = this.handleEmail.bind(this);
+        this.handleEmail = (value) => {this.setState({email: value, email_error: ""}, () => {this.setState(
+                {formIsValid: this.validateForm()})
+            })
+        };
         this.handlePassword = (value) => {this.setState({password: value}, () => {this.setState(
                 {formIsValid: this.validateForm()})
             })
@@ -45,17 +51,25 @@ export default class Form extends React.Component {
                 {formIsValid: this.validateForm()})
             })
         };
-        this.handleBirthDate = (value) => {this.setState({birth_date: value}, () => {this.setState(
-                {formIsValid: this.validateForm()})
+        this.handleBirthDate = (value) => {this.setState({birth_date: value}, () => {
+                this.setState({
+                    formIsValid: this.validateForm()
+                });
             })
         };
-        this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleRequestClose = () => {
+            this.setState({
+                openSnackbar: false,
+            });
+        };
 
+        this.handleSubmit = this.handleSubmit.bind(this);
         this.validateNotEmpty = this.validateNotEmpty.bind(this);
         this.validateEmail = this.validateEmail.bind(this);
         this.validatePassword = this.validatePassword.bind(this);
         this.checkPasswordRules = this.checkPasswordRules.bind(this);
         this.validatePasswordConfirm = this.validatePasswordConfirm.bind(this);
+        this.validateBirthDate = this.validateBirthDate.bind(this);
     }
 
     validateNotEmpty(value){
@@ -72,6 +86,15 @@ export default class Form extends React.Component {
 
     validatePasswordConfirm(value) {
         return value && this.state.password == value;
+    }
+
+    validateBirthDate(value) {
+        let maxDate = new Date();
+        value = new Date(value);
+        maxDate.setFullYear(maxDate.getFullYear() - 18);
+        let date = new Date(value.getMonth() + "/" + value.getDate() + "/" + value.getFullYear()).getTime();
+        maxDate = new Date(maxDate.getMonth() + "/" + maxDate.getDate() + "/" + maxDate.getFullYear()).getTime();
+        return date <= maxDate;
     }
 
     checkPasswordRules(value){
@@ -92,35 +115,6 @@ export default class Form extends React.Component {
                 this.refs.birth_date.props.validator(this.state.birth_date));
     }
 
-    handleEmail(value) {
-        this.setState({
-            email: value,
-            email_error: ""
-        }, () => {
-            this.setState({formIsValid: this.validateForm()});
-            if (this.validateEmail(value)) {
-                let registration_data = {
-                    first_name: "",
-                    last_name: "",
-                    email: this.state.email,
-                    password: "",
-                    birth_date: ""
-                };
-                registration_data["birth_date"] = new Date("01/01/1997").getTime() / MILLISECONDS;
-                axios.post(this.props.url, registration_data)
-                    .catch((error) => {
-                        if (error.response) {
-                            if (error.response.data.errors.email)
-                                this.setState({
-                                    email_error: error.response.data.errors.email[0]
-                                }, () => this.setState({formIsValid: this.validateForm()}));
-                        }
-                    });
-            }
-        }
-        );
-    }
-
     handleSubmit(event){
         event.preventDefault();
         let registration_data = Object.assign({}, this.state);
@@ -135,7 +129,24 @@ export default class Form extends React.Component {
             .then((response) => this.props.handleSubmit(response.data.message, ""))
             .catch((error) => {
                 if(error.response){
-                    this.props.handleSubmit("", "Oops, something went wrong. Please try again later or contact support.")
+                    if(error.response.status == 500) {
+                        this.setState({
+                            openSnackbar: false
+                        });
+                        this.props.handleSubmit("", "Oops, something went wrong. Please try again later or contact support.")
+                    }
+                    else if (error.response.data.errors.ban) {
+                        this.setState({
+                            banmessage: error.response.data.errors.ban,
+                            openSnackbar: true
+                        }, () => this.setState({formIsValid: this.validateForm()}));
+                    }
+                    else if (error.response.data.errors.email) {
+                        this.setState({
+                            email_error: error.response.data.errors.email[0],
+                            openSnackbar: false
+                        }, () => this.setState({formIsValid: this.validateForm()}));
+                    }
                 }
             });
     }
@@ -146,9 +157,6 @@ export default class Form extends React.Component {
                 <Paper className="registration_container" zDepth={3}>
                     <p className="registration-form-header">Sign Up</p>
                     <form className="registration_form">
-                        {
-                            Boolean(Object.values(this.state.response_errors).length)
-                        }
                         <FloatLabelField title="First name"
                                          errorMessage="First name is required"
                                          validator={this.validateNotEmpty}
@@ -170,8 +178,8 @@ export default class Form extends React.Component {
                                          errorEmpty="Email is required"
                                          errorRepeat={this.state.email_error}
                                          validator={this.validateEmail}
-                                         handleChange={this.handleEmail}
                                          value={this.state.email}
+                                         handleChange={this.handleEmail}
                                          type="email"
                                          ref="email"
                         />
@@ -200,8 +208,8 @@ export default class Form extends React.Component {
                         />
 
                         <DateField title="Birth date"
-                                   errorEmpty="Birth date is required"
-                                   validator={this.validateNotEmpty}
+                                   errorEmpty="Your age must be 18 years or older"
+                                   validator={this.validateBirthDate}
                                    handleChange={this.handleBirthDate}
                                    value={this.state.birth_date}
                                    ref="birth_date"
@@ -216,6 +224,12 @@ export default class Form extends React.Component {
                             />
                         <p className="login">Already a member? <a href="/auth/login">Login</a></p>
                     </form>
+                    <Snackbar
+                        open={this.state.openSnackbar}
+                        message={this.state.banmessage}
+                        autoHideDuration={4000}
+                        onRequestClose={this.handleRequestClose}
+                    />
                 </Paper>
             </MuiThemeProvider>
         );
