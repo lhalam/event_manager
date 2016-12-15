@@ -92,20 +92,20 @@ class EventUserAssignmentView(View):
     """
     def get(self, request, event_id):
         event = Event.get_by_id(event_id)
-        error = EventUserAssignmentView.check_rights_existence(request.user, event)
+        error = self.__check_rights_existence(request.user, event)
         if error:
             return error
-        users_to_add = EventUserAssignmentView.get_users_to_add_list(request.user, event)
+        users_to_add = self.__get_users_to_add_list(request.user, event)
         return JsonResponse({"participants": users_to_add}, status=200)
 
     def put(self, request, event_id):
         event_participants = json.loads(request.body.decode())
         user_to_add = []
         event = Event.get_by_id(event_id)
-        error = EventUserAssignmentView.check_rights_existence(request.user, event)
+        error = self.__check_rights_existence(request.user, event)
         if error:
             return error
-        able_to_add = EventUserAssignmentView.get_users_to_add_list(request.user, event)
+        able_to_add = self.__get_users_to_add_list(request.user, event)
         if not event_participants.get('members_to_add'):
             return INVALID_PAYLOAD
         for user_object in event_participants.get('members_to_add'):
@@ -117,39 +117,33 @@ class EventUserAssignmentView(View):
             user_to_add.append(user)
         for user in user_to_add:
             EventUserAssignment.objects.get_or_create(user=user, event=event)
-        recipient_list = [user.to_dict().get('username') for user in user_to_add]
-        thread = Thread(target=EmailSender.send_event_invite, args=(event, recipient_list, 'Event invite'))
-        thread.daemon = True
-        thread.start()
+        self.__send_invites(user_to_add, event)
         return HttpResponse(status=204)
 
-    @staticmethod
-    def get_users_to_add_list(user, event):
+    def __get_users_to_add_list(self, user, event):
         available_teams = TeamUserAssignment.get_all_teams(user)
         if not available_teams:
             return []
         users_to_add = []
         for team in available_teams:
             users = team.members.all()
-            for user in users:
-                user_object = {
-                    "id": user.id,
-                    "first_name": user.first_name,
-                    "last_name": user.last_name,
-                    "username": user.username
-                }
-                if not EventUserAssignmentView.check_participation(user, event) and user_object not in users_to_add:
-                    users_to_add.append(user_object)
+            users_to_add.extend([user.to_dict() for user in users
+                                 if not self.__check_participation(user, event)
+                                 and user.to_dict() not in users_to_add])
         return users_to_add
 
-    @staticmethod
-    def check_participation(user, event):
+    def __check_participation(self, user, event):
         return EventUserAssignment.get_by_event_user(event, user)
 
-    @staticmethod
-    def check_rights_existence(user, event):
+    def __check_rights_existence(self, user, event):
         if not event:
             return EVENT_NOT_EXISTS
-        if not EventUserAssignmentView.check_participation(user, event):
+        if not self.__check_participation(user, event):
             return PERMISSION_DENIED
         return None
+
+    def __send_invites(self, users_list, event):
+        recipient_list = [user.username for user in users_list]
+        thread = Thread(target=EmailSender.send_event_invite, args=(event, recipient_list, 'Event invite'))
+        thread.daemon = True
+        thread.start()

@@ -11,6 +11,7 @@ from django.core.mail import send_mail
 from utils.EmailService import EmailSender
 
 DEFAULT_LOCATION = '49.839683,24.029717'
+INVITE_SUBJECT = 'Birthday Event'
 
 
 class BirthDay(object):
@@ -34,7 +35,7 @@ class BirthDay(object):
             except:
                 print('Can not create relation between user: {0} and event: {1}'.format(participant, event))
 
-            EmailSender.send_event_invite(event, [user.get('username') for user in participants], 'Birthday Event')
+            EmailSender.send_event_invite(event, [user.get('username') for user in participants], INVITE_SUBJECT)
 
     @staticmethod
     def team_member_birthday(user):
@@ -69,7 +70,7 @@ class BirthDay(object):
             except:
                 print('Can not create relation between user: {0} and event: {1}'.format(participant, event))
 
-            EmailSender.send_birthday_invite(event, participants)
+            EmailSender.send_event_invite(event, participants, INVITE_SUBJECT)
 
 
 class Command(BaseCommand):
