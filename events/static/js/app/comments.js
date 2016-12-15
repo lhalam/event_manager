@@ -118,8 +118,7 @@ class CommentItem extends React.Component{
         super(props);
         this.state= ({
             showForm: false, 
-            showChild: false, 
-            showDeleteButton: false,
+            showChild: false,
             showConfirmationDelete: false});
         this.deleteComment = this.deleteComment.bind(this);
         this.handleConfirmationOpen = this.handleConfirmationOpen.bind(this);
@@ -169,12 +168,10 @@ class CommentItem extends React.Component{
                         onMouseOver={()=>this.setState({showDeleteButton: true})}
                         >
                         <b>{this.props.comment.author.name}</b>
-                        {
-                            this.state.showDeleteButton ? <a 
-                                onTouchTap={this.handleConfirmationOpen}>
-                                <i className="glyphicon glyphicon-remove" /></a>:
-                            null
-                        }
+                        <a 
+                            onTouchTap={this.handleConfirmationOpen}>
+                            <i className="glyphicon glyphicon-remove" />
+                        </a>
                         {
                             this.props.comment.children[0] ? (
                                 <a 

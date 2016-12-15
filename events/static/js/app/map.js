@@ -4,10 +4,6 @@ class Map extends React.Component{
     constructor(props){
         super(props);
         this.initMap = this.initMap.bind(this)
-        this.handlePlaceChanged = this.handlePlaceChanged.bind(this)
-    }
-    handlePlaceChanged(add, loc){
-        this.props.setLocation('Hello','world')
     }
     initMap() {
         var _this = this
@@ -157,6 +153,10 @@ class Map extends React.Component{
     }
     componentDidMount(){
         this.initMap()
+    }
+
+    componentDidUpdate(){
+        this.props.events ? this.initMap() : null
     }
 
     render(){

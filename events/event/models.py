@@ -72,6 +72,8 @@ class Event(models.Model):
 
 
 class EventUserAssignment(models.Model):
+    class Meta():
+        ordering = ['-event__start_date']
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 

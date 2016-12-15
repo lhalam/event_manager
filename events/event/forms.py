@@ -11,7 +11,7 @@ class DateValidator(forms.Field):
             float(value)
         except:
             raise forms.ValidationError("Enter valid date")
-        if float(value) - time_now < 60 * 60:
+        if float(value) - time_now < 60 * 15:
             raise forms.ValidationError("The Date can not be earlier than now")
         super(self.__class__, self).validate(value)
         return value
