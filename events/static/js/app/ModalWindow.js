@@ -7,6 +7,8 @@ import Chip from 'material-ui/Chip';
 import blue300 from 'material-ui/styles/colors';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
+let User = require('./helpers/User');
+
 
 export default class ModalWindow extends React.Component {
 
@@ -26,15 +28,16 @@ export default class ModalWindow extends React.Component {
 
     handleDeleteChip(chip) {
         let chips = this.props.dataDestination;
-            chips.splice(chip.indexOf(chip), 1);
-            this.props.handleToSendList(chips);
+        let chipToDelete = chips.find((el) => el['id'] == chip['id'] );
+        chips.splice(chips.indexOf(chipToDelete), 1);
+        this.props.handleToSendList(chips);
     }
 
     render() {
 
         const dataSourceConfig = {
-            text: 'username',
-            value: 'username'
+            text: 'full_name',
+            value: 'all_data'
         };
 
         const standardActions = [
@@ -66,16 +69,20 @@ export default class ModalWindow extends React.Component {
         };
 
         const defaultChipRenderer = ({ value, isFocused, isDisabled, handleClick, handleRequestDelete }, key) => (
-           <Chip
-               key={key}
-               style={{ margin: '8px 8px 0 0', float: 'left', pointerEvents: isDisabled ? 'none' : undefined }}
-               backgroundColor={isFocused ? blue300 : null}
-               onTouchTap={handleClick}
-               onRequestDelete={handleRequestDelete}
+            <Chip
+                key={key}
+                style={{ margin: '8px 8px 0 0', float: 'left', pointerEvents: isDisabled ? 'none' : undefined }}
+                backgroundColor={isFocused ? blue300 : null}
+                onTouchTap={handleClick}
+                onRequestDelete={handleRequestDelete}
             >
-               <Avatar className={'avatar'} size={32}>{value[0].toUpperCase()}</Avatar>
-               {value}
-           </Chip>);
+                <Avatar
+                    size={32}
+                    backgroundColor={value['avatar']}
+                >
+                    {value['first_name'][0].toUpperCase()}</Avatar>
+                {User.getFullName(value)}
+            </Chip>);
 
         if (this.props.dataSource.length > 0) {
             return (

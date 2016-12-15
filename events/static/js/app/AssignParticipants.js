@@ -3,8 +3,9 @@ import axios from 'axios';
 import RaisedButton from 'material-ui/RaisedButton';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import Snackbar from 'material-ui/Snackbar';
-import ModalWindow from './ModalWindow'
+import ModalWindow from './ModalWindow';
 
+let User = require('./helpers/User');
 
 export default class AssignParticipants extends React.Component {
     constructor(props) {
@@ -36,8 +37,13 @@ export default class AssignParticipants extends React.Component {
     loadParticipants() {
         axios.get(this.props.url)
               .then((eventParticipants) => {
+                  let getParticipants = {'participants': eventParticipants.data['participants'].map((user) => {
+                      user['full_name'] = User.getFullName(user);
+                      user['all_data'] = User.getUserData(user);
+                      return user;
+                  })};
                   this.setState({
-                      getParticipants: eventParticipants.data,
+                      getParticipants: getParticipants,
                       errorMessage: null
                   });
 
@@ -45,13 +51,13 @@ export default class AssignParticipants extends React.Component {
               .catch((failData) => {
                   this.setState({
                       getParticipants: {'participants': []},
-                      errorMessage: failData.response.data['error_message'],
+                      errorMessage: failData.response.data,
                   });
               });
     };
 
     sendParticipants() {
-        let participantsAddCount = this.state.dataToSend['participants'];
+        let participantsAddCount = this.state.dataToSend['participants'].map((user) => User.getUserData(user));
         axios.put(this.props.url, {"members_to_add": participantsAddCount})
             .then(() => {
                 this.props.handleAddUsers(participantsAddCount);
@@ -82,6 +88,7 @@ export default class AssignParticipants extends React.Component {
     };
 
     handleTouchTap() {
+        this.loadParticipants();
         this.setState({
             open: true,
         });

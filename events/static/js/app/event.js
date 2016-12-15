@@ -7,6 +7,7 @@ import {List, ListItem} from 'material-ui/List';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import AssignParticipants from './AssignParticipants';
 
+let User = require('./helpers/User');
 
 
 class Event extends React.Component{
@@ -18,9 +19,7 @@ class Event extends React.Component{
 
     handleAddUsers(users) {
         let event = this.state.event;
-        let allUsers = this.state.event['participants'].slice();
-        allUsers.push.apply(allUsers, users.map((userObj) => userObj['username']));
-        event['participants'] = allUsers;
+        event['participants'] = this.state.event['participants'].concat(users);
         this.setState({event: event});
     };
 
@@ -77,10 +76,14 @@ class Event extends React.Component{
                                     float: 'left',
                                     maxWidth: '400px',
                                 }}>
-                                    <Avatar style={{marginRight: 10}} 
-                                            size={32}>{user[0].toUpperCase()}
+                                    <Avatar
+                                        style={{marginRight: 10}}
+                                        size={32}
+                                        backgroundColor={user['avatar']}
+                                    >
+                                        {user['first_name'][0].toUpperCase()}
                                     </Avatar>
-                                    {user}
+                                    {User.getFullName(user)}
                                 </ListItem>
                                 );
                             })}

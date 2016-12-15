@@ -57,7 +57,7 @@ class Event(models.Model):
                 if self.pk is None:
                     data[f.name] = []
                 else:
-                    data[f.name] = list(f.value_from_object(self).values_list('username', flat=True))
+                    data[f.name] = [user.to_dict() for user in f.value_from_object(self)]
             else:
                 data[f.name] = f.value_from_object(self)
         data['start_date'] = data['start_date'].timestamp()

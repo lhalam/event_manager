@@ -131,7 +131,8 @@ class EventUserAssignmentView(View):
                     "id": user.id,
                     "first_name": user.first_name,
                     "last_name": user.last_name,
-                    "username": user.username
+                    "username": user.username,
+                    "avatar": user.avatar_background
                 }
                 if not EventUserAssignmentView.check_participation(user, event) and user_object not in users_to_add:
                     users_to_add.append(user_object)
