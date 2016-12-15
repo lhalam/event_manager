@@ -30,6 +30,9 @@ class EventList extends React.Component{
             this.setState({events: events})
         }.bind(this))
     }
+    getEventsButtonShow(){
+        return this.state.events.length != this.state.number
+    }
     componentWillMount(){
         axios.get('/api/v1/events/')
         .then(function (response) {
@@ -47,7 +50,7 @@ class EventList extends React.Component{
             <MuiThemeProvider>
             <div>
                 <Map events={events} geo={true} zoom={6}/>
-                <div>
+                <div className="event-list-wrapper">
                     {events.map(function(event){
                         return(
                                 <Link key={event.id} to={`/events/${event.id}`}>
@@ -56,7 +59,7 @@ class EventList extends React.Component{
                         )
                     })}
                     {
-                        this.state.number != this.state.events.length ? 
+                        this.getEventsButtonShow() ? 
                         <FlatButton 
                             label="Get More" 
                             primary={true}

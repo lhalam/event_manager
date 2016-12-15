@@ -29,12 +29,12 @@ class EventView(View):
         if not event_id:
             if request.GET.get('q'):
                 query_date = TZ.localize(datetime.utcfromtimestamp(float(request.GET.get('q'))))
-                eus = EventUserAssignment.objects.filter(event__start_date__lte=query_date)[:1]
+                eus = EventUserAssignment.objects.filter(event__start_date__lte=query_date)[:10]
                 response = [item.event.to_dict() for item in eus]
                 return HttpResponse(json.dumps(response), content_type="application/json")
             user_id = request.user.id
             eus = EventUserAssignment.objects.filter(user=user_id)
-            response = {'events':[item.event.to_dict() for item in eus[:10]], 'number': len(eus)}
+            response = {'events':[item.event.to_dict() for item in eus[:50]], 'number': len(eus)}
             return HttpResponse(json.dumps(response), content_type="application/json")
         event = Event.get_by_id(event_id)
         if event:

@@ -19,7 +19,7 @@ const Home = () => <div><h1>Home</h1></div>;
 render(
       <Router history = { hashHistory }>
           <Route path="/" component={ App }>
-              <IndexRoute component ={ Home }/>
+              <IndexRoute component ={ EventList }/>
               <Route path = "/calendar" component = { Calendar }/>
               <Route path = "/events/:event_id" component={Event}/>
               <Route path = "/events" component ={ EventList }/>
