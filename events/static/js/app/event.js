@@ -3,6 +3,8 @@ import axios from 'axios';
 import Map from './map';
 import Comments from './comments'
 import Avatar from 'material-ui/Avatar';
+import Popover from 'material-ui/Popover';
+import RaisedButton from 'material-ui/RaisedButton';
 import {List, ListItem} from 'material-ui/List';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import AssignParticipants from './AssignParticipants';
@@ -12,9 +14,26 @@ import AssignParticipants from './AssignParticipants';
 class Event extends React.Component{
     constructor(props){
         super(props);
-        this.state = ({event: false});
+        this.state = ({event: false, showConfirmationDelete: false});
         this.handleAddUsers = this.handleAddUsers.bind(this);
+        this.deleteEvent = this.deleteEvent.bind(this);
+        this.handleConfirmationOpen = this.handleConfirmationOpen.bind(this);
+        this.handleConfirmationClose = this.handleConfirmationClose.bind(this);
     }
+
+    handleConfirmationOpen(event){
+        event.preventDefault();
+        this.setState({
+        showConfirmationDelete: true,
+        anchorEl: event.currentTarget,
+        });
+    }
+
+    handleConfirmationClose(){
+    this.setState({
+      showConfirmationDelete: false,
+        });
+    };
 
     handleAddUsers(users) {
         let event = this.state.event;
@@ -24,8 +43,15 @@ class Event extends React.Component{
         this.setState({event: event});
     };
 
+    deleteEvent(){
+        console.log(this.state.event)
+        axios.delete(`api/v1/events/${this.state.event.id}`)
+        .then(()=>document.location.href = `/#/`)
+        .catch(()=>console.log('Some wrongs'))
+    }
+
     componentDidMount(){
-        const url = '/api/v1/events/' + this.props.params.event_id
+        const url = `/api/v1/events/${this.props.params.event_id}`
         axios.get(url) 
         .then(function (response) {
             this.setState({event: response.data})
@@ -39,9 +65,33 @@ class Event extends React.Component{
             return(
                 <MuiThemeProvider>
                 <div>
+                <Popover
+                    open={this.state.showConfirmationDelete}
+                    anchorEl={this.state.anchorEl}
+                    anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
+                    targetOrigin={{horizontal: 'left', vertical: 'top'}}
+                    onRequestClose={this.handleConfirmationClose}
+                >
+                <h5>Are you sure?</h5>
+                <RaisedButton 
+                    label="Delete" 
+                    secondary={true} 
+                    buttonStyle={{backgroundColor: '#F44336'}}
+                    onClick={this.deleteEvent}/>
+                </Popover>
                 <div className="event-card">
                     <div className="event-card-header">
                         {this.state.event.title}
+                        <div className="control-buttons">
+                            <a>
+                                <i className="glyphicon glyphicon-pencil"></i>
+                            </a>
+                            <a>
+                                <i 
+                                    className="glyphicon glyphicon-remove"
+                                    onClick={this.handleConfirmationOpen} />
+                            </a>
+                        </div>
                     </div>
                     <div>
                         <Map event={true} location={this.state.event.location} geo={false} zoom={13}/>

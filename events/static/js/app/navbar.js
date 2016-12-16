@@ -29,7 +29,7 @@ export default class Navbar extends React.Component {
                         showMenuIconButton={false}
                         title={
                         <Tabs onChange={this.onChangeTabs} className="tabs">
-                            <Tab label="Events" containerElement={<Link to="events" />}/>
+                            <Tab label="Events" containerElement={<Link to="/" />}/>
                             <Tab label="Companies" containerElement={<Link to="companies" />}/>
                             <Tab label="Calendar" containerElement={<Link to="calendar" />}/>
                         </Tabs>

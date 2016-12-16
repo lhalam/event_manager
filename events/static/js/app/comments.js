@@ -163,10 +163,7 @@ class CommentItem extends React.Component{
                     <img src="http://www.nlsgrp.co/wp-content/uploads/2016/06/Avatar-Matt-3.png" />
                 </div>
                 <div className="comment">
-                    <div 
-                        className="comment-header"
-                        onMouseOver={()=>this.setState({showDeleteButton: true})}
-                        >
+                    <div className="comment-header">
                         <b>{this.props.comment.author.name}</b>
                         <a 
                             onTouchTap={this.handleConfirmationOpen}>
@@ -203,7 +200,7 @@ class CommentItem extends React.Component{
                                                     />})
                                         }
                                     </div>
-                                    </div>
+                            </div>
                         ) : null
                     }
                 </div>

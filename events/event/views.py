@@ -81,16 +81,16 @@ class EventView(View):
             return HttpResponse(json.dumps(form.errors.as_json), content_type="application/json")
 
     def delete(self, request, event_id):
-        if request.user.is_authenticated:
-            event = Event.get_by_id(event_id)
-            if not event:
-                return HttpResponse(status=204)
-            if event.owner.id != request.user.id:
-                return PERMISSION_DENIED
-            event.delete()
-            return JsonResponse({'message': "Event delete successfully"}, status=200)
-        else:
+        if not request.user.is_authenticated:
             return PERMISSION_DENIED
+        event = Event.get_by_id(event_id)
+        if not event:
+            return EVENT_NOT_EXISTS
+        if event.owner.id != request.user.id:
+            return PERMISSION_DENIED
+        event.delete()
+        return JsonResponse({'message': "Event delete successfully"}, status=200)
+            
 
 
 class EventUserAssignmentView(View):

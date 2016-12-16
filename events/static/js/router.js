@@ -20,9 +20,9 @@ render(
       <Router history = { hashHistory }>
           <Route path="/" component={ App }>
               <IndexRoute component ={ EventList }/>
-              <Route path = "/calendar" component = { Calendar }/>
+              <Route path = "/" component ={ EventList }/>
               <Route path = "/events/:event_id" component={Event}/>
-              <Route path = "/events" component ={ EventList }/>
+              <Route path = "/calendar" component = { Calendar }/>
               <Route path = "/companies" component ={ CompaniesList }/>
               <Route path = "/companies/:company_id" component ={ Company }/>
               <Route path = "/companies/:cid/teams/:tid" component ={ Team }/>
