@@ -161,7 +161,7 @@ export default class AddVoting extends React.Component {
             "x_coordinate": this.state.xCoordinate,
             "y_coordinate": this.state.yCoordinate
         });
-        this.refs.mapInput.value = '';
+        this.refs['mapInput'].value = '';
         this.setState({
             choices: choices,
             place: '',
@@ -186,7 +186,7 @@ export default class AddVoting extends React.Component {
                 <Chip
                     key={i}
                     onRequestDelete={() => this.handleRequestDelete(i)}
-                    className="voting-option"
+                    className="new-voting-option"
 
                 >
                     {choice['value']}
@@ -194,15 +194,15 @@ export default class AddVoting extends React.Component {
             )
         });
         return ([
-                <TextField
-                    maxLength={500}
-                    floatingLabelText='Custom option'
-                    multiLine={true}
-                    ref="customInput"
-                    rowsMax={5}
-                    fullWidth={true}
-                    onChange={this.handleCustomInput}
-                />,
+            <TextField
+                maxLength={500}
+                floatingLabelText='Custom option'
+                multiLine={true}
+                ref="customInput"
+                rowsMax={5}
+                fullWidth={true}
+                onChange={this.handleCustomInput}
+            />,
              <FlatButton
                 disabled={!(this.state.customValue)}
                 label="Submit"
@@ -226,7 +226,7 @@ export default class AddVoting extends React.Component {
                 <Chip
                     key={i}
                     onRequestDelete={() => this.handleRequestDelete(i)}
-                    className="voting-option"
+                    className="new-voting-option"
                 >
                     {choice['place']}
                 </Chip>
@@ -276,7 +276,7 @@ export default class AddVoting extends React.Component {
             <Chip
                 key={i}
                 onRequestDelete={() => this.handleRequestDelete(i)}
-                className="voting-option"
+                className="new-voting-option"
 
             >
             {
@@ -295,13 +295,17 @@ export default class AddVoting extends React.Component {
                     floatingLabelText="Start Time*"
                     textFieldStyle={{width: '210px', float: 'right'}}
                     defaultTime={new Date(this.state.start_date * 1000)}
-                    onChange={(event, value, date=this.state.start_date)=>this.setState({start_date: this.handleTimeUpdate(value, date)})}
+                    onChange={(event, value, date=this.state.start_date)=>this.setState(
+                        {start_date: this.handleTimeUpdate(value, date)}
+                    )}
                   />
                   <DatePicker
                     floatingLabelText="Start Date*"
                     textFieldStyle={{width: '210px'}}
                     defaultDate={new Date(this.state.start_date * 1000)}
-                    onChange={(event, value, date=this.state.end_date)=>this.setState({start_date: this.handleDateUpdate(value, date)})}
+                    onChange={(event, value, date=this.state.start_date)=>this.setState(
+                        {start_date: this.handleDateUpdate(value, date)}
+                    )}
                     />
                   <span className="error-message">{start_date_error}</span>
               </div>,
@@ -359,7 +363,7 @@ export default class AddVoting extends React.Component {
         this.loadVoting()
     }
     render(){
-        const votingEndDateError = this.endVotingDateError() ? 'End date and time of voting cannot be earlier than now' : ''
+        const votingEndDateError = this.endVotingDateError() ? 'End date and time of voting cannot be earlier than now' : '';
         const actions = [
             <FlatButton
                 label="Cancel"
@@ -390,7 +394,7 @@ export default class AddVoting extends React.Component {
 
         return (
             <MuiThemeProvider muiTheme={getMuiTheme()}>
-                <div style={{display: 'inline-block'}}>
+                <div className="add-new-voting">
                     <RaisedButton
                         label={this.props.label}
                         onTouchTap={this.handleOpen}

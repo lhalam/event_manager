@@ -3,8 +3,9 @@ import axios from 'axios'
 import Paper from 'material-ui/Paper'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import Avatar from 'material-ui/Avatar';
-import Subheader from 'material-ui/Subheader';
+import Dialog from 'material-ui/Dialog';
 import RaisedButton from 'material-ui/RaisedButton';
+import FlatButton from 'material-ui/FlatButton';
 import CountdownTimer from './Countdown/CountdownTimer';
 import moment from 'moment';
 import {blue300, indigo900, green300} from 'material-ui/styles/colors';
@@ -18,15 +19,25 @@ export default class Voting extends React.Component {
     constructor(props){
         super(props);
         this.state = {
-            votings: []
+            votings: [],
+            openDeleteDialog: false,
+            votingToDelete: null
         };
 
         this.loadVoting = this.loadVoting.bind(this);
         this.DeleteVoting = this.DeleteVoting.bind(this);
+        this.handleCloseDialog = () => {this.setState({openDeleteDialog: false})};
+        this.handleOpenDialog = (event, voting_id) => {
+            this.setState({
+                openDeleteDialog: true,
+                votingToDelete: voting_id
+            });
+        };
     }
 
     componentDidMount() {
         this.loadVoting();
+
     }
 
     loadVoting() {
@@ -61,11 +72,13 @@ export default class Voting extends React.Component {
 
     }
 
-    DeleteVoting(voting_id) {
-        axios.delete('api/v1/events/'+this.props['event_id']+'/voting/'+voting_id)
+    DeleteVoting() {
+        this.handleCloseDialog();
+        axios.delete('api/v1/events/'+this.props['event_id']+'/voting/'+this.state.votingToDelete)
             .then((response) => {
                 this.setState({
-                    votings: response.data["votings"]
+                    votings: response.data["votings"],
+                    votingToDelete: null
                 });
             })
             .catch((error) => {
@@ -116,27 +129,38 @@ export default class Voting extends React.Component {
 
     getTipContent(voters) {
         if (voters.length > 0) {
-            let displayLength = 8;
-            return [
+            let displayLength = 6;
+            let users = [
                 voters.slice(0, displayLength).map((voter) => {
                     return (
-                            <Avatar className="tooltip-avatar" size={32}>
+                            <Avatar
+                                key={voter['id']}
+                                className="tooltip-avatar"
+                                onTouchTap={this.handleTipAvatarClick.bind(this, voter)}
+                            >
                                 {voter['first_name'][0].toUpperCase()}
                             </Avatar>
                     )
-                }),
-            ]
-        } else {
+                })
+            ];
             return (
-                null
+                <div>
+                    <p key={voters[0]['id']} className="voting-tip-header">{`${voters.length} people voted`}</p>
+                    {users}
+                </div>
             )
-        }
+
+        } return null
+    }
+
+    handleTipAvatarClick(voter, event) {
+        event.stopPropagation();
+        alert(voter['first_name']);
     }
 
     getDateFormat(startDate, endDate) {
         let format = 'MMMM Do YYYY, h:mm:ss a';
         return (
-
             moment(startDate)
                 .format(format) +
             " - " +
@@ -166,11 +190,12 @@ export default class Voting extends React.Component {
                     />) : null;
                 let voted = choice['voted'] ?(<Avatar backgroundColor={green300} icon={<ActionDone />} />) : (<Avatar />);
                 return [
+                    <div>
                         <ListItem
-                            className="choice-item"
+                            className="choice-item voting-option"
                             data-tip
                             data-event-off={'active' || 'focused'}
-                            disabled={voting['seconds_left'] < 0}
+                            disabled={voting['seconds_left'] < 0 || voting['voted']}
                             ref='choiceItem'
                             data-for={choice.id}
                             onTouchTap={this.handleVote.bind(this, event, choice.id, voting, choice['voted'])}
@@ -178,31 +203,30 @@ export default class Voting extends React.Component {
                             leftAvatar={voted}
                             rightAvatar={
                                 <Avatar color={'#fff'} backgroundColor={'rgb(0, 151, 167)'}>
-                                    {choice.votes}
+                                    {choice['votes']}
                                 </Avatar>
                             }
                         >
-                                {formattedChoice}
-                                <ReactTooltip
-                                    class="tooltip"
-                                    eventOff="onClick"
-                                    key={choice['id'].toString()}
-                                    place="top"
-                                    delayShow={600}
-                                    delayHide={150}
-                                    id={choice['id'].toString()}
-                                    effect='solid'
-                                    type='info'
-                                    getContent={this.getTipContent.bind(this, choice['voters'])}
-                                >
-                                </ReactTooltip>
-                        </ListItem>,
+                            <ReactTooltip
+                                class="tooltip"
+                                eventOff="onClick"
+                                key={j}
+                                place="top"
+                                delayShow={700}
+                                delayHide={900}
+                                id={choice['id'].toString()}
+                                effect='solid'
+                                getContent={[this.getTipContent.bind(this, choice['voters']), 150]}
+                            >
+                            </ReactTooltip>
+                            {formattedChoice}
+                        </ListItem>
+                    </div>,
                     <div>
                         {applyButton}
                     </div>
                 ];
             });
-
             return (
                 <div key={i}>
                     <div className="voting-wrap">
@@ -211,38 +235,72 @@ export default class Voting extends React.Component {
                                 {voting.title}
                             </div>
                             <div className="choice-item">
-                                <Subheader>Total votes: {voting['votes']}</Subheader>
-                                <Subheader>{
-                                    <div className='time-left'>
-                                        <CountdownTimer
-                                            secondsLeft={voting['seconds_left']}
-                                            prefix="Time left"
-                                            finalMessage="Time for voting passed"
-                                        />
-                                    </div>
-                                }</Subheader>
-                            </div>
-                            {choices}
-                            <div className="choice-item">
                                 <p>{voting.description}</p>
                             </div>
-                            {
-                                this.state.owner ? (
-                                    <div className="add-users-button">
-                                        <RaisedButton
-                                            className="delete-button voting-delete-button"
-                                            label="Delete voting"
-                                            secondary={true}
-                                            onTouchTap={this.DeleteVoting.bind(this, voting.id)}
-                                        />
-                                    </div>
-                                ) : null
-                            }
+                            <div className="choice-item">
+                                <div className="time-left">Total votes: {voting['votes']}</div>
+                                <div className='time-left'>
+                                    <CountdownTimer
+                                        secondsLeft={voting['seconds_left']}
+                                        prefix="Time left"
+                                        finalMessage="Time for voting passed"
+                                    />
+                                </div>
+                            </div>
+                            {choices}
+                            <div className="add-users-button">
+                                {
+                                    this.state.owner ? (
+
+                                            <RaisedButton
+                                                className="delete-button voting-delete-button"
+                                                label="Delete voting"
+                                                secondary={true}
+                                                onTouchTap={this.handleOpenDialog.bind(this, event, voting.id)}
+                                            />
+                                    ) : null
+                                }
+                                {
+                                    (voting['voted'] && voting['seconds_left'] > 0) ? (
+                                            <RaisedButton
+                                                className="voting-delete-button"
+                                                label="Revote"
+                                                disabled={voting['seconds_left'] < 0}
+                                                primary={true}
+                                                onTouchTap={this.handleVote.bind(this, event, voting['voted_choice'].id, voting, true)}
+                                            />
+
+                                    ) : null
+                                }
+                            </div>
                         </Paper>
                     </div>
+                    <Dialog
+                        actions={
+                            [
+                                <FlatButton
+                                    label="Cancel"
+                                    primary={true}
+                                    onTouchTap={this.handleCloseDialog}
+                                />,
+                                <RaisedButton
+                                    className="delete-button"
+                                    label="Delete"
+                                    primary={true}
+                                    style={{backgroundColor: "#f44336", color: "white", marginLeft: "10px"}}
+                                    onTouchTap={this.DeleteVoting}
+                                />,
+                            ]
+                        }
+                        modal={true}
+                        open={this.state.openDeleteDialog}
+                        onRequestClose={this.handleCloseDialog}
+                        contentClassName="dialog-window"
+                    >
+                        Are you sure you want delete the voting?
+                    </Dialog>
                 </div>
-                )
-
+            );
         });
 
         return (

@@ -34,12 +34,9 @@ class Voting(models.Model):
 
     def to_dict(self, user):
         now = datetime.now().timestamp()
-        voters = [{
-            'id': vote.user.id,
-            'username': vote.user.username,
-            'first_name': vote.user.first_name,
-            'last_name': vote.user.last_name
-        } for vote in VotingUserAssignment.objects.filter(voting=self)]
+        voters = [vote.user.to_dict() for vote in VotingUserAssignment.objects.filter(voting=self)]
+        choices = [choice.to_dict(user) for choice in self.choices.all()]
+        voted_choice = Choice.get_voted_choice(choices)
         return {
             "id": self.pk,
             "title": self.title,
@@ -48,9 +45,10 @@ class Voting(models.Model):
             "creation_date": self.creation_date,
             "seconds_left": int(self.end_date.timestamp()-now),
             "type": self.type,
-            "choices": [choice.to_dict(user) for choice in self.choices.all()],
+            "choices": choices,
             "voters": voters,
             "voted": VotingUserAssignment.check_vote(user, self),
+            "voted_choice": voted_choice,
             "votes": VotingUserAssignment.objects.filter(voting=self).count()
         }
 
@@ -126,6 +124,13 @@ class Choice(models.Model):
             return voting.choices.all().get(pk=choice_id)
         except Choice.DoesNotExist:
             return None
+
+    @staticmethod
+    def get_voted_choice(choices):
+        for choice in choices:
+            if choice.get('voted'):
+                return choice
+        return False
 
 
 class ChoiceUserAssignment(models.Model):
