@@ -4,7 +4,7 @@ from django.http.response import JsonResponse, HttpResponse
 from .models import Voting, Choice, ChoiceUserAssignment, VotingUserAssignment
 from registration.models import User
 from .forms import VotingForm
-from companies.views import PERMISSION_DENIED, NO_CONTENT, INVALID_PAYLOAD
+from events.views import PERMISSION_DENIED, INVALID_PAYLOAD
 from event.models import Event, EventUserAssignment
 
 import json

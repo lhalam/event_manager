@@ -103,12 +103,7 @@ class Choice(models.Model):
     creation_date = models.DateTimeField(auto_now_add=True)
 
     def to_dict(self, user):
-        voters = [{
-            'id': vote.user.id,
-            'username': vote.user.username,
-            'first_name': vote.user.first_name,
-            'last_name': vote.user.last_name
-        } for vote in ChoiceUserAssignment.objects.filter(choice=self)]
+        voters = [vote.user.to_dict() for vote in ChoiceUserAssignment.objects.filter(choice=self)]
         voted = ChoiceUserAssignment.check_vote(user, self)
         return {
             "id": self.pk,

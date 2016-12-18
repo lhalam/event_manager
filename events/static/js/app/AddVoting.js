@@ -2,6 +2,7 @@ import React from 'react';
 import axios from 'axios';
 import Dialog from 'material-ui/Dialog';
 import Divider from 'material-ui/Divider';
+import Snackbar from 'material-ui/Snackbar';
 import FlatButton from 'material-ui/FlatButton';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
@@ -30,7 +31,9 @@ export default class AddVoting extends React.Component {
             type: "",
             notAccessibleTypes: [],
             choices: [],
-            customValue: ''
+            customValue: '',
+            openSnackbar: false,
+            message: null
         }
         ;
 
@@ -38,7 +41,7 @@ export default class AddVoting extends React.Component {
         this.handleClose = () => {this.setState({open: false, type: ""});};
         this.handleTitle = (event) => {this.setState({title: event.target.value})};
         this.handleDescription = (event) => {this.setState({description: event.target.value})};
-
+        this.handleRequestClose = () => {this.setState({openSnackbar: false})};
         this.loadVoting = this.loadVoting.bind(this);
         this.handleRadiobuttonSelect = this.handleRadiobuttonSelect.bind(this);
         this.startDateError = this.startDateError.bind(this);
@@ -81,8 +84,19 @@ export default class AddVoting extends React.Component {
             "choices": this.state.choices.map((choice) => {return JSON.stringify(choice)})
         });
         axios.post(this.props.url, newVotingData.toString())
-                .then((response) => {this.props.renewVotings(response.data['votings'])})
-                .catch((error) => {console.log(error.response)})
+                .then((response) => {
+                    this.props.renewVotings(response.data['votings']);
+                    this.setState({
+                    message: 'New voting successfully added',
+                    openSnackbar: true,
+                });
+                })
+                .catch((error) => {
+                this.setState({
+                    message: 'Error occurred. '+error.response.data['error_message'],
+                    openSnackbar: true,
+                });
+            });
     }
 
     initialDate() {
@@ -354,8 +368,9 @@ export default class AddVoting extends React.Component {
                  this.setState({
                     notAccessibleTypes: [],
                     votings: [],
+                    message: 'Error occurred. Try again later.',
+                    openSnackbar: true,
                 });
-                console.log(error);
             })
     }
 
@@ -395,6 +410,12 @@ export default class AddVoting extends React.Component {
         return (
             <MuiThemeProvider muiTheme={getMuiTheme()}>
                 <div className="add-new-voting">
+                    <Snackbar
+                        open={this.state.openSnackbar}
+                        message={this.state.message}
+                        autoHideDuration={3000}
+                        onRequestClose={this.handleRequestClose}
+                    />
                     <RaisedButton
                         label={this.props.label}
                         onTouchTap={this.handleOpen}

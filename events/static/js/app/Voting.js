@@ -3,6 +3,7 @@ import axios from 'axios'
 import Paper from 'material-ui/Paper'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import Avatar from 'material-ui/Avatar';
+import Snackbar from 'material-ui/Snackbar';
 import Dialog from 'material-ui/Dialog';
 import RaisedButton from 'material-ui/RaisedButton';
 import FlatButton from 'material-ui/FlatButton';
@@ -21,7 +22,9 @@ export default class Voting extends React.Component {
         this.state = {
             votings: [],
             openDeleteDialog: false,
-            votingToDelete: null
+            votingToDelete: null,
+            openSnackbar: false,
+            message: null
         };
 
         this.loadVoting = this.loadVoting.bind(this);
@@ -33,6 +36,7 @@ export default class Voting extends React.Component {
                 votingToDelete: voting_id
             });
         };
+        this.handleRequestClose = () => {this.setState({openSnackbar: false})};
     }
 
     componentDidMount() {
@@ -49,6 +53,10 @@ export default class Voting extends React.Component {
                 });
             })
             .catch((error) => {
+                this.setState({
+                    message: 'Error occurred. Try again later.',
+                    openSnackbar: true,
+                });
             })
     }
 
@@ -57,7 +65,12 @@ export default class Voting extends React.Component {
             .then((response) => {
                 this.props.renewVotings(response.data['votings']);
             })
-            .catch((error) => console.log(error));
+            .catch((error) => {
+                this.setState({
+                    message: 'Error occurred. '+error.response.data['error_message'],
+                    openSnackbar: true,
+                });
+            });
 
     }
 
@@ -68,7 +81,12 @@ export default class Voting extends React.Component {
                     votings: response.data["votings"],
                 });
             })
-            .catch((error) => {console.log(error)});
+            .catch((error) => {
+                this.setState({
+                    message: 'Error occurred. '+error.response.data['error_message'],
+                    openSnackbar: true,
+                });
+            });
 
     }
 
@@ -78,12 +96,17 @@ export default class Voting extends React.Component {
             .then((response) => {
                 this.setState({
                     votings: response.data["votings"],
-                    votingToDelete: null
+                    votingToDelete: null,
+                    message: 'Voting successfully deleted',
+                    openSnackbar: true,
                 });
             })
             .catch((error) => {
-                console.log(error)
-            })
+                this.setState({
+                    message: 'Error occurred. '+error.response.data['error_message'],
+                    openSnackbar: true,
+                });
+            });
     }
 
     optionApplyHandler(event, choice_id, voting_id) {
@@ -93,9 +116,11 @@ export default class Voting extends React.Component {
             this.props.renewVotings(response.data['votings']);
             })
             .catch((error) => {
-                console.log(error)
+                this.setState({
+                    message: 'Error occurred. '+error.response.data['error_message'],
+                    openSnackbar: true,
+                });
             });
-
     }
 
     handleVote(event, choice_id, voting, voted) {
@@ -308,6 +333,12 @@ export default class Voting extends React.Component {
                 <div>
                     {votings}
                     <ReactTooltip />
+                    <Snackbar
+                        open={this.state.openSnackbar}
+                        message={this.state.message}
+                        autoHideDuration={3000}
+                        onRequestClose={this.handleRequestClose}
+                    />
                 </div>
             </MuiThemeProvider>
         );
