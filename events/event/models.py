@@ -22,15 +22,10 @@ class Event(models.Model):
         through='EventUserAssignment',
         through_fields=('event', 'user'),
     )
-
+    
     def __str__(self):
         return "%s" % self.title
 
-    def save(self, *args, **kwargs):
-        self.start_date = TZ.localize(datetime.utcfromtimestamp(float(self.start_date)))
-        self.end_date = TZ.localize(datetime.utcfromtimestamp(float(self.end_date)))
-        self.location = self.location.split(",")
-        super(self.__class__, self).save(*args, **kwargs)
 
     def serialize(self):
         return {

@@ -13,9 +13,6 @@ from .models import Event, EventUserAssignment, User
 from companies.models import TeamUserAssignment
 from .forms import EventCreateForm
 
-# Var for converting string to datetime
-TZ = get_current_timezone()
-FORMAT = '%b %d %Y %I:%M%p'
 
 EVENT_NOT_EXISTS = JsonResponse({"error_message": "Such event does not exists"}, status=404)
 PERMISSION_DENIED = JsonResponse({"error_message": "Permission denied"}, status=403)
@@ -31,17 +28,14 @@ class EventView(View):
                 query_date = TZ.localize(datetime.utcfromtimestamp(float(request.GET.get('q'))))
                 eus = EventUserAssignment.objects.filter(event__start_date__lte=query_date)[:10]
                 response = [item.event.to_dict() for item in eus]
-                return HttpResponse(json.dumps(response), content_type="application/json")
-            user_id = request.user.id
-            eus = EventUserAssignment.objects.filter(user=user_id)
+                return JsonResponse(response, safe=False)
+            eus = EventUserAssignment.objects.filter(user=request.user.id)
             response = {'events':[item.event.to_dict() for item in eus[:50]], 'number': len(eus)}
-            return HttpResponse(json.dumps(response), content_type="application/json")
+            return JsonResponse(response)
         event = Event.get_by_id(event_id)
         if event:
-            response = event.to_dict()
-            return HttpResponse(json.dumps(response), content_type="application/json")
-        else:
-            return EVENT_NOT_EXISTS
+            return JsonResponse(event.to_dict())
+        return EVENT_NOT_EXISTS
 
     def post(self, request):
         if not request.user.is_authenticated:
@@ -51,10 +45,10 @@ class EventView(View):
         except:
             return JsonResponse({"error_message": "Problem with JSON load or decode"}, status=400)
         user = User.get_by_id(request.user.id)
-        event_data['owner'] = user
-        validation_form = EventCreateForm(event_data)
-        if validation_form.is_valid():
-            event = Event.objects.create(**validation_form.data)
+        form = EventCreateForm(event_data)
+        if form.is_valid():
+            form.cleaned_data['owner'] = user
+            event = Event.objects.create(**form.cleaned_data)
             try:
                 EventUserAssignment.objects.create(user=user, event=event)
             except:
@@ -62,32 +56,26 @@ class EventView(View):
             return JsonResponse({'message': "Event created successfully", "event_id": event.id}, status=200)
         return JsonResponse(json.loads(validation_form.errors.as_json()), status=400)
 
-    def put(self, request, pk):
-        try:
-            event = Event.objects.get(id=pk)
-        except:
-            return HttpResponseNotFound('Does not exist')
-        body_unicode = request.body.decode('utf-8')
-        data = json.loads(body_unicode)
-        data["start_date"] = TZ.localize(datetime.datetime.strptime(data["start_date"], FORMAT))
-        data["end_date"] = TZ.localize(datetime.datetime.strptime(data["end_date"], FORMAT))
-        form = EventCreateForm(data)
-        if form.is_valid():
-            for k, v in data.items():
-                event.to_dict[k] = v
-                event.save()
-            return HttpResponse('ok')
-        else:
-            return HttpResponse(json.dumps(form.errors.as_json), content_type="application/json")
-
-    def delete(self, request, event_id):
-        if not request.user.is_authenticated:
-            return PERMISSION_DENIED
+    def put(self, request, event_id):
+        user = request.user
         event = Event.get_by_id(event_id)
+        data_update = json.loads(request.body.decode('utf-8'))
         if not event:
             return EVENT_NOT_EXISTS
-        if event.owner.id != request.user.id:
+        if user.id != event.owner.id:
+            return PERMISSION_DENIE
+        form = EventCreateForm(data_update)
+        if not form.is_valid():
+            return JsonResponse(json.loads(form.errors.as_json()), status=400)
+        Event.objects.filter(id=event_id).update(**form.cleaned_data)
+        return JsonResponse({"message": "Updated"}, status=400)        
+
+    def delete(self, request, event_id):
+        event = Event.get_by_id(event_id)
+        if not request.user.is_authenticated and event.owner.id != request.user.id:
             return PERMISSION_DENIED
+        if not event:
+            return EVENT_NOT_EXISTS
         event.delete()
         return JsonResponse({'message': "Event delete successfully"}, status=200)
             
