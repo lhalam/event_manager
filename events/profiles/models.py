@@ -1,11 +1,14 @@
 from __future__ import unicode_literals
 
-from django.contrib.auth.models import User
+from registration.models import User
 from django.db import models
 
 
 class UserProfile(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User,
+                                on_delete=models.CASCADE,
+                                primary_key=True
+                                )
     photo = models.CharField(max_length=200, default='default_photo.jpg')
     education = models.TextField(blank=True, default='')
     job = models.TextField(blank=True, default='')
