@@ -27,6 +27,7 @@ render(
               <Route path = "/companies/:company_id" component ={ Company }/>
               <Route path = "/companies/:cid/teams/:tid" component ={ Team }/>
               <Route path = "/profile/:user_id" component ={ Profile }/>
+              <Route path = "/profile/" component ={ Profile }/>
           </Route>
       </Router>, document.getElementById("root")
 );

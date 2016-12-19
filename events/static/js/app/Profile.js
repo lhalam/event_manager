@@ -4,20 +4,18 @@ import axios from 'axios';
 export default class Profile extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {
-            profile: {'photo': 'http://eventmanager203.s3.amazonaws.com/default_photo.jpg'},
-            owner: false
-        };
+        this.state = {};
     }
 
     loadProfile() {
         axios.get(`http://localhost:8000/api/v1/profile/${this.props.params.user_id ?
                                                           this.props.params.user_id : ''}`)
             .then((response) => {
-                this.setState();
+                this.setState(response['data']);
             })
             .catch((error) => {
-                console.log('oops, something went wrong')
+                console.log(error.response);
+                this.setState({error: `${error.response.status} ${error.response.statusText}`})
             })
     }
 
@@ -28,8 +26,11 @@ export default class Profile extends React.Component {
     }
 
     render() {
-
-        let profile_photo = this.state.profile['photo'];
+        if (this.state.error) return <h1>{this.state.error}</h1>;
+        let profile_photo = 'http://eventmanager203.s3.amazonaws.com/default_photo.jpg';
+        if (this.state.profile) {
+            profile_photo = this.state.profile['photo'];
+        }
         return (
             <div>
                 <p>Worked!</p>

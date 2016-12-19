@@ -6,7 +6,7 @@ from boto.s3.connection import S3Connection
 
 from profiles.forms import ProfileForm
 from django.http import JsonResponse
-from django.http.response import HttpResponseForbidden
+from django.http.response import HttpResponseForbidden, HttpResponseNotFound
 
 from django.views.generic.base import View
 from registration.models import User
@@ -14,13 +14,18 @@ from profiles.models import UserProfile
 
 
 class ProfileView(View):
-    def get(self, request, profile_id):
-        if request.user.is_authenticated:
-            print(profile_id)
+    def get(self, request, profile_id=None):
+        owner = True
+        if profile_id:
             profile = UserProfile.get_by_id(profile_id)
-            return JsonResponse(ProfileView.to_dict(profile), status=200)
+            if int(profile_id) != int(request.user.id):
+                owner = False
         else:
-            return HttpResponseForbidden('Permission denied')
+            profile = UserProfile.get_by_id(request.user.id)
+        if not profile:
+            return HttpResponseNotFound('User not found')
+        return JsonResponse({'profile': ProfileView.to_dict(profile), 'owner': owner}, status=200)
+
 
     def post(self, request):
         if request.user.is_authenticated:
