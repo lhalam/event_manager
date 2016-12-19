@@ -16,6 +16,7 @@ from profiles.models import UserProfile
 class ProfileView(View):
     def get(self, request, profile_id):
         if request.user.is_authenticated:
+            print(profile_id)
             profile = UserProfile.get_by_id(profile_id)
             return JsonResponse(ProfileView.to_dict(profile), status=200)
         else:
