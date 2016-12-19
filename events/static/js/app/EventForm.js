@@ -32,7 +32,7 @@ class Form extends React.Component{
       }
     );
     this.initialDate = this.initialDate.bind(this)
-    this.handleFormSubmit = this.handleFormSubmit.bind(this)
+    this.handleEventCreate = this.handleEventCreate.bind(this)
     this.handleStartDateUpdate = this.handleDateUpdate.bind(this)
     this.handleStartTimeUpdate = this.handleTimeUpdate.bind(this)
     this.setLocation = this.setLocation.bind(this)
@@ -41,6 +41,7 @@ class Form extends React.Component{
     this.descriptionError = this.descriptionError.bind(this)
     this.locationError = this.locationError.bind(this)
     this.formValid = this.formValid.bind(this)
+    this.handleEventUpdate = this.handleEventUpdate.bind(this)
   }
 
   initialDate(){
@@ -54,7 +55,7 @@ class Form extends React.Component{
     }
   }
 
-  handleFormSubmit(){
+  handleEventCreate(){
     axios.post('/api/v1/events/', {
       title: this.state.title,
       start_date: this.state.startDate,
@@ -66,6 +67,19 @@ class Form extends React.Component{
     .then(function(response){
       document.location.href += `events/${response.data.event_id}`
     })
+  }
+    handleEventUpdate(){
+    axios.put(`api/v1/events/${this.props.event.id}/`, {
+      title: this.state.title,
+      start_date: this.state.startDate,
+      end_date: this.state.endDate,
+      location: this.state.location,
+      place: this.state.place,
+      description: this.state.description
+    })
+    .then(function(response){
+      this.props.handleClose()
+    }.bind(this))
   }
 
   handleDateUpdate(value, date){
@@ -118,7 +132,18 @@ class Form extends React.Component{
             !this.locationError()
             )
   }
-
+  componentWillMount(){
+      if (this.props.event){
+          this.setState({
+              title: this.props.event.title,
+              startDate: this.props.event.start_date,
+              endDate: this.props.event.end_date,
+              description: this.props.event.description,
+              place: this.props.event.place,
+              location: this.props.event.location
+          })
+      }
+  }
   render(){
     const titleError = (this.titleError() && this.state.titleChanged) ? 'Cannot be empty and more than 20 characters' : ''
     const startDateError = this.startDateError() ? 'Start Date and Time cannot be earlier than now (15 minutes)' : ''
@@ -175,16 +200,20 @@ class Form extends React.Component{
             multiLine={true}
             rows={1}
             rowsMax={2}
+            value={this.state.description}
             onInput={(e)=>this.setState({description: e.target.value})}
             onBlur={()=>this.setState({descriptionChanged: true})}
             style={{width: '100%'}}
           /><br />
           <div>
-            <input id="pac-input" 
-                  className="controls" 
-                  type="text" 
-                  placeholder="Address" 
-                  onBlur={()=>this.setState({locationChanged: true})}
+            <input
+                id="pac-input"
+                className="controls"
+                type="text"
+                placeholder="Address"
+                value={this.state.place}
+                onInput={(e)=>this.setState({place: e.target.value})}
+                onBlur={()=>this.setState({locationChanged: true})}
               />
             <Map new={true} setLocation={this.setLocation}/>
             <span className="error-message">{locationError}</span>
@@ -192,9 +221,9 @@ class Form extends React.Component{
         </form>
         <div className="form-button">
           <FlatButton label="Cancel" primary={true} onClick={this.props.handleClose} style={{marginRight: '5px'}}/>
-          <RaisedButton label="Create Event" 
+          <RaisedButton label={this.props.event ? "Update" : "Create Event"}
             primary={true} 
-            onClick={this.handleFormSubmit}
+            onClick={this.props.event ? this.handleEventUpdate : this.handleEventCreate}
             disabled={!this.formValid()}
           />
       </div>
@@ -237,7 +266,7 @@ export default class CreateEventDialog extends React.Component {
           autoDetectWindowHeight={true}
           autoScrollBodyContent={true}
         >
-          <Form handleClose={this.handleClose}/>
+          <Form handleClose={this.handleClose} event={this.props.event}/>
         </Dialog>
       </div>
     );

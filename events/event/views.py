@@ -66,7 +66,7 @@ class EventView(View):
         if not form.is_valid():
             return JsonResponse(json.loads(form.errors.as_json()), status=400)
         Event.objects.filter(id=event_id).update(**form.cleaned_data)
-        return JsonResponse({"message": "Updated"}, status=400)        
+        return JsonResponse({"message": "Updated"}, status=200)
 
     def delete(self, request, event_id):
         event = Event.get_by_id(event_id)

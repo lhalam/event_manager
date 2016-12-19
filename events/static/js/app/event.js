@@ -1,6 +1,7 @@
 import React from 'react';
 import axios from 'axios';
 import Map from './map';
+import CreateEventDialog from './EventForm';
 import Comments from './comments'
 import Avatar from 'material-ui/Avatar';
 import Popover from 'material-ui/Popover';
@@ -65,6 +66,7 @@ class Event extends React.Component{
             return(
                 <MuiThemeProvider>
                 <div>
+                    <CreateEventDialog event={this.state.event}/>
                 <Popover
                     open={this.state.showConfirmationDelete}
                     anchorEl={this.state.anchorEl}
