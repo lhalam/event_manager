@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'calendars.apps.CalendarsConfig',
     'comments.apps.CommentsConfig',
     'companies.apps.CompaniesConfig',
+    'profiles.apps.ProfilesConfig',
     'static_precompiler',
     'webpack_loader',
     'utils',
