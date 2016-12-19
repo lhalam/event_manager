@@ -1,5 +1,5 @@
 import Map from './map'
-import CreateEventDialog from './NewEventForm';
+import CreateEventDialog from './EventForm';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import Toggle from 'material-ui/Toggle';
 import FlatButton from 'material-ui/FlatButton';

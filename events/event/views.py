@@ -1,8 +1,6 @@
 import json
 import datetime
 
-from django.utils.timezone import get_current_timezone
-from django.http.response import HttpResponseNotFound, HttpResponseForbidden
 from django.http import JsonResponse, HttpResponse
 from django.views.generic.base import View
 
@@ -54,7 +52,7 @@ class EventView(View):
             except:
                 return JsonResponse({"error_message": "Can not create relation between user and event"}, status=401)
             return JsonResponse({'message': "Event created successfully", "event_id": event.id}, status=200)
-        return JsonResponse(json.loads(validation_form.errors.as_json()), status=400)
+        return JsonResponse(json.loads(form.errors.as_json()), status=400)
 
     def put(self, request, event_id):
         user = request.user
@@ -63,7 +61,7 @@ class EventView(View):
         if not event:
             return EVENT_NOT_EXISTS
         if user.id != event.owner.id:
-            return PERMISSION_DENIE
+            return PERMISSION_DENIED
         form = EventCreateForm(data_update)
         if not form.is_valid():
             return JsonResponse(json.loads(form.errors.as_json()), status=400)

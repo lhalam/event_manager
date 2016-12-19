@@ -35,10 +35,10 @@ class EventCreateForm(forms.ModelForm):
         return location
 
     def clean_start_date(self):
-        return TZ.localize(datetime.utcfromtimestamp(self.cleaned_data['start_date'])) 
+        return TZ.localize(datetime.utcfromtimestamp(float(self.cleaned_data['start_date']))) 
 
     def clean_end_date(self):
-        end_date = TZ.localize(datetime.utcfromtimestamp(self.cleaned_data['end_date'])) 
+        end_date = TZ.localize(datetime.utcfromtimestamp(float(self.cleaned_data['end_date']))) 
         if (end_date - self.cleaned_data['start_date']).seconds < 60 * 15:
             raise forms.ValidationError("End Date and Time cannot be earlier than Start Date")
         return end_date

@@ -64,7 +64,7 @@ class Form extends React.Component{
       description: this.state.description
     })
     .then(function(response){
-      document.location.href += `/${response.data.event_id}`
+      document.location.href += `events/${response.data.event_id}`
     })
   }
 
