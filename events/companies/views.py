@@ -1,17 +1,14 @@
 import json
 
 from django.views.generic.base import View
-from django.http import HttpResponse, JsonResponse
+from django.http import JsonResponse
 
 from .forms import CompanyForm, TeamForm
 from .models import Company, TeamUserAssignment, Team, User
+from events.views import PERMISSION_DENIED, INVALID_PAYLOAD, NO_CONTENT, CREATED
 
-PERMISSION_DENIED = JsonResponse({"error_message": "Permission denied"}, status=403)
 COMPANY_NOT_EXISTS = JsonResponse({"error_message": "Such company does not exists"}, status=404)
 TEAM_NOT_EXISTS = JsonResponse({"error_message": "Such team does not exists"}, status=404)
-INVALID_PAYLOAD = JsonResponse({"error_message": "Invalid payload"}, status=400)
-NO_CONTENT = HttpResponse(status=204)
-CREATED = JsonResponse({'success': True}, status=201)
 
 
 class CompanyView(View):

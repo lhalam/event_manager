@@ -13,6 +13,7 @@ import Team from './app/team'
 import Profile from './app/Profile'
 import CompaniesList from './app/companies'
 import Company from './app/Company';
+import Voting from './app/Voting';
 
 const Home = () => <div><h1>Home</h1></div>;
 
@@ -21,6 +22,7 @@ render(
           <Route path="/" component={ App }>
               <IndexRoute component ={ Home }/>
               <Route path = "/calendar" component = { Calendar }/>
+              <Route path = "/events/:event_id/voting" component={Voting}/>
               <Route path = "/events/:event_id" component={Event}/>
               <Route path = "/events" component ={ EventList }/>
               <Route path = "/companies" component ={ CompaniesList }/>

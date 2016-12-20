@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'comments.apps.CommentsConfig',
     'companies.apps.CompaniesConfig',
     'profiles.apps.ProfilesConfig',
+    'votings.apps.VotingsConfig',
     'static_precompiler',
     'webpack_loader',
     'utils',

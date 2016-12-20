@@ -1,0 +1,110 @@
+
+@import "colors";
+
+.voting-wrap {
+    padding: 10px 40px 0 25px;
+    .voting-header {
+      overflow-x: hidden;
+      margin: 0;
+      padding: 0 40px 0 40px;
+      color: @popover-header;
+      font-weight: 700;
+      border-radius: 2px 2px 0 0;
+      font-size: 24px;
+      height: 35px;
+      .voting-timer {
+        float: right;
+        font-size: 15px;
+      }
+    }
+}
+
+.voting-delete-button {
+  margin-bottom: 10px !important;
+}
+
+.choice-item {
+  margin: 10px 40px !important;
+  min-width: 85%;
+  >p {
+    font-weight: 500;
+    color: @popover-header;
+  }
+}
+
+.tooltip-avatar {
+  margin: 3px 15px;
+  display: inline-block;
+  pointer-events: auto !important;
+  cursor: pointer !important;
+}
+
+.tooltip {
+  background-color: @popover-header !important;
+  color: @popover-dialog-header;
+  font-size: 12px !important;
+  &.place-top {
+   &:after {
+     border-top: 6px solid @popover-header !important;
+   }
+  }
+  pointer-events: auto !important;
+  &:hover {
+    cursor: default !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+}
+
+.apply-option-button {
+  margin: 5px 40px !important;;
+  div {
+    display: inline-block;
+  }
+
+}
+
+.radio-button-group {
+  margin: 20px 40px !important;
+}
+
+.voting-form-body {
+  max-height: 350px !important;
+  overflow: auto !important;
+  >button {
+    float: right
+  }
+}
+
+.error-message {
+    font-size: 12px;
+    color: @error-color;
+    float: left;
+}
+
+.voting-dialog-window {
+  margin: 0 auto !important;
+  max-width: 520px !important;
+  width: 100% !important;
+  label {
+    font-weight: normal;
+  }
+}
+
+.new-voting-option {
+  margin-top: 10px !important;
+}
+
+.voting-option {
+  cursor: pointer !important;
+}
+
+.time-left {
+  display: inline-block;
+  margin-right: 15px;
+  font-weight: 700;
+}
+
+.add-new-voting {
+  display: inline-block;
+}

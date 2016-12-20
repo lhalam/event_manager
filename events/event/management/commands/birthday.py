@@ -3,6 +3,7 @@ from registration.models import User
 from datetime import datetime
 from datetime import timedelta
 from companies.models import TeamUserAssignment, Team, Company
+from pytz import utc as TZ
 
 from django.core.management.base import BaseCommand
 from django.template.loader import render_to_string
@@ -11,6 +12,7 @@ from django.core.mail import send_mail
 from utils.EmailService import EmailSender
 
 DEFAULT_LOCATION = '49.839683,24.029717'
+INVITE_SUBJECT = 'Birthday Event'
 
 
 class BirthDay(object):
@@ -19,8 +21,8 @@ class BirthDay(object):
         for team in Company.get_teams(TeamUserAssignment.objects.get(user=user).team.company.id):
             event = Event.objects.create(
                 title=user.first_name + '`s ' + user.last_name + ' Birth Day',
-                start_date=(datetime.now().timestamp()),
-                end_date=((datetime.now() + timedelta(days=7)).timestamp()),
+                start_date=TZ.localize(datetime.now()),
+                end_date=TZ.localize(datetime.now() + timedelta(days=7)),
                 location=DEFAULT_LOCATION,
                 place=team.company.name,
                 description='It`s time to collect some money.',
@@ -34,7 +36,7 @@ class BirthDay(object):
             except:
                 print('Can not create relation between user: {0} and event: {1}'.format(participant, event))
 
-            EmailSender.send_birthday_invite(event, [user.get('username') for user in participants])
+            EmailSender.send_event_invite(event, [user.get('username') for user in participants], INVITE_SUBJECT)
 
     @staticmethod
     def team_member_birthday(user):
@@ -52,11 +54,10 @@ class BirthDay(object):
                 if not team_members:
                     team_members.append(team.company.admin)
                 event_owner = team_members[0]
-
             event = Event.objects.create(
                 title=user.first_name + '`s ' + user.last_name + ' Birth Day',
-                start_date=(datetime.now().timestamp()),
-                end_date=((datetime.now() + timedelta(days=7)).timestamp()),
+                start_date=TZ.localize(datetime.now()),
+                end_date=TZ.localize(datetime.now() + timedelta(days=7)),
                 location=DEFAULT_LOCATION,
                 place=team.company.name,
                 description='It`s time to collect some money.',
@@ -69,7 +70,7 @@ class BirthDay(object):
             except:
                 print('Can not create relation between user: {0} and event: {1}'.format(participant, event))
 
-            EmailSender.send_birthday_invite(event, participants)
+            EmailSender.send_event_invite(event, participants, INVITE_SUBJECT)
 
 
 class Command(BaseCommand):

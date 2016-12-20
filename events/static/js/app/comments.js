@@ -3,8 +3,8 @@ import axios from 'axios';
 import Popover from 'material-ui/Popover';
 import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
+let User = require('./helpers/User');
 
 
 class Comments extends React.Component{
@@ -168,7 +168,7 @@ class CommentItem extends React.Component{
                         className="comment-header"
                         onMouseOver={()=>this.setState({showDeleteButton: true})}
                         >
-                        <b>{this.props.comment.author.name}</b>
+                        <b>{User.getFullName(this.props.comment.author)}</b>
                         {
                             this.state.showDeleteButton ? <a 
                                 onTouchTap={this.handleConfirmationOpen}>
