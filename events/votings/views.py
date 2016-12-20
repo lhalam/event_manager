@@ -9,6 +9,7 @@ from event.models import Event, EventUserAssignment
 
 import json
 from datetime import datetime
+from pytz import utc as TZ
 
 
 class VotingView(View):
@@ -193,10 +194,10 @@ class SetEventView(View):
             return PERMISSION_DENIED
         choice = json.loads(Choice.get_by_id_voting(choice_id, voting).value.replace("'", "\""))
         if voting.type == 'date':
-            event.start_date = str(choice['start_date'])
-            event.end_date = str(choice['end_date'])
+            event.start_date = TZ.localize(datetime.utcfromtimestamp(float(choice['start_date'])))
+            event.end_date = TZ.localize(datetime.utcfromtimestamp(float(choice['end_date'])))
         elif voting.type == 'place':
-            event.location = '{},{}'.format(choice['x_coordinate'], choice['y_coordinate'])
+            event.location = [choice['x_coordinate'], choice['y_coordinate']]
             event.place = choice['place']
         else:
             return INVALID_PAYLOAD

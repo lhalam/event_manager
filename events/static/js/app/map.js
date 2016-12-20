@@ -124,7 +124,6 @@ class Map extends React.Component{
             });
         }
         if(this.props.event){
-            console.dir(this.props)
             var location = { lat: this.props.location[0], lng: this.props.location[1] };
             var map = new google.maps.Map(document.getElementById('map'), {
             zoom: 15,
@@ -172,7 +171,6 @@ class Map extends React.Component{
     }
 
     render(){
-        console.dir(this.props)
         if (this.props.new){
             return(
             <div>
