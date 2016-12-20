@@ -18,6 +18,8 @@ import { hashHistory } from 'react-router';
 import SearchField from './SearchField';
 import AddTeamWindow from './AddTeamWindow';
 
+let User = require('./helpers/User');
+
 
 export default class Team extends React.Component {
     constructor(props){
@@ -156,15 +158,20 @@ export default class Team extends React.Component {
         let team_admin = null;
         let admin_name = "";
         if (admin) {
-            admin_name = admin["first_name"] + " " + admin["last_name"];
             team_admin = (
                 <List>
                     <Subheader><div className="subheader">Team Admin</div></Subheader>
                     <div className="paper-element">
                     <ListItem
-                        primaryText={admin_name}
+                        primaryText={User.getFullName(admin)}
                         secondaryText={admin['username']}
-                        leftAvatar={<Avatar size={32}>{admin['first_name'][0].toUpperCase()}</Avatar>}
+                        leftAvatar={
+                            <Avatar
+                                size={32}
+                                backgroundColor={admin['avatar']}
+                            >
+                                {admin['first_name'][0].toUpperCase()}
+                            </Avatar>}
                     />
                     </div>
                 </List>
@@ -208,8 +215,13 @@ export default class Team extends React.Component {
                                             return (
                                                 <ListItem
                                                     key={index}
-                                                    primaryText={member.first_name + " " + member.last_name}
-                                                    leftAvatar={<Avatar>{member.first_name[0]}</Avatar>}
+                                                    primaryText={User.getFullName(member)}
+                                                    leftAvatar={
+                                                        <Avatar
+                                                            backgroundColor={member['avatar']}
+                                                        >
+                                                            {member.first_name[0]}
+                                                        </Avatar>}
                                                     rightIconButton={
                                                         (admin["username"] != member["username"] && this.state.role < 3) ?
                                                         <IconButton onClick={() => this.handleDelete(member)}>

@@ -7,10 +7,15 @@ from django.core.exceptions import PermissionDenied
 
 import datetime
 from datetime import timedelta
+from random import choice
 
 INVITE_DAYS_TTL = 7
 IP_BAN_TTL = 60 * 5
 MAX_REQUESTS_COUNT = 10
+AVATAR_BACKGROUND_COLORS = ['#4078c0', '#1abc9c', '#16a085', '#f1c40f', '#f39c12', '#2ecc71',
+                            '#27ae60', '#d35400', '#3498db', '#2980b9', '#e74c3c', '#c0392b',
+                            '#9b59b6', '#8e44ad', '#bdc3c7', '#34495e', '#2c3e50', '#95a5a6',
+                            '#7f8c8d', '#ec87bf', '#d870ad', '#d870ad', '#d870ad', '#b49255']
 
 
 def min_birth_date():
@@ -19,13 +24,19 @@ def min_birth_date():
 
 class User(BaseUser):
     birth_date = models.DateField(null=False, default=min_birth_date)
+    avatar_background = models.CharField(max_length=7)
+
+    def save(self, *args, **kwargs):
+        self.avatar_background = choice(AVATAR_BACKGROUND_COLORS)
+        super(self.__class__, self).save(*args, **kwargs)
 
     def to_dict(self):
         return {
             'id': self.id,
             'username': self.username,
             'first_name': self.first_name,
-            'last_name': self.last_name
+            'last_name': self.last_name,
+            'avatar': self.avatar_background
         }
 
     @classmethod
