@@ -26,12 +26,7 @@ class Company(models.Model):
             "id": company.id,
             "name": company.name,
             "description": company.description,
-            "admin": {
-                'id': company.admin.id,
-                'username': company.admin.username,
-                'first_name': company.admin.first_name,
-                'last_name': company.admin.last_name,
-            },
+            "admin": company.admin.to_dict()
         }
 
     @staticmethod
@@ -100,12 +95,7 @@ class Team(models.Model):
         members = []
         instances = TeamUserAssignment.objects.filter(team=current_team)
         for instance in instances:
-            user_object = {
-                "id": instance.user.id,
-                "first_name": instance.user.first_name,
-                "last_name": instance.user.last_name,
-                "username": instance.user.username
-            }
+            user_object = instance.user.to_dict()
             members.append(user_object)
         return members
 

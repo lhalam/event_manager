@@ -11,13 +11,31 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import Snackbar from 'material-ui/Snackbar';
 import AssignParticipants from './AssignParticipants';
 
+let User = require('./helpers/User');
 
+import AddVoting from './AddVoting';
+import Voting from './Voting'
 
 class Event extends React.Component{
     constructor(props){
         super(props);
         this.state = ({event: false, showConfirmationDelete: false, snackOpen: false});
         this.handleAddUsers = this.handleAddUsers.bind(this);
+        this.updateData = this.updateData.bind(this);
+        this.updateVotingData = this.updateVotingData.bind(this);
+    }
+
+    updateData (data) {
+        data['is_owner'] = true;
+        this.setState({
+            event: data
+        });
+    };
+
+    updateVotingData (votings) {
+        this.refs['voting'].setState({
+            votings: votings
+        });
         this.deleteEvent = this.deleteEvent.bind(this);
         this.handleConfirmationOpen = this.handleConfirmationOpen.bind(this);
         this.handleConfirmationClose = this.handleConfirmationClose.bind(this);
@@ -40,14 +58,11 @@ class Event extends React.Component{
 
     handleAddUsers(users) {
         let event = this.state.event;
-        let allUsers = this.state.event['participants'].slice();
-        allUsers.push.apply(allUsers, users.map((userObj) => userObj['username']));
-        event['participants'] = allUsers;
+        event['participants'] = this.state.event['participants'].concat(users);
         this.setState({event: event});
     };
 
     deleteEvent(){
-        console.log(this.state.event)
         axios.delete(`api/v1/events/${this.state.event.id}`)
         .then(()=>document.location.href = `/#/`)
         .catch(()=>console.log('Some wrongs'))
@@ -87,9 +102,9 @@ class Event extends React.Component{
                     onRequestClose={this.handleConfirmationClose}
                 >
                 <h5>Are you sure?</h5>
-                <RaisedButton 
-                    label="Delete" 
-                    secondary={true} 
+                <RaisedButton
+                    label="Delete"
+                    secondary={true}
                     buttonStyle={{backgroundColor: '#F44336'}}
                     onClick={this.deleteEvent}/>
                 </Popover>
@@ -98,12 +113,12 @@ class Event extends React.Component{
                         {this.state.event.title}
                         <div className="control-buttons">
                             <a>
-                                <i 
+                                <i
                                 className="glyphicon glyphicon-pencil"
                                 onClick={()=>this.refs.updateEventForm.handleOpen()}></i>
                             </a>
                             <a>
-                                <i 
+                                <i
                                     className="glyphicon glyphicon-remove"
                                     onClick={this.handleConfirmationOpen} />
                             </a>
@@ -113,6 +128,14 @@ class Event extends React.Component{
                         <Map event={true} location={this.state.event.location} geo={false} zoom={13}/>
                     </div>
                     <div className="event-card-body">
+                        <div className="voting">
+                            <Voting
+                                ref="voting"
+                                event_id={this.props.params['event_id']}
+                                updateEvent={this.updateData}
+                                renewVotings={this.updateVotingData}
+                            />
+                        </div>
                     <div>
                         <div className="col-sm-4">
                             <b>Start Date: </b> 
@@ -143,10 +166,14 @@ class Event extends React.Component{
                                     float: 'left',
                                     maxWidth: '400px',
                                 }}>
-                                    <Avatar style={{marginRight: 10}} 
-                                            size={32}>{user[0].toUpperCase()}
+                                    <Avatar
+                                        style={{marginRight: 10}}
+                                        size={32}
+                                        backgroundColor={user['avatar']}
+                                    >
+                                        {user['first_name'][0].toUpperCase()}
                                     </Avatar>
-                                    {user}
+                                    {User.getFullName(user)}
                                 </ListItem>
                                 );
                             })}
@@ -154,7 +181,13 @@ class Event extends React.Component{
                     </div>                               
                     </div>
                     <div className="add-users-button">
-                         <AssignParticipants
+                        { this.state.event['is_owner'] ? (<AddVoting
+                            label="add voting"
+                            event_id={this.props.params['event_id']}
+                            url={"/api/v1/events/"+this.props.params.event_id+"/voting/"}
+                            renewVotings={this.updateVotingData}
+                        />) : null}
+                        <AssignParticipants
                             handleAddUsers={this.handleAddUsers}
                             url={"/api/v1/events/"+this.props.params.event_id+"/user_assignment/"}
                             title='Add participants'

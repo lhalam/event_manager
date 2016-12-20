@@ -6,8 +6,6 @@ from pytz import utc as TZ
 from datetime import datetime
 
 
-
-
 class Event(models.Model):
     title = models.CharField(max_length=200)
     start_date = models.DateTimeField(blank=False)
@@ -22,7 +20,7 @@ class Event(models.Model):
         through='EventUserAssignment',
         through_fields=('event', 'user'),
     )
-    
+
     def __str__(self):
         return "%s" % self.title
 
@@ -52,7 +50,7 @@ class Event(models.Model):
                 if self.pk is None:
                     data[f.name] = []
                 else:
-                    data[f.name] = list(f.value_from_object(self).values_list('username', flat=True))
+                    data[f.name] = [user.to_dict() for user in f.value_from_object(self)]
             else:
                 data[f.name] = f.value_from_object(self)
         data['start_date'] = data['start_date'].timestamp()
@@ -74,4 +72,7 @@ class EventUserAssignment(models.Model):
 
     @staticmethod
     def get_by_event_user(event, user):
-        return EventUserAssignment.objects.filter(user=user, event=event)
+        try:
+            return EventUserAssignment.objects.get(user=user, event=event)
+        except (EventUserAssignment.DoesNotExist, EventUserAssignment.MultipleObjectsReturned):
+            return None

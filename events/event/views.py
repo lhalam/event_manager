@@ -34,8 +34,11 @@ class EventView(View):
             return JsonResponse(response)
         event = Event.get_by_id(event_id)
         if event:
-            return JsonResponse(event.to_dict())
-        return EVENT_NOT_EXISTS
+            response = event.to_dict()
+            response['is_owner'] = event.owner_id == request.user.id
+            return JsonResponse(response)
+        else:
+            return EVENT_NOT_EXISTS
 
     def post(self, request):
         if not request.user.is_authenticated:

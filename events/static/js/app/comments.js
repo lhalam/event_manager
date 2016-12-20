@@ -5,6 +5,7 @@ import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
+let User = require('./helpers/User');
 
 
 class Comments extends React.Component{
@@ -118,7 +119,8 @@ class CommentItem extends React.Component{
         super(props);
         this.state= ({
             showForm: false, 
-            showChild: false,
+            showChild: false, 
+            showDeleteButton: false,
             showConfirmationDelete: false});
         this.deleteComment = this.deleteComment.bind(this);
         this.handleConfirmationOpen = this.handleConfirmationOpen.bind(this);
@@ -163,12 +165,17 @@ class CommentItem extends React.Component{
                     <img src="http://www.nlsgrp.co/wp-content/uploads/2016/06/Avatar-Matt-3.png" />
                 </div>
                 <div className="comment">
-                    <div className="comment-header">
-                        <b>{this.props.comment.author.name}</b>
-                        <a 
-                            onTouchTap={this.handleConfirmationOpen}>
-                            <i className="glyphicon glyphicon-remove" />
-                        </a>
+                    <div 
+                        className="comment-header"
+                        onMouseOver={()=>this.setState({showDeleteButton: true})}
+                        >
+                        <b>{User.getFullName(this.props.comment.author)}</b>
+                        {
+                            this.state.showDeleteButton ? <a 
+                                onTouchTap={this.handleConfirmationOpen}>
+                                <i className="glyphicon glyphicon-remove" /></a>:
+                            null
+                        }
                         {
                             this.props.comment.children[0] ? (
                                 <a 
@@ -200,7 +207,7 @@ class CommentItem extends React.Component{
                                                     />})
                                         }
                                     </div>
-                            </div>
+                                    </div>
                         ) : null
                     }
                 </div>
