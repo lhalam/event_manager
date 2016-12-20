@@ -78,6 +78,6 @@ class EventUserAssignment(models.Model):
     @staticmethod
     def get_by_event_user(event, user):
         try:
-            return EventUserAssignment.objects.filter(user=user, event=event)
-        except EventUserAssignment.DoesNotExist:
+            return EventUserAssignment.objects.get(user=user, event=event)
+        except (EventUserAssignment.DoesNotExist, EventUserAssignment.MultipleObjectsReturned):
             return None

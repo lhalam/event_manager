@@ -14,6 +14,8 @@ from datetime import datetime
 class VotingView(View):
 
     def get(self, request, event_id, voting_id=None):
+        if not request.user.is_authenticated:
+            return PERMISSION_DENIED
         event = Event.get_by_id(event_id)
         if not voting_id:
             response = [voting.to_dict(request.user) for voting in event.votings.all()]
@@ -71,11 +73,9 @@ class VotingView(View):
 
     @staticmethod
     def _validate_uniqueness(voting_type, event):
-        if voting_type == 'date' or voting_type == 'place':
-            event_votings = event.votings.all()
-            for voting in event_votings:
-                if voting.type == voting_type:
-                    return "Only one voting with type '{}' per event is allowed".format(voting_type)
+        if voting_type in ['date', 'place']:
+            if event.votings.filter(type=voting_type).count():
+                return "Only one voting with type '{}' per event is allowed".format(voting_type)
 
     @staticmethod
     def _validate_choice_errors(voting_data):

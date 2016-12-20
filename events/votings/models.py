@@ -70,11 +70,7 @@ class VotingUserAssignment(models.Model):
 
     @staticmethod
     def check_vote(user, voting):
-        try:
-            VotingUserAssignment.objects.get(user=user, voting=voting)
-            return True
-        except VotingUserAssignment.DoesNotExist:
-            return False
+        return VotingUserAssignment.objects.filter(user=user, voting=voting).exists()
 
     @staticmethod
     def get_by_user_voting_id(user_id, voting_id):
@@ -134,11 +130,7 @@ class ChoiceUserAssignment(models.Model):
 
     @staticmethod
     def check_vote(user, choice):
-        try:
-            ChoiceUserAssignment.objects.get(user=user, choice=choice)
-            return True
-        except ChoiceUserAssignment.DoesNotExist:
-            return False
+        return ChoiceUserAssignment.objects.filter(user=user, choice=choice).exists()
 
     @staticmethod
     def get_by_user_choice_id(user_id, choice_id):
