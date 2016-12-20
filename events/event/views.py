@@ -32,6 +32,7 @@ class EventView(View):
         event = Event.get_by_id(event_id)
         if event:
             response = event.to_dict()
+            response['is_owner'] = event.owner_id == request.user.id
             return HttpResponse(json.dumps(response), content_type="application/json")
         else:
             return EVENT_NOT_EXISTS

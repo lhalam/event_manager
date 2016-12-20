@@ -9,12 +9,29 @@ import AssignParticipants from './AssignParticipants';
 
 let User = require('./helpers/User');
 
+import AddVoting from './AddVoting';
+import Voting from './Voting'
 
 class Event extends React.Component{
     constructor(props){
         super(props);
         this.state = ({event: false});
         this.handleAddUsers = this.handleAddUsers.bind(this);
+        this.updateData = this.updateData.bind(this);
+        this.updateVotingData = this.updateVotingData.bind(this);
+    }
+
+    updateData (data) {
+        data['is_owner'] = true;
+        this.setState({
+            event: data
+        });
+    };
+
+    updateVotingData (votings) {
+        this.refs['voting'].setState({
+            votings: votings
+        });
     }
 
     handleAddUsers(users) {
@@ -46,6 +63,14 @@ class Event extends React.Component{
                         <Map event={true} location={this.state.event.location} geo={false} zoom={13}/>
                     </div>
                     <div className="event-card-body">
+                        <div className="voting">
+                            <Voting
+                                ref="voting"
+                                event_id={this.props.params['event_id']}
+                                updateEvent={this.updateData}
+                                renewVotings={this.updateVotingData}
+                            />
+                        </div>
                     <div>
                         <div className="col-sm-4">
                             <b>Start Date: </b> 
@@ -91,7 +116,13 @@ class Event extends React.Component{
                     </div>                               
                     </div>
                     <div className="add-users-button">
-                         <AssignParticipants
+                        { this.state.event['is_owner'] ? (<AddVoting
+                            label="add voting"
+                            event_id={this.props.params['event_id']}
+                            url={"/api/v1/events/"+this.props.params.event_id+"/voting/"}
+                            renewVotings={this.updateVotingData}
+                        />) : null}
+                        <AssignParticipants
                             handleAddUsers={this.handleAddUsers}
                             url={"/api/v1/events/"+this.props.params.event_id+"/user_assignment/"}
                             title='Add participants'

@@ -6,8 +6,6 @@ from pytz import utc as TZ
 from datetime import datetime
 
 
-
-
 class Event(models.Model):
     title = models.CharField(max_length=200)
     start_date = models.DateTimeField(blank=False)
@@ -27,9 +25,11 @@ class Event(models.Model):
         return "%s" % self.title
 
     def save(self, *args, **kwargs):
-        self.start_date = TZ.localize(datetime.utcfromtimestamp(float(self.start_date)))
-        self.end_date = TZ.localize(datetime.utcfromtimestamp(float(self.end_date)))
-        self.location = self.location.split(",")
+        if not isinstance(self.start_date, datetime) and not isinstance(self.end_date, datetime):
+            self.start_date = TZ.localize(datetime.utcfromtimestamp(float(self.start_date)))
+            self.end_date = TZ.localize(datetime.utcfromtimestamp(float(self.end_date)))
+        if isinstance(self.location, str):
+            self.location = self.location.split(",")
         super(self.__class__, self).save(*args, **kwargs)
 
     def serialize(self):
@@ -77,4 +77,7 @@ class EventUserAssignment(models.Model):
 
     @staticmethod
     def get_by_event_user(event, user):
-        return EventUserAssignment.objects.filter(user=user, event=event)
+        try:
+            return EventUserAssignment.objects.get(user=user, event=event)
+        except (EventUserAssignment.DoesNotExist, EventUserAssignment.MultipleObjectsReturned):
+            return None
