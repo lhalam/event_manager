@@ -10,6 +10,7 @@ import {List, ListItem} from 'material-ui/List';
 import { hashHistory } from 'react-router'
 import SearchField from './SearchField';
 
+let User = require('./helpers/User');
 
 export default class CompaniesList extends React.Component {
     constructor(props) {
@@ -52,15 +53,9 @@ export default class CompaniesList extends React.Component {
     }
 
     handleCompanyClick(id) {
-        setTimeout(hashHistory.push('/companies/' + id), 20000);
+        hashHistory.push('/companies/' + id);
     }
 
-    getFullName(company) {
-        return (
-            company['admin']['first_name'] + ' ' +
-            company['admin']['last_name']
-        );
-    }
 
     render() {
 
@@ -80,10 +75,13 @@ export default class CompaniesList extends React.Component {
                                     margin: '-8px 0'
                                 }}
                             >
-                                    <Avatar size={32}>
+                                    <Avatar
+                                        size={32}
+                                        backgroundColor={companyObject['admin']['avatar']}
+                                    >
                                         {companyObject['admin']['first_name'][0].toUpperCase()}
                                     </Avatar>
-                                    {this.getFullName(companyObject)}
+                                    {User.getFullName(companyObject['admin'])}
                                 </Chip>
                             </div>
                         </div>

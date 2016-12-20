@@ -11,6 +11,8 @@ import AddCompanyWindow from './AddCompanyWindow';
 import CreateTeam from './AddTeamWindow';
 import SearchField from './SearchField';
 
+let User = require('./helpers/User');
+
 
 export default class Company extends React.Component {
 
@@ -77,16 +79,21 @@ export default class Company extends React.Component {
         let teams = null;
 
         if (companyObject['admin']) {
-            this.adminName = companyObject['admin']['first_name']+' '+companyObject['admin']['last_name'];
             this.adminId = companyObject['admin']['id'];
             admin = (
                 <List>
                     <Subheader><div className="subheader">Company Admin</div></Subheader>
                     <div className="paper-element">
                     <ListItem
-                        primaryText={this.adminName}
+                        primaryText={User.getFullName(companyObject['admin'])}
                         secondaryText={companyObject['admin']['username']}
-                        leftAvatar={<Avatar size={32}>{companyObject['admin']['first_name'][0].toUpperCase()}</Avatar>}
+                        leftAvatar={
+                            <Avatar
+                                backgroundColor={companyObject['admin']['avatar']}
+                                size={32}
+                            >
+                                {companyObject['admin']['first_name'][0].toUpperCase()}
+                            </Avatar>}
                     />
                     </div>
                 </List>
