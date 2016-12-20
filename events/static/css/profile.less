@@ -1,4 +1,79 @@
-.profile-pic {
-  max-height: 400px;
-  max-width: 400px;
+@import "colors";
+
+@side: 250px;
+.profile {
+  width: 90%;
+  height: auto !important;
+  margin: 5% 10% !important;
+  .picture-card {
+    margin: 10px 10px;
+    display: inline-block !important;
+    height: auto !important;
+    max-width: @side+40px !important;
+    max-height: @side+40px !important;
+    padding: 20px 20px !important;
+    width: 100% !important;
+
+    .image-container {
+      display: inline-block;
+      max-width: @side;
+      position:relative;
+      object-fit: contain;
+      &:hover {
+        .button-panel {
+          height: 37px;
+          .upload-picture {
+            color: darken(@popover-dialog-header, 20%) !important;
+          }
+        }
+      }
+
+      .button-panel {
+
+        -moz-transition: all 0.1s linear;
+        -o-transition: all 0.1s linear;
+        -webkit-transition: all 0.1s linear;
+        height: 37px;
+        width: @side;
+        background-color: @button-panel;
+        position: absolute;
+        bottom: 0;
+
+        .arrow-up {
+          color: @popover-dialog-header;
+        }
+
+        .upload-picture {
+          margin: 0 auto !important;
+          background-color: transparent !important;
+          color: transparent !important;
+          cursor: pointer;
+          width: 100% !important;
+          &:hover {
+            color: @popover-dialog-header !important;
+          }
+        }
+
+      }
+
+      .profile-pic {
+        width: @side;
+        object-fit: contain;
+        object-position: 100% 100%;
+      }
+    }
+  }
+
+  .info-card {
+
+        padding: 20px 20px !important;
+        position: absolute;
+        margin: 10px 10px;
+        display: inline-block !important;
+        max-height: @side+40px !important;
+        height: 100% !important;
+        max-width: (@side*3) !important;
+        width: 100% !important;
+      }
+
 }
