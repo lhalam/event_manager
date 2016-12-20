@@ -28,7 +28,8 @@ class Form extends React.Component{
         description: '',
         titleChanged: false,
         descriptionChanged: false,
-        locationChanged: false
+        locationChanged: false,
+        snackOpen: false
       }
     );
     this.initialDate = this.initialDate.bind(this)
@@ -79,6 +80,8 @@ class Form extends React.Component{
     })
     .then(function(response){
       this.props.handleClose()
+      this.props.update()
+      this.props.showSnackBar()
     }.bind(this))
   }
 
@@ -140,7 +143,7 @@ class Form extends React.Component{
               endDate: this.props.event.end_date,
               description: this.props.event.description,
               place: this.props.event.place,
-              location: this.props.event.location
+              location: this.props.event.location.join()
           })
       }
   }
@@ -215,7 +218,7 @@ class Form extends React.Component{
                 onInput={(e)=>this.setState({place: e.target.value})}
                 onBlur={()=>this.setState({locationChanged: true})}
               />
-            <Map new={true} setLocation={this.setLocation}/>
+            <Map new={true} setLocation={this.setLocation} location={this.props.event ? this.props.event.location : null}/>
             <span className="error-message">{locationError}</span>
           </div>
         </form>
@@ -251,9 +254,11 @@ export default class CreateEventDialog extends React.Component {
   render() {
     return (
       <div>
+      {!this.props.event ? 
         <FloatingActionButton onTouchTap={this.handleOpen} className="add_button_wrapper">
           <ContentAdd/>
-        </FloatingActionButton>
+        </FloatingActionButton> : null
+      }
         <Dialog
           modal={true}
           open={this.state.open}
@@ -266,7 +271,7 @@ export default class CreateEventDialog extends React.Component {
           autoDetectWindowHeight={true}
           autoScrollBodyContent={true}
         >
-          <Form handleClose={this.handleClose} event={this.props.event}/>
+          <Form handleClose={this.handleClose} event={this.props.event} update={this.props.update} showSnackBar={this.props.showSnackBar}/>
         </Dialog>
       </div>
     );

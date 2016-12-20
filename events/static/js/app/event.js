@@ -8,6 +8,7 @@ import Popover from 'material-ui/Popover';
 import RaisedButton from 'material-ui/RaisedButton';
 import {List, ListItem} from 'material-ui/List';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import Snackbar from 'material-ui/Snackbar';
 import AssignParticipants from './AssignParticipants';
 
 
@@ -15,11 +16,12 @@ import AssignParticipants from './AssignParticipants';
 class Event extends React.Component{
     constructor(props){
         super(props);
-        this.state = ({event: false, showConfirmationDelete: false});
+        this.state = ({event: false, showConfirmationDelete: false, snackOpen: false});
         this.handleAddUsers = this.handleAddUsers.bind(this);
         this.deleteEvent = this.deleteEvent.bind(this);
         this.handleConfirmationOpen = this.handleConfirmationOpen.bind(this);
         this.handleConfirmationClose = this.handleConfirmationClose.bind(this);
+        this.getEventInfo = this.getEventInfo.bind(this)
     }
 
     handleConfirmationOpen(event){
@@ -51,12 +53,16 @@ class Event extends React.Component{
         .catch(()=>console.log('Some wrongs'))
     }
 
-    componentDidMount(){
+    getEventInfo(){
         const url = `/api/v1/events/${this.props.params.event_id}`
         axios.get(url) 
         .then(function (response) {
             this.setState({event: response.data})
         }.bind(this))
+    }
+
+    componentWillMount(){
+        this.getEventInfo()
     }
 
     render(){
@@ -66,7 +72,13 @@ class Event extends React.Component{
             return(
                 <MuiThemeProvider>
                 <div>
-                    <CreateEventDialog event={this.state.event}/>
+                    <CreateEventDialog event={this.state.event} ref="updateEventForm" update={this.getEventInfo} showSnackBar={()=>this.setState({snackOpen: true})}/>
+                <Snackbar
+                    open={this.state.snackOpen}
+                    message="Event was updated"
+                    autoHideDuration={4000}
+                    onRequestClose={()=>this.setState({snackOpen: false})}
+                />
                 <Popover
                     open={this.state.showConfirmationDelete}
                     anchorEl={this.state.anchorEl}
@@ -86,7 +98,9 @@ class Event extends React.Component{
                         {this.state.event.title}
                         <div className="control-buttons">
                             <a>
-                                <i className="glyphicon glyphicon-pencil"></i>
+                                <i 
+                                className="glyphicon glyphicon-pencil"
+                                onClick={()=>this.refs.updateEventForm.handleOpen()}></i>
                             </a>
                             <a>
                                 <i 

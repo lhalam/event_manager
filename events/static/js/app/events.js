@@ -51,7 +51,7 @@ class EventList extends React.Component{
             <div>
                 <Map events={events} geo={true} zoom={6}/>
                 <div className="event-list-wrapper">
-                    {events.map(function(event){
+                    {events.reverse().map(function(event){
                         return(
                                 <Link key={event.id} to={`/events/${event.id}`}>
                                     <EventItem event={event}/>

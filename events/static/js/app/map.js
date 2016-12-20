@@ -8,12 +8,16 @@ class Map extends React.Component{
     initMap() {
         var _this = this
         if (this.props.new){
+            var location = _this.props.location ?{lat:_this.props.location[0], lng: _this.props.location[1] }: {lat: 49, lng: 23}
+            var zoom = _this.props.location ? 15 : 7
             var map = new google.maps.Map(document.getElementById('map_new'), {
-            center: {lat: 49, lng: 23},
-            zoom: 7,
+            center: location,
+            zoom: zoom,
             mapTypeId: 'roadmap',
             disableDefaultUI: true
+            
         });
+        if (!_this.props.location){
             if (navigator.geolocation) {
                     navigator.geolocation.getCurrentPosition(function(position) {
                     var pos = {
@@ -28,6 +32,7 @@ class Map extends React.Component{
                     } else {
                     handleLocationError(false, infoWindow, map.getCenter());
                     }
+        }
                 // Create the search box and link it to the UI element.
                 var input = document.getElementById('pac-input');
                 var searchBox = new google.maps.places.SearchBox(input);
@@ -37,6 +42,12 @@ class Map extends React.Component{
                 map.addListener('bounds_changed', function() {
                 searchBox.setBounds(map.getBounds());
                 });
+                if (_this.props.location){
+                    var marker = new google.maps.Marker({
+                        position: location,
+                        map: map
+                        });
+                }
 
                 var markers = [];
                 // Listen for the event fired when the user selects a prediction and retrieve
@@ -113,6 +124,7 @@ class Map extends React.Component{
             });
         }
         if(this.props.event){
+            console.dir(this.props)
             var location = { lat: this.props.location[0], lng: this.props.location[1] };
             var map = new google.maps.Map(document.getElementById('map'), {
             zoom: 15,
@@ -160,6 +172,7 @@ class Map extends React.Component{
     }
 
     render(){
+        console.dir(this.props)
         if (this.props.new){
             return(
             <div>
