@@ -3,6 +3,7 @@ from registration.models import User
 from datetime import datetime
 from datetime import timedelta
 from companies.models import TeamUserAssignment, Team, Company
+from pytz import utc as TZ
 
 from django.core.management.base import BaseCommand
 from django.template.loader import render_to_string
@@ -20,8 +21,8 @@ class BirthDay(object):
         for team in Company.get_teams(TeamUserAssignment.objects.get(user=user).team.company.id):
             event = Event.objects.create(
                 title=user.first_name + '`s ' + user.last_name + ' Birth Day',
-                start_date=(datetime.now().timestamp()),
-                end_date=((datetime.now() + timedelta(days=7)).timestamp()),
+                start_date=TZ.localize(datetime.now()),
+                end_date=TZ.localize(datetime.now() + timedelta(days=7)),
                 location=DEFAULT_LOCATION,
                 place=team.company.name,
                 description='It`s time to collect some money.',
@@ -53,11 +54,10 @@ class BirthDay(object):
                 if not team_members:
                     team_members.append(team.company.admin)
                 event_owner = team_members[0]
-
             event = Event.objects.create(
                 title=user.first_name + '`s ' + user.last_name + ' Birth Day',
-                start_date=(datetime.now().timestamp()),
-                end_date=((datetime.now() + timedelta(days=7)).timestamp()),
+                start_date=TZ.localize(datetime.now()),
+                end_date=TZ.localize(datetime.now() + timedelta(days=7)),
                 location=DEFAULT_LOCATION,
                 place=team.company.name,
                 description='It`s time to collect some money.',
