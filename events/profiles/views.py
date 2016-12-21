@@ -7,10 +7,12 @@ from boto.s3.connection import S3Connection
 from profiles.forms import ProfileForm
 from django.http import JsonResponse
 from django.http.response import HttpResponseForbidden, HttpResponseNotFound
-
+from django.utils.datastructures import MultiValueDictKeyError
 from django.views.generic.base import View
+
 from registration.models import User
 from profiles.models import UserProfile
+from events.views import INVALID_PAYLOAD, SERVER_ERROR
 
 
 class ProfileView(View):
@@ -25,7 +27,6 @@ class ProfileView(View):
         if not profile:
             return HttpResponseNotFound('User not found')
         return JsonResponse({'profile': ProfileView.to_dict(profile), 'owner': owner}, status=200)
-
 
     def post(self, request):
         if request.user.is_authenticated:
@@ -63,16 +64,18 @@ class FileManager(View):
     CONN = S3Connection(local_settings.ACCESS_KEY_ID, local_settings.AWS_SECRET_ACCESS_KEY)
 
     def post(self, request):
-        path = json.loads(request.body.decode())
-        if not path:
-            return JsonResponse({'status': 'Please, input correct path'}, status=400)
+        try:
+            file = request.FILES['profile_pic']
+        except MultiValueDictKeyError:
+            return INVALID_PAYLOAD
         try:
             key_bucket = self.__get_key_bucket()
-            key_bucket.key = path['path'].split('/')[-1]
-            key_bucket.set_contents_from_filename(filename=path['path'])
+            key_bucket.key = file.name
+            key_bucket.set_acl('public-read')
+            key_bucket.set_contents_from_file(file)
             return JsonResponse({'key_photo': key_bucket.key})
         except socket.error:
-            return JsonResponse({'status': 'Please check your path : ' + path['path']}, status=400)
+            return SERVER_ERROR
 
     @staticmethod
     def get_href(key, bucket_name=local_settings.NAME_PROFILES_BUCKET):
