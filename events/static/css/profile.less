@@ -33,7 +33,7 @@
         -moz-transition: all 0.1s linear;
         -o-transition: all 0.1s linear;
         -webkit-transition: all 0.1s linear;
-        height: 37px;
+        height: 0;
         width: @side;
         background-color: @button-panel;
         position: absolute;
@@ -76,4 +76,20 @@
         width: 100% !important;
       }
 
+}
+
+.file-upload {
+    cursor: pointer;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    width: 100%;
+    opacity: 0;
+}
+
+.upload-photo-button {
+  & span {
+    bottom: 42px !important;
+  }
 }

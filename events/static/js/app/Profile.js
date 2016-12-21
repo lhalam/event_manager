@@ -4,7 +4,11 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import Paper from 'material-ui/Paper';
 import CircularProgress from 'material-ui/CircularProgress';
 import FlatButton from 'material-ui/FlatButton';
+import RaisedButton from 'material-ui/RaisedButton';
 import Dialog from 'material-ui/Dialog';
+
+let Dropzone = require('react-dropzone');
+let FileInput = require('react-file-input');
 
 
 export default class Profile extends React.Component {
@@ -13,15 +17,30 @@ export default class Profile extends React.Component {
         this.state = {
             error: '',
             showButtonsPanel: false,
-            open: false
+            open: false,
+            uploadedImage: false
         };
         this.showButtons = () => this.setState({showButtonsPanel: true});
         this.hideButtons = () => this.setState({showButtonsPanel: false});
+        this.openDialog = () => this.setState({open: true});
+        this.closeDialog = () => this.setState({open: false, uploadedImage: false});
 
-        this.openDialog =() => {this.setState({open: true});
-    };
+        this.onDrop = (files) => {
+            console.log('Received files: ', files);
+            this.sendFile(files[0], 'api/v1/profile/photo/');
+            this.setState({uploadedImage: files[0]});
+        };
 
-        this.getPhoto = this.getPhoto.bind(this)
+        this.handleFileUpload = (e) => {
+            e.preventDefault();
+            let file = e.target.files[0];
+            console.log('Received file: ', file);
+            this.sendFile(file, 'api/v1/profile/photo/');
+            this.setState({uploadedImage: file[0]});
+        };
+
+        this.sendFile = this.sendFile.bind(this);
+        this.getPhoto = this.getPhoto.bind(this);
     }
 
     getPhoto() {
@@ -31,6 +50,19 @@ export default class Profile extends React.Component {
         return <CircularProgress size={60} thickness={7} />;
 
     }
+
+    sendFile(received_file, URL) {
+        let file = new FormData();
+        file.append('profile_pic', received_file);
+        console.log(file);
+        axios.post(URL, file)
+            .then((res) => {
+                console.log(res)
+            })
+            .catch((err) => {
+                console.log(err.response)
+            });
+    };
 
 
     loadProfile() {
@@ -55,7 +87,13 @@ export default class Profile extends React.Component {
         if (this.state.error) return <h1 className="error-message">{this.state.error}</h1>;
 
         let profile_photo = this.getPhoto();
-
+        const actions = [
+            <FlatButton
+                label="Close"
+                primary={true}
+                onTouchTap={this.closeDialog}
+            />
+        ];
         return (
             <MuiThemeProvider>
                 <div className="profile">
@@ -102,6 +140,29 @@ export default class Profile extends React.Component {
                     open={this.state.open}
                     actions={actions}
                 >
+                    { this.state.uploadedImage ?
+                            <img src={this.state.uploadedImage.preview} alt="userpic"/>
+                         :
+                            <div>
+
+                            <RaisedButton
+                            type="primary"
+                            label="upload photo"
+                            className="upload-photo-button"
+                            >
+                                <FileInput
+                                    name="myImage"
+                                    accept=".png,.gif,.jpg"
+                                    placeholder="My Image"
+                                    className="file-upload"
+                                    onChange={this.handleFileUpload}
+                                />
+                            </RaisedButton>
+                            <Dropzone ref="dropzone" onDrop={this.onDrop}>
+                                <div>Try dropping some files here, or click to select files to upload.</div>
+                            </Dropzone>
+                            </div>
+                    }
                 </Dialog>
 
                 </div>
