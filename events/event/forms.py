@@ -25,6 +25,17 @@ class EventCreateForm(forms.ModelForm):
     start_date = DateValidator()
     end_date = DateValidator()
 
+    def clean_title(self):
+        title = self.cleaned_data['title']
+        if len(title) > 20:
+            raise forms.ValidationError("Cannot be more than 20 characters")
+        return title
+    
+    def clean_description(self):
+        description = self.cleaned_data['description']
+        if len(description) > 200:
+            raise forms.ValidationError("Cannot be more than 200 characters")
+        return description
 
     def clean_location(self):
         location = self.cleaned_data['location']

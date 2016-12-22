@@ -10,6 +10,7 @@ from .models import Event, EventUserAssignment, User
 from companies.models import TeamUserAssignment
 from .forms import EventCreateForm
 from utils.EmailService import EmailSender
+from dateutil.tz import tzutc
 
 
 
@@ -63,14 +64,14 @@ class EventView(View):
         user = request.user
         event = Event.get_by_id(event_id)
         data_update = json.loads(request.body.decode('utf-8'))
-        date_now = TZ.localize(datetime.now())
+        date_now = datetime.now(tzutc())
         if not event:
             return EVENT_NOT_EXISTS
         if user.id != event.owner.id and not user.is_superuser:
             return PERMISSION_DENIED
         form = EventCreateForm(data_update)
         if date_now > event.start_date:
-            return JsonResponse({'message': 'Can\'t change event which are started'}, status=400)
+            return JsonResponse({'message': 'Can\'t change event which was started'}, status=400)
         if not form.is_valid():
             return JsonResponse(json.loads(form.errors.as_json()), status=400)
         Event.objects.filter(id=event_id).update(**form.cleaned_data)
