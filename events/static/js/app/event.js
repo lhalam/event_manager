@@ -23,6 +23,10 @@ class Event extends React.Component{
         this.handleAddUsers = this.handleAddUsers.bind(this);
         this.updateData = this.updateData.bind(this);
         this.updateVotingData = this.updateVotingData.bind(this);
+        this.deleteEvent = this.deleteEvent.bind(this);
+        this.handleConfirmationOpen = this.handleConfirmationOpen.bind(this);
+        this.handleConfirmationClose = this.handleConfirmationClose.bind(this);
+        this.getEventInfo = this.getEventInfo.bind(this)
     }
 
     updateData (data) {
@@ -36,10 +40,6 @@ class Event extends React.Component{
         this.refs['voting'].setState({
             votings: votings
         });
-        this.deleteEvent = this.deleteEvent.bind(this);
-        this.handleConfirmationOpen = this.handleConfirmationOpen.bind(this);
-        this.handleConfirmationClose = this.handleConfirmationClose.bind(this);
-        this.getEventInfo = this.getEventInfo.bind(this)
     }
 
     handleConfirmationOpen(event){
@@ -111,18 +111,21 @@ class Event extends React.Component{
                 <div className="event-card">
                     <div className="event-card-header">
                         {this.state.event.title}
-                        <div className="control-buttons">
-                            <a>
-                                <i
-                                className="glyphicon glyphicon-pencil"
-                                onClick={()=>this.refs.updateEventForm.handleOpen()}></i>
-                            </a>
-                            <a>
-                                <i
-                                    className="glyphicon glyphicon-remove"
-                                    onClick={this.handleConfirmationOpen} />
-                            </a>
-                        </div>
+                        {
+                            this.state.event.is_owner || this.state.role == 0 ?
+                            <div className="control-buttons">
+                                <a>
+                                    <i
+                                    className="glyphicon glyphicon-pencil"
+                                    onClick={()=>this.refs.updateEventForm.handleOpen()}></i>
+                                </a>
+                                <a>
+                                    <i
+                                        className="glyphicon glyphicon-remove"
+                                        onClick={this.handleConfirmationOpen} />
+                                </a>
+                            </div> : null
+                        }
                     </div>
                     <div>
                         <Map event={true} location={this.state.event.location} geo={false} zoom={13}/>

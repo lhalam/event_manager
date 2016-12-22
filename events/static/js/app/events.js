@@ -40,51 +40,47 @@ class EventList extends React.Component{
         }.bind(this))
     }
     render(){
-        const eventsActive =[];
-        const eventsPassed = [];
+        let eventsActive =[];
+        let eventsPassed = [];
         const dateNow = new Date().getTime() / 1000;
-        this.state.events.map((event)=>dateNow < event.end_date ? eventsActive.push(event): eventsPassed.push(event))
+        this.state.events.map((event)=>dateNow < event.end_date ? eventsActive.unshift(event): eventsPassed.push(event))
         const events = this.state.showActive ? eventsActive : eventsPassed
-        if (this.state.events[0]){
-            return(
+        return (
             <MuiThemeProvider>
             <div>
-                <Map events={events} geo={true} zoom={6}/>
-                <div className="event-list-wrapper">
-                    {events.reverse().map(function(event){
-                        return(
-                                <Link key={event.id} to={`/events/${event.id}`}>
-                                    <EventItem event={event}/>
-                                </Link>
-                        )
-                    })}
-                    {
-                        this.getEventsButtonShow() ? 
-                        <FlatButton 
-                            label="Get More" 
-                            primary={true}
-                            onClick={this.getMoreEvents}
-                        /> : null
-                    }
-                    <Checkbox
-                        label="Active"
-                        checked={this.state.showActive}
-                        onClick={()=>this.setState({showActive: !this.state.showActive})}
-                    />
-                </div>
+                {
+                    events[0] ? 
+                    <div>
+                        <Map events={events} geo={true} zoom={6}/>
+                        <div className="event-list-wrapper">
+                            {events.map(function(event){
+                                return(
+                                        <Link key={event.id} to={`/events/${event.id}`}>
+                                            <EventItem event={event}/>
+                                        </Link>
+                                )
+                            })}
+                        </div>
+                    </div> 
+                    : <h3>There aren't events</h3>
+                }
+                {
+                    this.getEventsButtonShow() ? 
+                    <FlatButton 
+                        label="Get More" 
+                        primary={true}
+                        onClick={this.getMoreEvents}
+                    /> : null
+                }
+                <Checkbox
+                    label="Active"
+                    checked={this.state.showActive}
+                    onClick={()=>this.setState({showActive: !this.state.showActive})}
+                />
                 <CreateEventDialog />
             </div>
             </MuiThemeProvider>
         )
-        }else{
-            return(
-                <MuiThemeProvider>
-                <div>
-                    <CreateEventDialog />
-                </div>
-                </MuiThemeProvider>
-            )
-        }
             
     }
 }

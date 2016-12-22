@@ -1,5 +1,4 @@
 import json
-import datetime
 from threading import Thread
 from django.http import JsonResponse, HttpResponse
 from django.views.generic.base import View
@@ -26,7 +25,7 @@ class EventView(View):
         if not event_id:
             if request.GET.get('q'):
                 query_date = TZ.localize(datetime.utcfromtimestamp(float(request.GET.get('q'))))
-                eus = EventUserAssignment.objects.filter(event__start_date__lte=query_date)[:10]
+                eus = EventUserAssignment.objects.filter(event__start_date__lt=query_date)[:25]
                 response = [item.event.to_dict() for item in eus]
                 return JsonResponse(response, safe=False)
             eus = EventUserAssignment.objects.filter(user=request.user.id)
@@ -36,6 +35,7 @@ class EventView(View):
         if event:
             response = event.to_dict()
             response['is_owner'] = event.owner_id == request.user.id
+            response['role'] = User.get_by_id(request.user.id).get_role_id()
             return JsonResponse(response)
         else:
             return EVENT_NOT_EXISTS
@@ -65,7 +65,7 @@ class EventView(View):
         data_update = json.loads(request.body.decode('utf-8'))
         if not event:
             return EVENT_NOT_EXISTS
-        if user.id != event.owner.id:
+        if user.id != event.owner.id and not user.is_superuser:
             return PERMISSION_DENIED
         form = EventCreateForm(data_update)
         if not form.is_valid():
@@ -75,7 +75,7 @@ class EventView(View):
 
     def delete(self, request, event_id):
         event = Event.get_by_id(event_id)
-        if not request.user.is_authenticated and event.owner.id != request.user.id:
+        if not request.user.is_superuser and event.owner.id != request.user.id:
             return PERMISSION_DENIED
         if not event:
             return EVENT_NOT_EXISTS
