@@ -83,6 +83,7 @@ class Event extends React.Component{
     render(){
         const start_date = new Date(this.state.event.start_date * 1000)
         const end_date = new Date(this.state.event.end_date * 1000)
+        const now_date = new Date().getTime()
         if (this.state.event){
             return(
                 <MuiThemeProvider>
@@ -90,7 +91,7 @@ class Event extends React.Component{
                     <CreateEventDialog event={this.state.event} ref="updateEventForm" update={this.getEventInfo} showSnackBar={()=>this.setState({snackOpen: true})}/>
                 <Snackbar
                     open={this.state.snackOpen}
-                    message="Event was updated"
+                    snackbarMessage="Event was updated"
                     autoHideDuration={4000}
                     onRequestClose={()=>this.setState({snackOpen: false})}
                 />
@@ -112,13 +113,17 @@ class Event extends React.Component{
                     <div className="event-card-header">
                         {this.state.event.title}
                         {
-                            this.state.event.is_owner || this.state.role == 0 ?
+                            this.state.event.is_owner || this.state.event.role == 0 ?
                             <div className="control-buttons">
-                                <a>
-                                    <i
-                                    className="glyphicon glyphicon-pencil"
-                                    onClick={()=>this.refs.updateEventForm.handleOpen()}></i>
-                                </a>
+                                {
+                                    now_date < this.state.event.start_date*1000 ? 
+                                    <a>
+                                        <i
+                                            className="glyphicon glyphicon-pencil"
+                                            onClick={()=>this.refs.updateEventForm.handleOpen()}>
+                                        </i>
+                                    </a> : null
+                                }
                                 <a>
                                     <i
                                         className="glyphicon glyphicon-remove"

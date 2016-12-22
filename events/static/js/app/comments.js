@@ -37,7 +37,9 @@ class CommentForm extends React.Component{
             parrent_id: this.props.parrent_comment
         }).then(function(response){
             this.setState({text: ''});
-            this.props.getComments()
+            this.props.getComments();
+            this.props.hideForm ? this.props.hideForm() : null;
+            this.props.showChild ? this.props.showChild(): null;
         }.bind(this))
     }
 
@@ -78,7 +80,7 @@ class CommentList extends React.Component{
     getComments(){
         axios.get(`/api/v1/comments/${this.props.event_id}/`)
         .then(function(response){
-            this.setState({comments: response.data})
+            this.setState({comments: response.data.comments, role: response.data.role})
         }.bind(this))
     }
     componentDidMount(){
@@ -100,7 +102,8 @@ class CommentList extends React.Component{
                             <CommentItem 
                                 key={comment.id} 
                                 comment={comment}
-                                getComments={this.getComments}/>)
+                                getComments={this.getComments}
+                                role={this.state.role}/>)
                         }
                     </div>
                 </div>
@@ -119,8 +122,7 @@ class CommentItem extends React.Component{
         super(props);
         this.state= ({
             showForm: false, 
-            showChild: false, 
-            showDeleteButton: false,
+            showChild: false,
             showConfirmationDelete: false});
         this.deleteComment = this.deleteComment.bind(this);
         this.handleConfirmationOpen = this.handleConfirmationOpen.bind(this);
@@ -165,13 +167,10 @@ class CommentItem extends React.Component{
                     <img src="http://www.nlsgrp.co/wp-content/uploads/2016/06/Avatar-Matt-3.png" />
                 </div>
                 <div className="comment">
-                    <div 
-                        className="comment-header"
-                        onMouseOver={()=>this.setState({showDeleteButton: true})}
-                        >
+                    <div className="comment-header">
                         <b>{User.getFullName(this.props.comment.author)}</b>
                         {
-                            this.state.showDeleteButton ? <a 
+                            this.props.role == 0 ? <a 
                                 onTouchTap={this.handleConfirmationOpen}>
                                 <i className="glyphicon glyphicon-remove" /></a>:
                             null
@@ -192,7 +191,9 @@ class CommentItem extends React.Component{
                     <a onClick={()=>this.setState({showForm: !this.state.showForm})}>Answer</a>
                     {this.state.showForm ? <CommentForm 
                         parrent_comment={this.props.comment.id}
-                        getComments={this.props.getComments}/> : null
+                        getComments={this.props.getComments}
+                        hideForm={()=>this.setState({showForm: false})}
+                        showChild={()=>this.setState({showChild: true})}/> : null
                     }
                     {
                         this.state.showChild ? (
@@ -204,7 +205,9 @@ class CommentItem extends React.Component{
                                                     key={comment.id}
                                                     comment={comment}
                                                     getComments={this.props.getComments}
-                                                    />})
+                                                    role={this.props.role}
+                                                    />
+                                        })
                                         }
                                     </div>
                                     </div>

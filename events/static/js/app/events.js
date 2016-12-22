@@ -68,6 +68,7 @@ class EventList extends React.Component{
                     this.getEventsButtonShow() ? 
                     <FlatButton 
                         label="Get More" 
+                        style={{minWidth: '100%'}}
                         primary={true}
                         onClick={this.getMoreEvents}
                     /> : null
