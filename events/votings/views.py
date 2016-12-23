@@ -43,10 +43,11 @@ class VotingView(View):
         }, status=201)
 
     def post(self, request, event_id):
+        now_date = TZ.localize(datetime.now())
         event = Event.get_by_id(event_id)
         if not event:
             return HttpResponse(status=404)
-        if request.user.id != event.owner.id:
+        if request.user.id != event.owner.id or now_date > event.end_date:
             return PERMISSION_DENIED
         voting_data = json.loads(request.body.decode())
         voting_validation_form = VotingForm(voting_data)

@@ -81,9 +81,9 @@ class Event extends React.Component{
     }
 
     render(){
-        const start_date = new Date(this.state.event.start_date * 1000)
-        const end_date = new Date(this.state.event.end_date * 1000)
-        const now_date = new Date().getTime()
+        const startDate = new Date(this.state.event.start_date * 1000)
+        const endDate = new Date(this.state.event.end_date * 1000)
+        const nowDate = new Date().getTime()
         if (this.state.event){
             return(
                 <MuiThemeProvider>
@@ -91,7 +91,7 @@ class Event extends React.Component{
                     <CreateEventDialog event={this.state.event} ref="updateEventForm" update={this.getEventInfo} showSnackBar={()=>this.setState({snackOpen: true})}/>
                 <Snackbar
                     open={this.state.snackOpen}
-                    snackbarMessage="Event was updated"
+                    message="Event was updated"
                     autoHideDuration={4000}
                     onRequestClose={()=>this.setState({snackOpen: false})}
                 />
@@ -116,7 +116,7 @@ class Event extends React.Component{
                             this.state.event.is_owner || this.state.event.role == 0 ?
                             <div className="control-buttons">
                                 {
-                                    now_date < this.state.event.start_date*1000 ? 
+                                    nowDate < this.state.event.start_date*1000 ?
                                     <a>
                                         <i
                                             className="glyphicon glyphicon-pencil"
@@ -147,13 +147,13 @@ class Event extends React.Component{
                     <div>
                         <div className="col-sm-4">
                             <b>Start Date: </b> 
-                            {start_date.toDateString()},
-                            {start_date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                            {startDate.toDateString()},
+                            {startDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                         </div>
                         <div className="col-sm-4">
                             <b>End Date: </b>
-                            {end_date.toDateString()},
-                            {end_date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} 
+                            {endDate.toDateString()},
+                            {endDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                         </div>
                         <div className="col-sm-4">
                             <b>Place:</b> {this.state.event.place}
@@ -189,20 +189,22 @@ class Event extends React.Component{
                     </div>                               
                     </div>
                     <div className="add-users-button">
-                        { this.state.event['is_owner'] ? (<AddVoting
+                        { this.state.event['is_owner'] && nowDate < endDate ? (<AddVoting
                             label="add voting"
                             event_id={this.props.params['event_id']}
                             url={"/api/v1/events/"+this.props.params.event_id+"/voting/"}
                             renewVotings={this.updateVotingData}
                         />) : null}
-                        <AssignParticipants
-                            handleAddUsers={this.handleAddUsers}
-                            url={"/api/v1/events/"+this.props.params.event_id+"/user_assignment/"}
-                            title='Add participants'
-                            hintText='Start typing participant name...'
-                            noUsersText='All possible users were added to this event.'
-                            snackbarMessage="successfully added to event"
-                        />
+                        { nowDate < endDate ?
+                            <AssignParticipants
+                                handleAddUsers={this.handleAddUsers}
+                                url={"/api/v1/events/" + this.props.params.event_id + "/user_assignment/"}
+                                title='Add participants'
+                                hintText='Start typing participant name...'
+                                noUsersText='All possible users were added to this event.'
+                                snackbarMessage="successfully added to event"
+                            /> : null
+                        }
                     </div>
                     <div className="description-wrapper">
                         <b>
