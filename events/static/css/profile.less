@@ -39,10 +39,6 @@
         position: absolute;
         bottom: 0;
 
-        .arrow-up {
-          color: @popover-dialog-header;
-        }
-
         .upload-picture {
           margin: 0 auto !important;
           background-color: transparent !important;
@@ -57,6 +53,7 @@
       }
 
       .profile-pic {
+        max-height: @side;
         width: @side;
         object-fit: contain;
         object-position: 100% 100%;
@@ -92,4 +89,22 @@
   & span {
     bottom: 42px !important;
   }
+}
+
+.dialog-image-window {
+  img {
+    overflow: auto;
+    max-width: @side*2 !important;
+    max-height: @side*2 !important;
+    object-fit: contain;
+    object-position: 100% 100%;
+  }
+  margin: 0 auto !important;
+  min-width: @side/3 !important;
+  max-width: @side*2 !important;
+  max-height: @side*2;
+}
+
+.pic-to-crop {
+  margin: 0 auto !important;
 }
