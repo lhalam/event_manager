@@ -95,6 +95,10 @@ export default class Team extends React.Component {
         }
     }
 
+    handleUserClick(user) {
+        hashHistory.push('/profile/'+user.id)
+    }
+
     componentDidMount(){
         axios.get("/api/v1/companies/" + this.props.params.cid + "/teams/" + this.props.params.tid)
             .then((response) => {
@@ -165,6 +169,7 @@ export default class Team extends React.Component {
                     <ListItem
                         primaryText={User.getFullName(admin)}
                         secondaryText={admin['username']}
+                        onTouchTap={this.handleUserClick.bind(this, admin)}
                         leftAvatar={
                             <Avatar
                                 size={32}
@@ -216,6 +221,7 @@ export default class Team extends React.Component {
                                                 <ListItem
                                                     key={index}
                                                     primaryText={User.getFullName(member)}
+                                                    onTouchTap={this.handleUserClick.bind(this, member)}
                                                     leftAvatar={
                                                         <Avatar
                                                             backgroundColor={member['avatar']}

@@ -28,8 +28,9 @@ export default class CompaniesList extends React.Component {
 
     }
 
-    handleAdminClick(event) {
+    handleAdminClick(admin, event) {
         event.stopPropagation();
+        hashHistory.push('/profile/'+admin.id)
     }
 
     newDataHandler(company_id) {
@@ -69,7 +70,7 @@ export default class CompaniesList extends React.Component {
                     <div className="outer-div">
                         <div className="inner-div">
                             <Chip
-                                onTouchTap={this.handleAdminClick}
+                                onTouchTap={this.handleAdminClick.bind(this, companyObject['admin'])}
                                 style={{
                                     float: 'right',
                                     margin: '-8px 0'

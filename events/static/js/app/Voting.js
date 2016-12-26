@@ -12,6 +12,7 @@ import moment from 'moment';
 import {blue300, indigo900, green300} from 'material-ui/styles/colors';
 import {List, ListItem} from 'material-ui/List';
 import ActionDone from 'material-ui/svg-icons/action/done';
+import { hashHistory } from 'react-router'
 
 import ReactTooltip from 'react-tooltip'
 
@@ -160,6 +161,7 @@ export default class Voting extends React.Component {
                     return (
                             <Avatar
                                 key={voter['id']}
+                                backgroundColor={voter['avatar']}
                                 className="tooltip-avatar"
                                 onTouchTap={this.handleTipAvatarClick.bind(this, voter)}
                             >
@@ -180,7 +182,7 @@ export default class Voting extends React.Component {
 
     handleTipAvatarClick(voter, event) {
         event.stopPropagation();
-        alert(voter['first_name']);
+        hashHistory.push('/profile/'+voter.id)
     }
 
     getDateFormat(startDate, endDate) {

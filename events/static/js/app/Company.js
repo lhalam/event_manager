@@ -50,6 +50,10 @@ export default class Company extends React.Component {
             });
     }
 
+    handleAdminClick(admin) {
+        hashHistory.push('/profile/'+admin.id)
+    }
+
 
     handleTeamClick(team_id, company_id) {
         setTimeout(hashHistory.push('/companies/'+company_id+'/teams/'+team_id), 500)
@@ -86,6 +90,7 @@ export default class Company extends React.Component {
                     <div className="paper-element">
                     <ListItem
                         primaryText={User.getFullName(companyObject['admin'])}
+                        onTouchTap={this.handleAdminClick.bind(this, companyObject['admin'])}
                         secondaryText={companyObject['admin']['username']}
                         leftAvatar={
                             <Avatar

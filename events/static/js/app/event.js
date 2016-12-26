@@ -6,6 +6,7 @@ import Avatar from 'material-ui/Avatar';
 import {List, ListItem} from 'material-ui/List';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import AssignParticipants from './AssignParticipants';
+import { hashHistory } from 'react-router'
 
 let User = require('./helpers/User');
 
@@ -39,6 +40,11 @@ class Event extends React.Component{
         event['participants'] = this.state.event['participants'].concat(users);
         this.setState({event: event});
     };
+
+    handleUserClick(user) {
+        hashHistory.push('/profile/'+user.id)
+    }
+
 
     componentDidMount(){
         const url = '/api/v1/events/' + this.props.params.event_id
@@ -100,7 +106,9 @@ class Event extends React.Component{
                                 <ListItem key={index} style={{
                                     float: 'left',
                                     maxWidth: '400px',
-                                }}>
+                                }}
+                                onTouchTap={this.handleUserClick.bind(this, user)}
+                                >
                                     <Avatar
                                         style={{marginRight: 10}}
                                         size={32}
