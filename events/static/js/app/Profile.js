@@ -9,6 +9,8 @@ import Dialog from 'material-ui/Dialog';
 import {Cropper} from 'react-image-cropper';
 import Dropzone from 'react-dropzone';
 
+let User = require('./helpers/User');
+
 
 export default class Profile extends React.Component {
     constructor(props) {
@@ -191,13 +193,17 @@ export default class Profile extends React.Component {
                                 this.state.profile ?
                                     <img className="profile-pic" src={this.state.profile['photo']} alt="userpic"/>
                                      :
-                                    <CircularProgress size={60} thickness={7} />
+                                    <CircularProgress size={200} thickness={7} />
                             }
 
                         </div>
                     </Paper>
 
                     <Paper className="info-card">
+                        {
+                            this.state.profile ?
+                                User.getFullName(this.state.profile.user) : null
+                        }
                     </Paper>
 
                     <Dialog
