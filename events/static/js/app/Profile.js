@@ -63,7 +63,7 @@ export default class Profile extends React.Component {
         this.closeDelDialog();
         this.closeDialog();
 
-        axios.delete(`api/v1/profile/${this.state.profile.user.id}`)
+        axios.delete(`api/v1/profile/photo/${this.state.profile.user.id}`)
             .then((response) => {
                 console.log('response', response.data);
                 let profile = this.state.profile;

@@ -1,8 +1,5 @@
 import json
 import socket
-from events import local_settings
-from boto.s3.key import Key
-from boto.s3.connection import S3Connection
 
 from profiles.forms import ProfileForm
 from django.http import JsonResponse
@@ -13,6 +10,7 @@ from django.views.generic.base import View
 from registration.models import User
 from profiles.models import UserProfile
 from events.views import INVALID_PAYLOAD, SERVER_ERROR, PERMISSION_DENIED
+from utils.FileService import FileManager
 
 DEFAULT_PHOTO = 'default_photo.jpg'
 
@@ -50,16 +48,6 @@ class ProfileView(View):
         else:
             return HttpResponseForbidden('Permission denied')
 
-    def delete(self, request, profile_id):
-        profile = UserProfile.get_by_id(profile_id)
-        if not profile or str(request.user.id) != profile_id:
-            return PERMISSION_DENIED
-        key = profile.photo
-        profile.photo = DEFAULT_PHOTO
-        profile.save()
-        FileManager.delete_by_key(key)
-        return JsonResponse({'photo': FileManager.get_href(DEFAULT_PHOTO), "key": DEFAULT_PHOTO}, status=200)
-
     @staticmethod
     def to_dict(profile):
         user = User.get_by_id(profile.user)
@@ -72,16 +60,14 @@ class ProfileView(View):
         }
 
 
-class FileManager(View):
-    CONN = S3Connection(local_settings.ACCESS_KEY_ID, local_settings.AWS_SECRET_ACCESS_KEY)
-
+class ProfilePicture(View):
     def post(self, request):
         try:
             file = request.FILES['profile_pic']
         except MultiValueDictKeyError:
             return INVALID_PAYLOAD
         try:
-            key_bucket = FileManager.__get_key_bucket()
+            key_bucket = FileManager.get_key_bucket()
             key_bucket.key = file.name
             key_bucket.set_contents_from_file(file)
             key_bucket.set_acl('public-read')
@@ -94,25 +80,12 @@ class FileManager(View):
             photo = FileManager.get_href(key_bucket.key)
             return JsonResponse({'photo': photo})
 
-    @staticmethod
-    def delete_by_key(key):
-        bucket = FileManager.CONN.get_bucket(local_settings.NAME_PROFILES_BUCKET)
-        k = FileManager.__get_key_bucket()
-        k.key = key
-        bucket.delete_key(k)
-        return True
-
-    @staticmethod
-    def get_href(key, bucket_name=local_settings.NAME_PROFILES_BUCKET):
-        return FileManager.CONN.generate_url(expires_in=0,
-                                             method="GET",
-                                             bucket=bucket_name,
-                                             key=key,
-                                             query_auth=False,
-                                             force_http=True
-                                             )
-
-    @staticmethod
-    def __get_key_bucket():
-        bucket = FileManager.CONN.get_bucket(local_settings.NAME_PROFILES_BUCKET)
-        return Key(bucket)
+    def delete(self, request, profile_id):
+        profile = UserProfile.get_by_id(profile_id)
+        if not profile or str(request.user.id) != profile_id:
+            return PERMISSION_DENIED
+        key = profile.photo
+        profile.photo = DEFAULT_PHOTO
+        profile.save()
+        FileManager.delete_by_key(key)
+        return JsonResponse({'photo': FileManager.get_href(DEFAULT_PHOTO), "key": DEFAULT_PHOTO}, status=200)
