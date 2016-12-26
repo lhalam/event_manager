@@ -5,6 +5,7 @@ from django.utils import timezone
 from django.contrib.auth.models import User as BaseUser
 from django.core.exceptions import PermissionDenied
 
+from utils.FileService import FileManager
 from datetime import timedelta
 from random import choice
 
@@ -37,6 +38,7 @@ class User(BaseUser):
             'last_name': self.last_name,
             'avatar': self.avatar_background,
             'key': self.userprofile.photo,
+            'url': FileManager.get_href(self.userprofile.photo)
         }
 
     @classmethod
