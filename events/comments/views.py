@@ -2,6 +2,7 @@ from django.shortcuts import render, HttpResponse
 from django.views.generic import View
 from event.models import Event
 from registration.models import User
+from event.views import PERMISSION_DENIED
 from .models import Comment
 from .forms import CommentForm
 
@@ -13,12 +14,18 @@ import json
 class CommentView(View):
     def get(self, request, id):
         if not request.user.is_authenticated:
-            return HttpResponse('Permission denied', status=403)
+            return PERMISSION_DENIED
         comments = Comment.objects.filter(event_id=id).order_by('-date_add')
-        response = [comment.to_dict() for comment in comments]
+        response = {
+            'comments': [comment.to_dict() for comment in comments],
+            'role': User.get_by_id(request.user.id).get_role_id(),
+            'user': User.get_by_id(request.user.id)
+        }
         return HttpResponse(json.dumps(response), content_type="text/json")
 
     def post(self, request, id=None):
+        if not request.user.is_authenticated:
+            return PERMISSION_DENIED
         body_requst = json.loads(request.body.decode("utf-8"))
         data = {}
         data["text"] = body_requst["text"]
@@ -35,10 +42,9 @@ class CommentView(View):
 
     def delete(self, request, id=None):
         if not request.user.is_superuser:
-            return HttpResponse('Permission denied', status=403)
+            return PERMISSION_DENIED
         try:
             Comment.objects.get(id=id).delete()
-            print('Deleted')
         except:
             return HttpResponse('Not Found', status=404)
         return HttpResponse('Ok')

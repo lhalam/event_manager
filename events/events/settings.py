@@ -115,7 +115,7 @@ USE_L10N = True
 
 USE_TZ = True
 
-SESSION_COOKIE_AGE = 60 * 60
+
 
 
 # Static files (CSS, JavaScript, Images)

@@ -1,6 +1,9 @@
 import Map from './map'
-import CreateEventDialog from './NewEventForm';
+import CreateEventDialog from './EventForm';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import Toggle from 'material-ui/Toggle';
+import FlatButton from 'material-ui/FlatButton';
+import Checkbox from 'material-ui/Checkbox';
 import {Container, Row, Col} from 'react-grid-system';
 import {Link} from 'react-router';
 
@@ -11,43 +14,74 @@ const axios = require("axios");
 class EventList extends React.Component{
     constructor(props){
         super(props);
-        this.state = ({events: []})
+        this.state = ({
+            events: [],
+            number: 0,
+            showActive: true
+        });
+        this.getMoreEvents = this.getMoreEvents.bind(this);
+    }
+    getMoreEvents(){
+        const lastEventDate = this.state.events[this.state.events.length -1].start_date
+        axios.get(`api/v1/events/?q=${lastEventDate}`)
+        .then(function(response){
+            let events = this.state.events.slice()
+            events.push.apply(events, response.data)
+            this.setState({events: events})
+        }.bind(this))
+    }
+    getEventsButtonShow(){
+        return this.state.events.length != this.state.number
     }
     componentWillMount(){
         axios.get('/api/v1/events/')
         .then(function (response) {
-            this.setState({events: response.data})
+            this.setState({events: response.data.events, number: response.data.number})
         }.bind(this))
     }
     render(){
-        if (this.state.events[0]){
-            return(
+        let eventsActive =[];
+        let eventsPassed = [];
+        const dateNow = new Date().getTime() / 1000;
+        this.state.events.map((event)=>dateNow < event.end_date ? eventsActive.unshift(event): eventsPassed.push(event))
+        const events = this.state.showActive ? eventsActive : eventsPassed
+        return (
             <MuiThemeProvider>
             <div>
-                <Map events={this.state.events} geo={true} zoom={6}/>
-                <div className="event-list-wrapper">
-                    {this.state.events.map(function(event){
-                        return(
-                                <Link key={event.id} to={`/events/${event.id}`}>
-                                    <EventItem event={event}/>
-                                </Link>
-                        )
-                        
-                    })}
-                </div>
+                {
+                    events[0] ? 
+                    <div>
+                        <Map events={events} geo={true} zoom={6}/>
+                        <div className="event-list-wrapper">
+                            {events.map(function(event){
+                                return(
+                                        <Link key={event.id} to={`/events/${event.id}`}>
+                                            <EventItem event={event}/>
+                                        </Link>
+                                )
+                            })}
+                        </div>
+                    </div> 
+                    : <h3>There aren't events</h3>
+                }
+                {
+                    this.getEventsButtonShow() ? 
+                    <FlatButton 
+                        label="Get More" 
+                        style={{minWidth: '100%'}}
+                        primary={true}
+                        onClick={this.getMoreEvents}
+                    /> : null
+                }
+                <Checkbox
+                    label="Active"
+                    checked={this.state.showActive}
+                    onClick={()=>this.setState({showActive: !this.state.showActive})}
+                />
                 <CreateEventDialog />
             </div>
             </MuiThemeProvider>
         )
-        }else{
-            return(
-                <MuiThemeProvider>
-                <div>
-                    <CreateEventDialog />
-                </div>
-                </MuiThemeProvider>
-            )
-        }
             
     }
 }
@@ -55,27 +89,29 @@ class EventList extends React.Component{
 
 class EventItem extends React.Component{
     render(){
-        const date = new Date(this.props.event.start_date * 1000)
+        const dateStart = new Date(this.props.event.start_date * 1000)
+        const dateEnd = new Date(this.props.event.end_date * 1000)
+        const dateNow = new Date().getTime();
         const url = `#/events/${this.props.event.id}`
         return(
-            <div className="event-item-wrapper">
-                <Col xs={3}>
+            <div className={dateNow > dateEnd ? 'event-item-wrapper passed': 'event-item-wrapper'}>
+                <Col sm={3}>
                     <div className="event-title">
                         {this.props.event.title}
                     </div>
                 </Col>
-                <Col xs={3}>
+                <Col sm={3}>
                     <div>
                         {this.props.event.place}
                     </div>
                 </Col>
-                <Col xs={3}>
+                <Col sm={3}>
                     <p>
                         {this.props.event.owner.username}
                     </p>
                 </Col>
-                <Col xs={3}>
-                    {date.toDateString()}, {date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                <Col sm={3}>
+                    {dateStart.toDateString()}, {dateStart.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                 </Col>
             </div>
         )
