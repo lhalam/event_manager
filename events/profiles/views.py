@@ -3,11 +3,10 @@ import socket
 
 from profiles.forms import ProfileForm
 from django.http import JsonResponse
-from django.http.response import HttpResponseForbidden, HttpResponseNotFound
+from django.http.response import HttpResponseNotFound
 from django.utils.datastructures import MultiValueDictKeyError
 from django.views.generic.base import View
 
-from registration.models import User
 from profiles.models import UserProfile
 from events.views import INVALID_PAYLOAD, SERVER_ERROR, PERMISSION_DENIED
 from utils.FileService import FileManager
@@ -26,38 +25,20 @@ class ProfileView(View):
             profile = UserProfile.get_by_id(request.user.id)
         if not profile:
             return HttpResponseNotFound('User not found')
-        return JsonResponse({'profile': ProfileView.to_dict(profile), 'owner': owner}, status=200)
+        return JsonResponse({'profile': profile.to_dict(), 'owner': owner}, status=200)
 
-    def post(self, request):
-        if request.user.is_authenticated:
-            info = json.loads(request.body.decode())
-            try:
-                profile = UserProfile()
-                profile.user = User.get_user_by_id(info.get('user'))
-                profile.photo = info.get('photo')
-                profile.education = info.get('education')
-                profile.job = info.get('job')
-                form = ProfileForm(profile)
-                if form.is_valid():
-                    profile.save()
-                    return JsonResponse({'status': 'success'}, status=200)
-                else:
-                    return JsonResponse({'status': 'Some fields are incorrect. Please check.'}, status=400)
-            except:
-                return JsonResponse({'status': 'Please, check your personal information'}, status=400)
-        else:
-            return HttpResponseForbidden('Permission denied')
-
-    @staticmethod
-    def to_dict(profile):
-        user = User.get_by_id(profile.user)
-        return {
-            'user': user.to_dict(),
-            'photo': FileManager.get_href(profile.photo),
-            'education': profile.education,
-            'job': profile.job,
-            'key': profile.photo
-        }
+    def put(self, request, profile_id):
+        if not request.user.is_authenticated or str(request.user.id) != profile_id:
+            return PERMISSION_DENIED
+        profile_data = json.loads(request.body.decode())
+        profile_form = ProfileForm(profile_data)
+        if not profile_form.is_valid():
+            return JsonResponse({'success': False, 'errors': profile_form.errors}, status=400)
+        UserProfile.objects.filter(pk=profile_id).update(**profile_form.cleaned_data)
+        return JsonResponse({
+                             'success': True,
+                             'profile': UserProfile.get_by_id(request.user.id).to_dict()
+                             }, status=200)
 
 
 class ProfilePicture(View):
@@ -74,9 +55,7 @@ class ProfilePicture(View):
         except socket.error:
             return SERVER_ERROR
         else:
-            profile = UserProfile.get_by_id(request.user.id)
-            profile.photo = key_bucket.key
-            profile.save()
+            UserProfile.objects.filter(pk=request.user.id).update(photo=key_bucket.key)
             photo = FileManager.get_href(key_bucket.key)
             return JsonResponse({'photo': photo})
 
@@ -85,7 +64,6 @@ class ProfilePicture(View):
         if not profile or str(request.user.id) != profile_id:
             return PERMISSION_DENIED
         key = profile.photo
-        profile.photo = DEFAULT_PHOTO
-        profile.save()
+        UserProfile.objects.filter(pk=profile_id).update(photo=DEFAULT_PHOTO)
         FileManager.delete_by_key(key)
         return JsonResponse({'photo': FileManager.get_href(DEFAULT_PHOTO), "key": DEFAULT_PHOTO}, status=200)
