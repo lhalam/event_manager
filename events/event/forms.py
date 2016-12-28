@@ -9,10 +9,10 @@ class DateValidator(forms.Field):
         if not value:
             raise forms.ValidationError("This field is required")
         try:
-            time = float(value)
+            check_time = float(value)
         except:
             raise forms.ValidationError("Enter valid date")
-        if time - time_now < 60 * 15:
+        if check_time - time_now < 60 * 15: # 60 seconds * 15 minutes
             raise forms.ValidationError("The Date can not be earlier than now")
         super(self.__class__, self).validate(value)
         return value
@@ -50,6 +50,6 @@ class EventCreateForm(forms.ModelForm):
 
     def clean_end_date(self):
         end_date = TZ.localize(datetime.utcfromtimestamp(float(self.cleaned_data['end_date']))) 
-        if (end_date - self.cleaned_data['start_date']).seconds < 60 * 15:
+        if (end_date - self.cleaned_data['start_date']).seconds < 60 * 15: # 60 seconds * 15 minutes
             raise forms.ValidationError("End Date and Time cannot be earlier than Start Date")
         return end_date

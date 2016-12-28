@@ -65,7 +65,7 @@ class Event extends React.Component{
     deleteEvent(){
         axios.delete(`api/v1/events/${this.state.event.id}`)
         .then(()=>document.location.href = `/#/`)
-        .catch(()=>console.log('Some wrongs'))
+        .catch((response)=>console.log(response.data))
     }
 
     getEventInfo(){
