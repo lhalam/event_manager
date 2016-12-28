@@ -12,6 +12,7 @@ from events.views import INVALID_PAYLOAD, SERVER_ERROR, PERMISSION_DENIED
 from utils.FileService import FileManager
 
 DEFAULT_PHOTO = 'default_photo.jpg'
+MAX_SIZE = 2*1024*1024
 
 
 class ProfileView(View):
@@ -46,6 +47,8 @@ class ProfilePicture(View):
         try:
             file = request.FILES['profile_pic']
         except MultiValueDictKeyError:
+            return INVALID_PAYLOAD
+        if file.size < MAX_SIZE:
             return INVALID_PAYLOAD
         try:
             key_bucket = FileManager.get_key_bucket()
