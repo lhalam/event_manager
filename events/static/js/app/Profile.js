@@ -34,6 +34,7 @@ export default class Profile extends React.Component {
             open: false,
             openDel: false,
             openEdit: false,
+            openSize: false,
             uploadedImage: false,
         };
 
@@ -45,6 +46,15 @@ export default class Profile extends React.Component {
         this.closeDelDialog = () => this.setState({openDel: false});
         this.openEditDialog = () => this.setState({openEdit: true});
 
+
+        this.onDrop = (files) => {
+            let image = files[0];
+            if (image.size > maximumImageSize) {
+                this.setState({openSize: true})
+            } else {
+                this.setState({uploadedImage: image})
+            }
+        };
 
         this.crop = () => {
             let image = this.state.uploadedImage;
@@ -231,7 +241,7 @@ export default class Profile extends React.Component {
                 <Dropzone
                     accept="image/*"
                     ref="dropzone"
-                    onDrop={(files) => this.setState({uploadedImage: files[0]}).bind(this)}
+                    onDrop={this.onDrop}
                 >
                     <div>Try dropping some files here, or click to select files to upload.</div>
                 </Dropzone>
@@ -333,8 +343,8 @@ export default class Profile extends React.Component {
                             open={this.state.openEdit}
                             actions={editActions}
                             title="Profile edit"
-                            contentClassName={"dialog-window"}
-                            titleClassName={"dialog-title"}
+                            contentClassName="dialog-window"
+                            titleClassName="dialog-title"
                         >
                             <TextField
                                 maxLength={120}
@@ -356,6 +366,20 @@ export default class Profile extends React.Component {
                         </Dialog> : null
                     }
 
+                    <Dialog
+                        contentClassName="dialog-window"
+                        actions={
+                        <FlatButton
+                            label="OK"
+                            primary={true}
+                            onTouchTap={()=>this.setState({openSize: false}).bind(this)}
+                        />
+                      }
+                      open={this.state.openSize}
+                      onRequestClose={()=>this.setState({openSize: false}).bind(this)}
+                    >
+                      Please, select image, which size is less than 2 MB
+                    </Dialog>
 
                 </div>
             </MuiThemeProvider>
