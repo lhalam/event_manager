@@ -86,10 +86,7 @@ export default class Profile extends React.Component {
             ia[i] = byteString.charCodeAt(i);
         }
         let blob = new Blob([ab], {type: mimeString});
-        console.log(blob);
-        let file = new File([blob], imageTitle);
-        console.log(file);
-        return file;
+        return new File([blob], imageTitle);
     }
 
     deletePhoto() {
