@@ -6,6 +6,7 @@ import CircularProgress from 'material-ui/CircularProgress';
 import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
 import Dialog from 'material-ui/Dialog';
+import Snackbar from 'material-ui/Snackbar';
 import TextField from 'material-ui/TextField';
 import {Cropper} from 'react-image-cropper';
 import Dropzone from 'react-dropzone';
@@ -29,13 +30,15 @@ export default class Profile extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            error: '',
-            showButtonsPanel: false,
+            error: null,
             open: false,
+            message: null,
             openDel: false,
-            openEdit: false,
             openSize: false,
+            openEdit: false,
+            openSnackbar: false,
             uploadedImage: false,
+            showButtonsPanel: false,
         };
 
         this.showButtons = () => this.setState({showButtonsPanel: true});
@@ -45,14 +48,15 @@ export default class Profile extends React.Component {
         this.openDelDialog = () => this.setState({openDel: true});
         this.closeDelDialog = () => this.setState({openDel: false});
         this.openEditDialog = () => this.setState({openEdit: true});
-
+        this.handleEducation = (event) => this.setState({education: event.target.value});
+        this.handleJob = (event) => this.setState({job: event.target.value});
 
         this.onDrop = (files) => {
             let image = files[0];
             if (image.size > maximumImageSize) {
                 this.setState({openSize: true})
             } else {
-                this.setState({uploadedImage: image})
+                this.setState({uploadedImage: image});
             }
         };
 
@@ -63,15 +67,11 @@ export default class Profile extends React.Component {
             let type = image.name.split('.').splice(-1, 1)[0].toLowerCase();
             let croppedImage = this.dataURItoFile(
                 this.refs['cropper'].crop(),
-                `${hash}-${new Date().getTime()}.${type}`,
+                `${hash}.${type}`,
                 image.type
             );
-            console.log(croppedImage);
             this.sendPhoto(croppedImage, 'api/v1/profile/photo/');
         };
-
-        this.handleEducation = (event) => this.setState({education: event.target.value});
-        this.handleJob = (event) => this.setState({job: event.target.value});
 
         this.sendPhoto = this.sendPhoto.bind(this);
         this.sendProfileData = this.sendProfileData.bind(this);
@@ -105,26 +105,26 @@ export default class Profile extends React.Component {
 
         axios.delete(`api/v1/profile/photo/${this.state.profile.user.id}`)
             .then((response) => {
-                console.log('response', response.data);
                 let profile = this.state.profile;
                 profile['photo'] = response.data['photo'];
                 profile['key'] = response.data['key'];
                 this.setState({
                     profile: profile,
-
                 })
             })
             .catch((error) => {
-                console.log(error.response)
+                 this.setState({
+                    message: 'Error occurred. '+error.response.data['error_message'],
+                    openSnackbar: true,
+                    open: false,
+                });
             })
 
     }
 
     sendPhoto(received_file, URL) {
-        console.log('received_file', received_file);
         let file = new FormData();
         file.append('profile_pic', received_file);
-        console.log('file', file);
         axios.post(URL, file)
             .then((res) => {
                 let profile = this.state.profile;
@@ -136,8 +136,12 @@ export default class Profile extends React.Component {
                     uploadedImage: false
                 })
             })
-            .catch((err) => {
-                console.log(err.response)
+            .catch((error) => {
+                this.setState({
+                    message: 'Error occurred. '+error.response.data['error_message'],
+                    openSnackbar: true,
+                    open: false,
+                });
             });
     };
 
@@ -148,16 +152,19 @@ export default class Profile extends React.Component {
         };
         axios.put(`api/v1/profile/${this.state.profile.user.id}/`, requestBody)
             .then((response) => {
-                console.dir(response.data);
                 this.setState({
                     profile: response.data['profile'],
                 }, this.handleEditClose);
             })
             .catch((error) => {
-                console.log(error.response.data)
+                let errors = error.response.data['errors'];
+                let job = errors['job'];
+                let education = errors['education'];
+                this.setState({
+                    jobError: job,
+                    educationError: education,
+                });
             });
-
-        console.log(this.state.profile);
     }
 
     loadProfile(url) {
@@ -170,13 +177,12 @@ export default class Profile extends React.Component {
                 })
             })
             .catch((error) => {
-                console.log(error.response);
                 this.setState({error: `${error.response.status} ${error.response.statusText}`})
             })
     }
 
     getUrl() {
-        let parameter = this.props.params.user_id ? this.props.params.user_id.toString() : '';
+        let parameter = this.props.params['user_id'] ? this.props.params['user_id'].toString() : '';
         return `api/v1/profile/${parameter}`;
     }
 
@@ -186,7 +192,7 @@ export default class Profile extends React.Component {
     }
 
     render() {
-        if (this.state.error) return <h1 className="error-message">{this.state.error}</h1>;
+        if (this.state.error) return <h1>{this.state.error}</h1>;
 
         const pictureActions = [
             this.state.uploadedImage ?
@@ -243,9 +249,9 @@ export default class Profile extends React.Component {
                     ref="dropzone"
                     onDrop={this.onDrop}
                 >
-                    <div>Try dropping some files here, or click to select files to upload.</div>
+                    <div>Try dropping some picture here, or click to select picture to upload.</div>
                 </Dropzone>
-                <div>
+                <div className="validation-message">
                     {`Your image size should be ${maximumImageSize.toString()[0]} MB max`}
                 </div>
             </div>
@@ -294,11 +300,7 @@ export default class Profile extends React.Component {
                             <p className="profile-title"><span>Job: </span>{this.state.profile['job']}</p>
                             { this.state['owner'] ?
                                 <a className="update-profile">
-                                    <i
-                                    className="glyphicon glyphicon-pencil"
-                                    onClick={this.openEditDialog}
-                                    >
-                                    </i>
+                                    <i className="glyphicon glyphicon-pencil" onClick={this.openEditDialog}/>
                                 </a> : null
                             }
                         </Paper> : null
@@ -347,7 +349,9 @@ export default class Profile extends React.Component {
                             titleClassName="dialog-title"
                         >
                             <TextField
-                                maxLength={120}
+                                errorText={this.state.educationError}
+                                maxLength={200}
+                                multiLine={true}
                                 fullWidth={true}
                                 defaultValue={this.state.profile.education}
                                 floatingLabelText='Education'
@@ -356,7 +360,9 @@ export default class Profile extends React.Component {
                             />
                             <br />
                             <TextField
-                                maxLength={120}
+                                errorText={this.state.jobError}
+                                maxLength={200}
+                                multiLine={true}
                                 fullWidth={true}
                                 defaultValue={this.state.profile.job}
                                 floatingLabelText='Job'
@@ -378,8 +384,16 @@ export default class Profile extends React.Component {
                       open={this.state.openSize}
                       onRequestClose={()=>this.setState({openSize: false}).bind(this)}
                     >
-                      Please, select image, which size is less than 2 MB
+                      Please, select an image, which size is less than 2MB
                     </Dialog>
+                    {this.state.message ?
+                        <Snackbar
+                            open={this.state.openSnackbar}
+                            message={this.state.message}
+                            autoHideDuration={3000}
+                            onRequestClose={() => this.setState({openSnackbar: false}).bind(this)}
+                        /> : null
+                    }
 
                 </div>
             </MuiThemeProvider>

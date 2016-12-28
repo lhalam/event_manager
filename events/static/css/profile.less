@@ -124,27 +124,33 @@
 
 .dialog-image-window {
   img {
-    max-width: @side*1.5;
-    max-height: @side*1.5;
+    max-width: @side*2;
+    max-height: @side*2;
     object-fit: contain;
-    object-position: 100% 100%;
+    object-position: 100%;
   }
-  object-fit: contain;
+  position: absolute !important;
+  bottom: 42% !important;
+  right: 21% !important;
+  left: 21% !important;
   margin: 0 auto !important;
-  max-width: @side*2 !important;
+  max-width: @side*1.5 !important;
   max-height: @side*1.5 !important;
-  object-position: 100% 100%;
 }
 
 .pic-to-crop {
   margin: 0 auto !important;
   max-width: @side*2 !important;
-  max-height: @side*1.5 !important;
-  object-position: 100% 100%;
+  max-height: @side*2 !important;
+  object-position: 100%;
   img {
     max-width: @side*2 !important;
-    max-height: @side*1.5 !important;
+    max-height: @side*2 !important;
     object-fit: contain;
-    object-position: 100% 100%;
+    object-position: 100%;
   }
+}
+
+.validation-message {
+  margin-top: 10px;
 }
