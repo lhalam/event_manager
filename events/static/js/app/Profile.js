@@ -135,15 +135,21 @@ export default class Profile extends React.Component {
     };
 
     sendProfileData() {
-        let profile = this.state.profile;
-        console.log(profile.education);
-        console.log('2', this.state.education, this.state.job);
-        profile['education'] = this.state.education;
-        profile['job'] = this.state.job;
-        console.log(profile);
-        this.setState({
-            profile: profile,
-        }, this.handleEditClose);
+        let requestBody = {
+            'education': this.state.education,
+            'job': this.state.job
+        };
+        axios.put(`api/v1/profile/${this.state.profile.user.id}/`, requestBody)
+            .then((response) => {
+                console.dir(response.data);
+                this.setState({
+                    profile: response.data['profile'],
+                }, this.handleEditClose);
+            })
+            .catch((error) => {
+                console.log(error.response.data)
+            });
+
         console.log(this.state.profile);
     }
 
