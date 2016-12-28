@@ -432,7 +432,7 @@ export default class AddVoting extends React.Component {
                         onRequestClose={this.handleClose}
                     >
                         <TextField
-                            maxLength={30}
+                            maxLength={200}
                             floatingLabelText='Voting title'
                             ref="title"
                             onChange={this.handleTitle}
