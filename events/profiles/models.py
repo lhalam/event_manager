@@ -3,6 +3,8 @@ from __future__ import unicode_literals
 from registration.models import User
 from django.db import models
 
+from utils.FileService import FileManager
+
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User,
@@ -23,3 +25,13 @@ class UserProfile(models.Model):
             return cls.objects.get(pk=profile_id)
         except cls.DoesNotExist:
             return None
+
+    def to_dict(self):
+        user = User.get_by_id(self.user)
+        return {
+            'user': user.to_dict(),
+            'photo': FileManager.get_href(self.photo),
+            'education': self.education,
+            'job': self.job,
+            'key': self.photo
+        }
