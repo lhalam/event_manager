@@ -63,15 +63,46 @@
 
   .info-card {
 
-        padding: 20px 20px !important;
-        position: absolute;
-        margin: 10px 10px;
-        display: inline-block !important;
-        max-height: @side+40px !important;
-        height: 100% !important;
-        max-width: (@side*3) !important;
-        width: 100% !important;
+    &:hover {
+      .update-profile {
+        visibility: visible;
       }
+    }
+
+    .update-profile {
+      visibility: hidden;
+      position: absolute;
+      top: 0.7em;
+      right: 0.7em;
+      i {
+        color: @subheader;
+      }
+      &:hover {
+        cursor: pointer;
+        i {
+          color: @popover-header;
+        }
+      }
+    }
+
+    .profile-title {
+      span {
+        font-weight: 700;
+        color: @popover-header
+      }
+    }
+
+    .profile-subheader {
+      color: @subheader;
+    }
+
+    padding: 20px 20px !important;
+    position: absolute;
+    margin: 10px 10px;
+    display: inline-block !important;
+    max-height: @side+40px !important;
+    max-width: (@side*2) !important;
+  }
 
 }
 
@@ -93,18 +124,27 @@
 
 .dialog-image-window {
   img {
-    overflow: auto;
-    max-width: @side*2 !important;
-    max-height: @side*2 !important;
+    max-width: @side*1.5;
+    max-height: @side*1.5;
     object-fit: contain;
     object-position: 100% 100%;
   }
+  object-fit: contain;
   margin: 0 auto !important;
-  min-width: @side/3 !important;
   max-width: @side*2 !important;
-  max-height: @side*2;
+  max-height: @side*1.5 !important;
+  object-position: 100% 100%;
 }
 
 .pic-to-crop {
   margin: 0 auto !important;
+  max-width: @side*2 !important;
+  max-height: @side*1.5 !important;
+  object-position: 100% 100%;
+  img {
+    max-width: @side*2 !important;
+    max-height: @side*1.5 !important;
+    object-fit: contain;
+    object-position: 100% 100%;
+  }
 }

@@ -16,7 +16,7 @@ import { hashHistory } from 'react-router'
 
 import ReactTooltip from 'react-tooltip'
 
-
+let User = require('./helpers/User');
 export default class Voting extends React.Component {
     constructor(props){
         super(props);
@@ -158,16 +158,23 @@ export default class Voting extends React.Component {
             let displayLength = 6;
             let users = [
                 voters.slice(0, displayLength).map((voter) => {
-                    return (
-                            <Avatar
-                                key={voter['id']}
-                                backgroundColor={voter['avatar']}
-                                className="tooltip-avatar"
-                                onTouchTap={this.handleTipAvatarClick.bind(this, voter)}
-                            >
-                                {voter['first_name'][0].toUpperCase()}
-                            </Avatar>
-                    )
+                    let avatar = voter['key'] == User.defaultProfilePicture ?
+                         <Avatar
+                            key={voter['id']}
+                            backgroundColor={voter['avatar']}
+                            className="tooltip-avatar"
+                            onTouchTap={this.handleTipAvatarClick.bind(this, voter)}
+                        >
+                            {voter['first_name'][0].toUpperCase()}
+                        </Avatar> :
+                        <Avatar
+                            key={voter['id']}
+                            className="tooltip-avatar"
+                            onTouchTap={this.handleTipAvatarClick.bind(this, voter)}
+                            src={voter['url']}
+                        />;
+
+                    return avatar;
                 })
             ];
             return (

@@ -6,7 +6,7 @@ import Avatar from 'material-ui/Avatar';
 import {List, ListItem} from 'material-ui/List';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import AssignParticipants from './AssignParticipants';
-import { hashHistory } from 'react-router'
+import { hashHistory } from 'react-router';
 
 let User = require('./helpers/User');
 

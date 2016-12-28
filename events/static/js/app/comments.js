@@ -161,7 +161,7 @@ class CommentItem extends React.Component{
                 onClick={this.deleteComment}/>
             </Popover>
                 <div className="author-avatar">
-                    <img src="http://www.nlsgrp.co/wp-content/uploads/2016/06/Avatar-Matt-3.png" />
+                    <img src={this.props.comment.author['url']} />
                 </div>
                 <div className="comment">
                     <div 

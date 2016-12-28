@@ -84,6 +84,15 @@ export default class Company extends React.Component {
 
         if (companyObject['admin']) {
             this.adminId = companyObject['admin']['id'];
+            let avatar = companyObject['admin']['key'] == User.defaultProfilePicture ?
+                <Avatar
+                    size={32}
+                    backgroundColor={companyObject['admin']['avatar']}
+                >
+                    {companyObject['admin']['first_name'][0].toUpperCase()}
+                </Avatar> :
+                <Avatar size={32} src={companyObject['admin']['url']} />;
+
             admin = (
                 <List>
                     <Subheader><div className="subheader">Company Admin</div></Subheader>
@@ -92,13 +101,7 @@ export default class Company extends React.Component {
                         primaryText={User.getFullName(companyObject['admin'])}
                         onTouchTap={this.handleAdminClick.bind(this, companyObject['admin'])}
                         secondaryText={companyObject['admin']['username']}
-                        leftAvatar={
-                            <Avatar
-                                backgroundColor={companyObject['admin']['avatar']}
-                                size={32}
-                            >
-                                {companyObject['admin']['first_name'][0].toUpperCase()}
-                            </Avatar>}
+                        leftAvatar={avatar}
                     />
                     </div>
                 </List>

@@ -6,11 +6,24 @@ import CircularProgress from 'material-ui/CircularProgress';
 import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
 import Dialog from 'material-ui/Dialog';
+import TextField from 'material-ui/TextField';
 import {Cropper} from 'react-image-cropper';
 import Dropzone from 'react-dropzone';
 
 let User = require('./helpers/User');
 
+String.prototype.hashCode = function() {
+  let hash = 0, i, chr, len;
+  if (this.length === 0) return hash;
+  for (i = 0, len = this.length; i < len; i++) {
+    chr   = this.charCodeAt(i);
+    hash  = ((hash << 5) - hash) + chr;
+    hash |= 0; // Convert to 32bit integer
+  }
+  return hash.toString();
+};
+
+const maximumImageSize = 2*1024*1024;
 
 export default class Profile extends React.Component {
     constructor(props) {
@@ -20,6 +33,7 @@ export default class Profile extends React.Component {
             showButtonsPanel: false,
             open: false,
             openDel: false,
+            openEdit: false,
             uploadedImage: false,
         };
 
@@ -29,20 +43,39 @@ export default class Profile extends React.Component {
         this.closeDialog = () => this.setState({open: false, uploadedImage: false});
         this.openDelDialog = () => this.setState({openDel: true});
         this.closeDelDialog = () => this.setState({openDel: false});
+        this.openEditDialog = () => this.setState({openEdit: true});
+
 
         this.crop = () => {
             let image = this.state.uploadedImage;
+            let username = this.state.profile['user'].username;
+            let hash = username.hashCode();
+            let type = image.name.split('.').splice(-1, 1)[0].toLowerCase();
             let croppedImage = this.dataURItoFile(
                 this.refs['cropper'].crop(),
-                `${this.state.profile.user.id}-${image.name}`,
+                `${hash}-${new Date().getTime()}.${type}`,
                 image.type
             );
             console.log(croppedImage);
             this.sendPhoto(croppedImage, 'api/v1/profile/photo/');
         };
 
+        this.handleEducation = (event) => this.setState({education: event.target.value});
+        this.handleJob = (event) => this.setState({job: event.target.value});
+
         this.sendPhoto = this.sendPhoto.bind(this);
+        this.sendProfileData = this.sendProfileData.bind(this);
         this.deletePhoto = this.deletePhoto.bind(this);
+        this.handleEditClose = this.handleEditClose.bind(this);
+    }
+
+    handleEditClose() {
+        let profile = this.state.profile;
+        this.setState({
+            openEdit: false,
+            education: profile.education,
+            job: profile.job,
+        });
     }
 
     dataURItoFile(dataURI, imageTitle, mimeString) {
@@ -101,10 +134,27 @@ export default class Profile extends React.Component {
             });
     };
 
+    sendProfileData() {
+        let profile = this.state.profile;
+        console.log(profile.education);
+        console.log('2', this.state.education, this.state.job);
+        profile['education'] = this.state.education;
+        profile['job'] = this.state.job;
+        console.log(profile);
+        this.setState({
+            profile: profile,
+        }, this.handleEditClose);
+        console.log(this.state.profile);
+    }
+
     loadProfile(url) {
         axios.get(url)
             .then((response) => {
                 this.setState(response['data']);
+                this.setState({
+                    education: response['data']['profile']['education'],
+                    job: response['data']['profile']['job']
+                })
             })
             .catch((error) => {
                 console.log(error.response);
@@ -114,7 +164,7 @@ export default class Profile extends React.Component {
 
     getUrl() {
         let parameter = this.props.params.user_id ? this.props.params.user_id.toString() : '';
-        return 'api/v1/profile/'+parameter;
+        return `api/v1/profile/${parameter}`;
     }
 
     componentWillMount() {
@@ -124,7 +174,8 @@ export default class Profile extends React.Component {
 
     render() {
         if (this.state.error) return <h1 className="error-message">{this.state.error}</h1>;
-        const actions = [
+
+        const pictureActions = [
             this.state.uploadedImage ?
                 <FlatButton
                 label="Set photo"
@@ -149,27 +200,49 @@ export default class Profile extends React.Component {
 
         ];
 
+        const editActions = [
+                <FlatButton
+                    label="Cancel"
+                    primary={true}
+                    onTouchTap={this.handleEditClose}
+
+                />,
+                <FlatButton
+                    label="Submit"
+                    disabled={!this.state.owner}
+                    primary={true}
+                    onTouchTap={this.sendProfileData}
+
+                />,
+        ];
+
         let dialogContent = (this.state.uploadedImage ?
+            <div className="pic-to-crop">
                 <Cropper
-                    className="pic-to-crop"
                     src={this.state.uploadedImage.preview}
                     ref="cropper"
                     allowNewSelection={false}
-                /> :
-            <Dropzone
-                accept="image/*"
-                ref="dropzone"
-                onDrop={(files) => this.setState({uploadedImage: files[0]}).bind(this)}
-            >
-                <div>Try dropping some files here, or click to select files to upload.</div>
-            </Dropzone>
+                />
+            </div> :
+            <div>
+                <Dropzone
+                    accept="image/*"
+                    ref="dropzone"
+                    onDrop={(files) => this.setState({uploadedImage: files[0]}).bind(this)}
+                >
+                    <div>Try dropping some files here, or click to select files to upload.</div>
+                </Dropzone>
+                <div>
+                    {`Your image size should be ${maximumImageSize.toString()[0]} MB max`}
+                </div>
+            </div>
         );
 
         return (
             <MuiThemeProvider>
                 <div className="profile">
 
-                    <Paper className="picture-card">
+                    <Paper zDepth={2} className="picture-card">
                         <div
                             onMouseEnter={this.showButtons}
                             className="image-container"
@@ -197,18 +270,31 @@ export default class Profile extends React.Component {
                             }
 
                         </div>
+
                     </Paper>
 
-                    <Paper className="info-card">
-                        {
-                            this.state.profile ?
-                                User.getFullName(this.state.profile.user) : null
-                        }
-                    </Paper>
+                    {this.state.profile ?
+                        <Paper zDepth={2} className="info-card">
+                            <h3>{User.getFullName(this.state.profile.user)}</h3>
+                            <h4 className="profile-subheader">{this.state.profile.user.username}</h4>
+                            <p className="profile-title"><span>Education: </span>{this.state.profile['education']}</p>
+                            <p className="profile-title"><span>Job: </span>{this.state.profile['job']}</p>
+                            { this.state['owner'] ?
+                                <a className="update-profile">
+                                    <i
+                                    className="glyphicon glyphicon-pencil"
+                                    onClick={this.openEditDialog}
+                                    >
+                                    </i>
+                                </a> : null
+                            }
+                        </Paper> : null
+                    }
 
                     <Dialog
                         open={this.state.open}
-                        actions={actions}
+                        modal={false}
+                        actions={pictureActions}
                         contentClassName="dialog-image-window"
                     >
                        {dialogContent}
@@ -238,6 +324,35 @@ export default class Profile extends React.Component {
                     >
                         Are you sure you want delete the voting?
                     </Dialog>
+
+                    {this.state.profile ?
+                        <Dialog
+                            open={this.state.openEdit}
+                            actions={editActions}
+                            title="Profile edit"
+                            contentClassName={"dialog-window"}
+                            titleClassName={"dialog-title"}
+                        >
+                            <TextField
+                                maxLength={120}
+                                fullWidth={true}
+                                defaultValue={this.state.profile.education}
+                                floatingLabelText='Education'
+                                ref="education"
+                                onChange={this.handleEducation}
+                            />
+                            <br />
+                            <TextField
+                                maxLength={120}
+                                fullWidth={true}
+                                defaultValue={this.state.profile.job}
+                                floatingLabelText='Job'
+                                ref="job"
+                                onChange={this.handleJob}
+                            />
+                        </Dialog> : null
+                    }
+
 
                 </div>
             </MuiThemeProvider>
