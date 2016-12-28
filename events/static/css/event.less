@@ -15,7 +15,21 @@
   font-size: 30px;
   height: 100px;
   line-height: 1.75em;
-  padding: 25px;
+  padding: 15px 0px 10px 40px;
+  .control-buttons{
+    float: right;
+    a{
+      margin-right: 10px;
+      font-size: 16px;
+      i{
+        color: white;
+        font-weight: normal;
+      }
+    }
+    a:hover{
+      cursor: pointer;
+    }
+  }
 }
 .event-card-body {
   .voting{
@@ -82,12 +96,12 @@
 }
 
 .comment-wrapper{
-  border-top: 1px solid #e0e0e0;
   border-radius: 5px;
   margin: 5px 0px 0px 5px;
   display: inline-flex;
   padding: 10px 0px 0px 15px;
   background: #fff;
+  box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1), 0px 6px 10px rgba(0, 0, 0, 0.15);
   h5{
     text-align: center;
   }
@@ -111,13 +125,13 @@
   p{
     display: inline;
     float: right;
-    padding-right: 15px;
+    padding-right: 5px;
   }
 }
 .comment-body{
-  padding: 5px;
+  padding: 5px 5px 5px 25px;
+  color: @hint-text
 }
-
 
 .show-body:before{
   content: '▾ Hide'
