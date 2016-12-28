@@ -1,5 +1,6 @@
 import json
 import socket
+import imghdr
 
 from profiles.forms import ProfileForm
 from django.http import JsonResponse
@@ -12,6 +13,9 @@ from events.views import INVALID_PAYLOAD, SERVER_ERROR, PERMISSION_DENIED
 from utils.FileService import FileManager
 
 DEFAULT_PHOTO = 'default_photo.jpg'
+MAX_SIZE = 2*1024*1024
+ACCEPTABLE_TYPES = ['rgb', 'gif', 'pbm', 'pgm', 'ppm', 'tiff',
+                    'rast', 'xbm', 'jpeg', 'bmp', 'png', 'webp', 'exr']
 
 
 class ProfileView(View):
@@ -46,6 +50,8 @@ class ProfilePicture(View):
         try:
             file = request.FILES['profile_pic']
         except MultiValueDictKeyError:
+            return INVALID_PAYLOAD
+        if file.size > MAX_SIZE or imghdr.what(file) not in ACCEPTABLE_TYPES:
             return INVALID_PAYLOAD
         try:
             key_bucket = FileManager.get_key_bucket()
