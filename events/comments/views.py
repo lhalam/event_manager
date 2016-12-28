@@ -19,7 +19,6 @@ class CommentView(View):
         response = {
             'comments': [comment.to_dict() for comment in comments],
             'role': User.get_by_id(request.user.id).get_role_id(),
-            'user': User.get_by_id(request.user.id)
         }
         return HttpResponse(json.dumps(response), content_type="text/json")
 

@@ -37,6 +37,7 @@ class EventView(View):
             response = event.to_dict()
             response['is_owner'] = event.owner_id == request.user.id
             response['role'] = User.get_by_id(request.user.id).get_role_id()
+            response['user'] = User.get_by_id(request.user.id).to_dict()
             return JsonResponse(response)
         else:
             return EVENT_NOT_EXISTS

@@ -69,6 +69,9 @@
 .author-avatar{
     width: 2.7em;
     img{
+      &:hover {
+        cursor: pointer;
+      }
       border-radius: 50%;
       width: 100%;
       height: auto;
@@ -102,7 +105,7 @@
   border-radius: 5px;
   margin: 5px 0px 0px 5px;
   display: inline-flex;
-  padding: 10px 0px 0px 15px;
+  padding: 10px 7px 0px 15px;
   background: #fff;
   box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1), 0px 6px 10px rgba(0, 0, 0, 0.15);
   h5{
@@ -125,6 +128,13 @@
 .comment-header{
   padding-left: 15px;
   margin-bottom: 10px;
+  a.to_profile{
+    color: black;
+    float: inherit;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
   p{
     display: inline;
     float: right;

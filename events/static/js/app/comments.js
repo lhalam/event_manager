@@ -3,7 +3,7 @@ import axios from 'axios';
 import Popover from 'material-ui/Popover';
 import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import { hashHistory } from 'react-router';
 
 let User = require('./helpers/User');
 
@@ -12,7 +12,7 @@ class Comments extends React.Component{
     render(){
         return (
             <div>
-                <CommentList event_id={this.props.event_id}/>
+                <CommentList user={this.props.user} event_id={this.props.event_id}/>
             </div>
         )
     }
@@ -48,7 +48,7 @@ class CommentForm extends React.Component{
             return (   
             <div className="comment-form-container">
                 <div className="author-avatar">
-                    <img src="http://www.nlsgrp.co/wp-content/uploads/2016/06/Avatar-Matt-3.png" />
+                    <img onClick={()=>hashHistory.push('/profile/'+this.props.user.id)} src={this.props.user['url']} />
                 </div>
                 <div className="form-wrapper">
                     <textarea 
@@ -91,7 +91,8 @@ class CommentList extends React.Component{
             return (
                 <div>
                     <div>
-                        <CommentForm 
+                        <CommentForm
+                        user={this.props.user}
                         event_id={this.props.event_id}
                         getComments={this.getComments}/>
                         <hr/>
@@ -99,7 +100,8 @@ class CommentList extends React.Component{
                     <div className="comment-list">
                         {
                             this.state.comments.map((comment)=>
-                            <CommentItem 
+                            <CommentItem
+                                user={this.props.user}
                                 key={comment.id} 
                                 comment={comment}
                                 getComments={this.getComments}
@@ -164,11 +166,16 @@ class CommentItem extends React.Component{
                 onClick={this.deleteComment}/>
             </Popover>
                 <div className="author-avatar">
-                    <img src={this.props.comment.author['url']} />
+                    <img
+                        onClick={()=>hashHistory.push('/profile/'+this.props.comment.author.id)}
+                        src={this.props.comment.author['url']}
+                    />
                 </div>
                 <div className="comment">
                     <div className="comment-header">
-                        <b>{User.getFullName(this.props.comment.author)}</b>
+                        <a className="to_profile" href={`/#/profile/${this.props.comment.author.id}`}>
+                            <b>{User.getFullName(this.props.comment.author)}</b>
+                        </a>
                         {
                             this.props.role == 0 ? <a 
                                 onTouchTap={this.handleConfirmationOpen}>
@@ -189,7 +196,8 @@ class CommentItem extends React.Component{
                         {this.props.comment.text}
                     </div>
                     <a onClick={()=>this.setState({showForm: !this.state.showForm})}>Answer</a>
-                    {this.state.showForm ? <CommentForm 
+                    {this.state.showForm ? <CommentForm
+                        user={this.props.user}
                         parrent_comment={this.props.comment.id}
                         getComments={this.props.getComments}
                         hideForm={()=>this.setState({showForm: false})}

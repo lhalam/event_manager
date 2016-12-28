@@ -228,7 +228,7 @@ class Event extends React.Component{
                         </h1>
                     </div><hr/>
                     <div className="comments-body">
-                        <Comments event_id={this.state.event.id}/>
+                        <Comments user={this.state.event.user} event_id={this.state.event.id}/>
                     </div>
                 </div>
                 </div>
