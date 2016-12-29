@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'calendars.apps.CalendarsConfig',
     'comments.apps.CommentsConfig',
     'companies.apps.CompaniesConfig',
+    'profiles.apps.ProfilesConfig',
     'votings.apps.VotingsConfig',
     'static_precompiler',
     'webpack_loader',
@@ -114,7 +115,7 @@ USE_L10N = True
 
 USE_TZ = True
 
-SESSION_COOKIE_AGE = 60 * 60
+
 
 
 # Static files (CSS, JavaScript, Images)

@@ -28,8 +28,9 @@ export default class CompaniesList extends React.Component {
 
     }
 
-    handleAdminClick(event) {
+    handleAdminClick(admin, event) {
         event.stopPropagation();
+        hashHistory.push('/profile/'+admin.id)
     }
 
     newDataHandler(company_id) {
@@ -69,18 +70,22 @@ export default class CompaniesList extends React.Component {
                     <div className="outer-div">
                         <div className="inner-div">
                             <Chip
-                                onTouchTap={this.handleAdminClick}
+                                onTouchTap={this.handleAdminClick.bind(this, companyObject['admin'])}
                                 style={{
                                     float: 'right',
                                     margin: '-8px 0'
                                 }}
                             >
+                                { companyObject['admin']['key'] == User.defaultProfilePicture ?
                                     <Avatar
                                         size={32}
                                         backgroundColor={companyObject['admin']['avatar']}
                                     >
                                         {companyObject['admin']['first_name'][0].toUpperCase()}
-                                    </Avatar>
+                                    </Avatar> :
+                                    <Avatar size={32} src={companyObject['admin']['url']} />
+                                }
+
                                     {User.getFullName(companyObject['admin'])}
                                 </Chip>
                             </div>

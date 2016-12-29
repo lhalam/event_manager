@@ -6,6 +6,7 @@ from django.views import View
 from django.http import JsonResponse
 from django.shortcuts import redirect, reverse, render
 
+from profiles.models import UserProfile
 from .models import User, RegistrationConfirm, BannedIP
 from .forms import RegistrationForm
 from utils.EmailService import EmailSender
@@ -48,7 +49,7 @@ class RegistrationView(View):
                 password=registration_data.get('password'),
                 birth_date=datetime.datetime.fromtimestamp(birth_date).strftime('%Y-%m-%d')
             )
-
+            UserProfile.create_user_profile(user=user)
             EmailSender.send_registration_confirm(user)
 
             return JsonResponse({'message': 'To finish registration follow instructions in email'}, status=201)
