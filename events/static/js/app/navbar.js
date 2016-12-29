@@ -3,7 +3,10 @@ import { Router, Route, Link, browserHistory } from 'react-router';
 
 import AppBar from 'material-ui/AppBar';
 import {Tabs, Tab} from 'material-ui/Tabs';
-import FlatButton from 'material-ui/FlatButton';
+import IconButton from 'material-ui/IconButton';
+import IconMenu from 'material-ui/IconMenu';
+import MenuItem from 'material-ui/MenuItem';
+import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 
@@ -34,7 +37,18 @@ export default class Navbar extends React.Component {
                             <Tab label="Calendar" containerElement={<Link to="calendar" />}/>
                         </Tabs>
                         }
-                        iconElementRight={<FlatButton href="/auth/logout?next=/" label="Logout" />}
+                        iconElementRight={
+                            <IconMenu
+                                iconButtonElement={
+                                  <IconButton><MoreVertIcon /></IconButton>
+                                }
+                                targetOrigin={{horizontal: 'right', vertical: 'top'}}
+                                anchorOrigin={{horizontal: 'right', vertical: 'top'}}
+                              >
+                                <MenuItem containerElement={<Link to="/profile/" />} primaryText="Profile" />
+                                <MenuItem href="/auth/logout?next=/" primaryText="Logout" />
+
+                              </IconMenu>}
                     />
                 </MuiThemeProvider>
             </header>

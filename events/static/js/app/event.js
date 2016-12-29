@@ -10,6 +10,7 @@ import {List, ListItem} from 'material-ui/List';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import Snackbar from 'material-ui/Snackbar';
 import AssignParticipants from './AssignParticipants';
+import { hashHistory } from 'react-router';
 
 let User = require('./helpers/User');
 
@@ -62,6 +63,11 @@ class Event extends React.Component{
         this.setState({event: event});
     };
 
+    handleUserClick(user) {
+        hashHistory.push('/profile/'+user.id)
+    }
+
+
     deleteEvent(){
         axios.delete(`api/v1/events/${this.state.event.id}`)
         .then(()=>document.location.href = `/#/`)
@@ -70,7 +76,7 @@ class Event extends React.Component{
 
     getEventInfo(){
         const url = `/api/v1/events/${this.props.params.event_id}`
-        axios.get(url) 
+        axios.get(url)
         .then(function (response) {
             this.setState({event: response.data})
         }.bind(this))
@@ -173,14 +179,18 @@ class Event extends React.Component{
                                 <ListItem key={index} style={{
                                     float: 'left',
                                     maxWidth: '400px',
-                                }}>
+                                }}
+                                onTouchTap={this.handleUserClick.bind(this, user)}
+                                >{
+                                    user['key'] == User.defaultProfilePicture ?
                                     <Avatar
                                         style={{marginRight: 10}}
                                         size={32}
                                         backgroundColor={user['avatar']}
                                     >
                                         {user['first_name'][0].toUpperCase()}
-                                    </Avatar>
+                                    </Avatar>: <Avatar style={{marginRight: 10}} size={32} src={user['url']} />
+                                }
                                     {User.getFullName(user)}
                                 </ListItem>
                                 );
@@ -220,7 +230,7 @@ class Event extends React.Component{
                         </h1>
                     </div><hr/>
                     <div className="comments-body">
-                        <Comments event_id={this.state.event.id}/>
+                        <Comments user={this.state.event.user} event_id={this.state.event.id}/>
                     </div>
                 </div>
                 </div>
