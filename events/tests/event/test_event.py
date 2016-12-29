@@ -1,6 +1,7 @@
 from registration.models import User
 from event.models import Event
 
+from django.test import Client
 import pytest
 import json
 
@@ -28,6 +29,7 @@ def test_create_event(admin_client):
 """
 
 def test_permission_get(client):
+    client = Client()
     request = client.get('/api/v1/events/')
     assert request.status_code == 403
 
