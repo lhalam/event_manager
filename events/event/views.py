@@ -11,9 +11,7 @@ from companies.models import TeamUserAssignment
 from .forms import EventCreateForm
 from utils.EmailService import EmailSender
 
-# Var for converting string to datetime
-TZ = get_current_timezone()
-FORMAT = '%b %d %Y %I:%M%p'
+
 
 EVENT_NOT_EXISTS = JsonResponse({"error_message": "Such event does not exists"}, status=404)
 PERMISSION_DENIED = JsonResponse({"error_message": "Permission denied"}, status=403)
