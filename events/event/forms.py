@@ -25,26 +25,6 @@ class EventCreateForm(forms.ModelForm):
     start_date = DateValidator()
     end_date = DateValidator()
 
-    def clean_title(self):
-        title = self.cleaned_data['title']
-        if len(title) > 20:
-            raise forms.ValidationError("Cannot be more than 20 characters")
-        return title
-    
-    def clean_description(self):
-        description = self.cleaned_data['description']
-        if len(description) > 200:
-            raise forms.ValidationError("Cannot be more than 200 characters")
-        return description
-
-    def clean_location(self):
-        location = self.cleaned_data['location']
-        try:
-            isinstance(location[0], float) and isinstance(location[1], float)
-        except:
-            raise forms.ValidationError("Enter valid data")
-        return location
-
     def clean_start_date(self):
         return TZ.localize(datetime.utcfromtimestamp(float(self.cleaned_data['start_date']))) 
 
