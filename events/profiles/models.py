@@ -12,8 +12,8 @@ class UserProfile(models.Model):
                                 primary_key=True
                                 )
     photo = models.CharField(max_length=200, default='default_photo.jpg')
-    education = models.TextField(blank=True, default='')
-    job = models.TextField(blank=True, default='')
+    education = models.CharField(blank=True, max_length=200)
+    job = models.CharField(blank=True, max_length=200)
 
     @classmethod
     def create_user_profile(cls, **kwargs):
