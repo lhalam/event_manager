@@ -33,7 +33,7 @@ def test_permission_get(client):
     request = client.get('/api/v1/events/')
     assert request.status_code == 403
 
-def test_permission_post():
+def test_permission_post(client):
     request = client.post('/api/v1/events/')
     assert request.status_code == 403
 
