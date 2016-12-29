@@ -7,7 +7,7 @@ class DateValidator(forms.Field):
     def validate(self, value):
         time_now = datetime.now().timestamp()
         if not value:
-            raise forms.ValidationError("This field is required")
+            raise forms.ValidationError("This field is required.", code="required")
         try:
             check_time = float(value)
         except:
@@ -26,10 +26,10 @@ class EventCreateForm(forms.ModelForm):
     end_date = DateValidator()
 
     def clean_start_date(self):
-        return TZ.localize(datetime.utcfromtimestamp(float(self.cleaned_data['start_date']))) 
+        return TZ.localize(datetime.utcfromtimestamp(float(self.cleaned_data['start_date'])))
 
     def clean_end_date(self):
-        end_date = TZ.localize(datetime.utcfromtimestamp(float(self.cleaned_data['end_date']))) 
+        end_date = TZ.localize(datetime.utcfromtimestamp(float(self.cleaned_data['end_date'])))
         if (end_date - self.cleaned_data['start_date']).seconds < 60 * 15: # 60 seconds * 15 minutes
-            raise forms.ValidationError("End Date and Time cannot be earlier than Start Date")
+            raise forms.ValidationError("End Date and Time cannot be earlier than Start Date", code="early")
         return end_date

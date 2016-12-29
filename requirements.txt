@@ -7,3 +7,5 @@ boto==2.43.0
 botocore==1.4.65
 s3transfer==0.1.9
 pytz==2016.7
+pytes==3.0.5
+pytest-django==3.1.2

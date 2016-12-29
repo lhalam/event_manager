@@ -7,12 +7,12 @@ from datetime import datetime
 
 
 class Event(models.Model):
-    title = models.CharField(max_length=200)
+    title = models.CharField(max_length=256)
     start_date = models.DateTimeField(blank=False)
     end_date = models.DateTimeField(blank=False)
     location = ArrayField(base_field=models.FloatField(), size=2)
     place = models.CharField(max_length=200, blank=False)
-    description = models.TextField(max_length=400 blank=False)
+    description = models.TextField(max_length=400, blank=False)
     created_date = models.DateTimeField(auto_now_add=True)
     owner = models.ForeignKey(User, null=False, related_name='owner')
     participants = models.ManyToManyField(
