@@ -85,6 +85,8 @@ export default class Profile extends React.Component {
             openEdit: false,
             education: profile.education,
             job: profile.job,
+            jobError: null,
+            educationError: null,
         });
     }
 
@@ -296,8 +298,12 @@ export default class Profile extends React.Component {
                         <Paper zDepth={2} className="info-card">
                             <h3>{User.getFullName(this.state.profile.user)}</h3>
                             <h4 className="profile-subheader">{this.state.profile.user.username}</h4>
-                            <p className="profile-title"><span>Education: </span>{this.state.profile['education']}</p>
-                            <p className="profile-title"><span>Job: </span>{this.state.profile['job']}</p>
+                            {this.state.profile['education'] ?
+                            <p className="profile-title"><span>Education: </span>{this.state.profile['education']}</p>:
+                                null}
+                            {this.state.profile['job'] ?
+                            <p className="profile-title"><span>Job: </span>{this.state.profile['job']}</p>:
+                                null}
                             { this.state['owner'] ?
                                 <a className="update-profile">
                                     <i className="glyphicon glyphicon-pencil" onClick={this.openEditDialog}/>

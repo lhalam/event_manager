@@ -181,14 +181,16 @@ class Event extends React.Component{
                                     maxWidth: '400px',
                                 }}
                                 onTouchTap={this.handleUserClick.bind(this, user)}
-                                >
+                                >{
+                                    user['key'] == User.defaultProfilePicture ?
                                     <Avatar
                                         style={{marginRight: 10}}
                                         size={32}
                                         backgroundColor={user['avatar']}
                                     >
                                         {user['first_name'][0].toUpperCase()}
-                                    </Avatar>
+                                    </Avatar>: <Avatar style={{marginRight: 10}} size={32} src={user['url']} />
+                                }
                                     {User.getFullName(user)}
                                 </ListItem>
                                 );
