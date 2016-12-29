@@ -5,6 +5,7 @@ from .models import Voting, Choice, ChoiceUserAssignment, VotingUserAssignment
 from registration.models import User
 from .forms import VotingForm
 from events.views import PERMISSION_DENIED, INVALID_PAYLOAD
+from event.views import EVENT_NOT_EXISTS
 from event.models import Event, EventUserAssignment
 
 import json
@@ -17,6 +18,8 @@ class VotingView(View):
         if not request.user.is_authenticated:
             return PERMISSION_DENIED
         event = Event.get_by_id(event_id)
+        if not event:
+            return EVENT_NOT_EXISTS
         if not voting_id:
             response = [voting.to_dict(request.user) for voting in event.votings.all()]
             return JsonResponse({
