@@ -76,11 +76,16 @@ export default class ModalWindow extends React.Component {
                 onTouchTap={handleClick}
                 onRequestDelete={handleRequestDelete}
             >
-                <Avatar
-                    size={32}
-                    backgroundColor={value['avatar']}
-                >
-                    {value['first_name'][0].toUpperCase()}</Avatar>
+                { value['key'] == User.defaultProfilePicture ?
+                    <Avatar
+                        size={32}
+                        backgroundColor={value['avatar']}
+                    >
+                        {value['first_name'][0].toUpperCase()}
+                    </Avatar> :
+                    <Avatar size={32} src={value['url']}/>
+                }
+
                 {User.getFullName(value)}
             </Chip>);
 

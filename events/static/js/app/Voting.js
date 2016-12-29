@@ -12,10 +12,11 @@ import moment from 'moment';
 import {blue300, indigo900, green300} from 'material-ui/styles/colors';
 import {List, ListItem} from 'material-ui/List';
 import ActionDone from 'material-ui/svg-icons/action/done';
+import { hashHistory } from 'react-router'
 
 import ReactTooltip from 'react-tooltip'
 
-
+let User = require('./helpers/User');
 export default class Voting extends React.Component {
     constructor(props){
         super(props);
@@ -30,7 +31,7 @@ export default class Voting extends React.Component {
         this.loadVoting = this.loadVoting.bind(this);
         this.DeleteVoting = this.DeleteVoting.bind(this);
         this.handleCloseDialog = () => {this.setState({openDeleteDialog: false})};
-        this.handleOpenDialog = (event, voting_id) => {
+        this.handleOpenDialog = (voting_id) => {
             this.setState({
                 openDeleteDialog: true,
                 votingToDelete: voting_id
@@ -109,7 +110,7 @@ export default class Voting extends React.Component {
             });
     }
 
-    optionApplyHandler(event, choice_id, voting_id) {
+    optionApplyHandler(choice_id, voting_id) {
         axios.post('api/v1/events/'+this.props['event_id']+'/voting/'+voting_id+'/choice/'+choice_id+'/set_data/')
             .then((response) => {
             this.props.updateEvent(response.data['event']);
@@ -123,8 +124,7 @@ export default class Voting extends React.Component {
             });
     }
 
-    handleVote(event, choice_id, voting, voted) {
-        event.stopPropagation();
+    handleVote(choice_id, voting, voted) {
         this.loadVoting();
         if (!voted && voting['seconds_left'] > 0) {
             this.makeVote(choice_id, voting.id);
@@ -157,15 +157,23 @@ export default class Voting extends React.Component {
             let displayLength = 6;
             let users = [
                 voters.slice(0, displayLength).map((voter) => {
-                    return (
-                            <Avatar
-                                key={voter['id']}
-                                className="tooltip-avatar"
-                                onTouchTap={this.handleTipAvatarClick.bind(this, voter)}
-                            >
-                                {voter['first_name'][0].toUpperCase()}
-                            </Avatar>
-                    )
+                    let avatar = voter['key'] == User.defaultProfilePicture ?
+                         <Avatar
+                            key={voter['id']}
+                            backgroundColor={voter['avatar']}
+                            className="tooltip-avatar"
+                            onTouchTap={this.handleTipAvatarClick.bind(this, voter)}
+                        >
+                            {voter['first_name'][0].toUpperCase()}
+                        </Avatar> :
+                        <Avatar
+                            key={voter['id']}
+                            className="tooltip-avatar"
+                            onTouchTap={this.handleTipAvatarClick.bind(this, voter)}
+                            src={voter['url']}
+                        />;
+
+                    return avatar;
                 })
             ];
             return (
@@ -180,7 +188,7 @@ export default class Voting extends React.Component {
 
     handleTipAvatarClick(voter, event) {
         event.stopPropagation();
-        alert(voter['first_name']);
+        hashHistory.push('/profile/'+voter.id)
     }
 
     getDateFormat(startDate, endDate) {
@@ -211,7 +219,7 @@ export default class Voting extends React.Component {
                         className="apply-option-button"
                         label="Apply"
                         primary={true}
-                        onTouchTap={this.optionApplyHandler.bind(this, event, choice.id, voting.id)}
+                        onTouchTap={this.optionApplyHandler.bind(this, choice.id, voting.id)}
                     />) : null;
                 let voted = choice['voted'] ?(<Avatar backgroundColor={green300} icon={<ActionDone />} />) : (<Avatar />);
                 return [
@@ -223,7 +231,7 @@ export default class Voting extends React.Component {
                             disabled={voting['seconds_left'] < 0 || voting['voted']}
                             ref='choiceItem'
                             data-for={choice.id}
-                            onTouchTap={this.handleVote.bind(this, event, choice.id, voting, choice['voted'])}
+                            onTouchTap={this.handleVote.bind(this, choice.id, voting, choice['voted'])}
                             key={j}
                             leftAvatar={voted}
                             rightAvatar={
@@ -281,7 +289,7 @@ export default class Voting extends React.Component {
                                                 className="delete-button voting-delete-button"
                                                 label="Delete voting"
                                                 secondary={true}
-                                                onTouchTap={this.handleOpenDialog.bind(this, event, voting.id)}
+                                                onTouchTap={this.handleOpenDialog.bind(this, voting.id)}
                                             />
                                     ) : null
                                 }
@@ -292,7 +300,7 @@ export default class Voting extends React.Component {
                                                 label="Revote"
                                                 disabled={voting['seconds_left'] < 0}
                                                 primary={true}
-                                                onTouchTap={this.handleVote.bind(this, event, voting['voted_choice'].id, voting, true)}
+                                                onTouchTap={this.handleVote.bind(this, voting['voted_choice'].id, voting, true)}
                                             />
 
                                     ) : null

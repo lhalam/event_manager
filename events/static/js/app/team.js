@@ -95,6 +95,10 @@ export default class Team extends React.Component {
         }
     }
 
+    handleUserClick(user) {
+        hashHistory.push('/profile/'+user.id)
+    }
+
     componentDidMount(){
         axios.get("/api/v1/companies/" + this.props.params.cid + "/teams/" + this.props.params.tid)
             .then((response) => {
@@ -156,8 +160,15 @@ export default class Team extends React.Component {
         ];
         let admin = this.state.admin;
         let team_admin = null;
-        let admin_name = "";
         if (admin) {
+             let avatar = admin['key'] == User.defaultProfilePicture ?
+                <Avatar
+                    size={32}
+                    backgroundColor={admin['avatar']}
+                >
+                    {admin['first_name'][0].toUpperCase()}
+                </Avatar> :
+                <Avatar size={32} src={admin['url']} />;
             team_admin = (
                 <List>
                     <Subheader><div className="subheader">Team Admin</div></Subheader>
@@ -165,13 +176,8 @@ export default class Team extends React.Component {
                     <ListItem
                         primaryText={User.getFullName(admin)}
                         secondaryText={admin['username']}
-                        leftAvatar={
-                            <Avatar
-                                size={32}
-                                backgroundColor={admin['avatar']}
-                            >
-                                {admin['first_name'][0].toUpperCase()}
-                            </Avatar>}
+                        onTouchTap={this.handleUserClick.bind(this, admin)}
+                        leftAvatar={avatar}
                     />
                     </div>
                 </List>
@@ -212,16 +218,19 @@ export default class Team extends React.Component {
                                 <List>
                                     {
                                         this.state.searchMembers.map((member, index) => {
+                                            let avatar = member['key'] == User.defaultProfilePicture ?
+                                                <Avatar
+                                                    backgroundColor={member['avatar']}
+                                                >
+                                                    {member['first_name'][0].toUpperCase()}
+                                                </Avatar> :
+                                                <Avatar src={member['url']} />;
                                             return (
                                                 <ListItem
                                                     key={index}
                                                     primaryText={User.getFullName(member)}
-                                                    leftAvatar={
-                                                        <Avatar
-                                                            backgroundColor={member['avatar']}
-                                                        >
-                                                            {member.first_name[0]}
-                                                        </Avatar>}
+                                                    onTouchTap={this.handleUserClick.bind(this, member)}
+                                                    leftAvatar={avatar}
                                                     rightIconButton={
                                                         (admin["username"] != member["username"] && this.state.role < 3) ?
                                                         <IconButton onClick={() => this.handleDelete(member)}>

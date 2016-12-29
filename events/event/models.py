@@ -24,13 +24,6 @@ class Event(models.Model):
     def __str__(self):
         return "%s" % self.title
 
-    def save(self, *args, **kwargs):
-        if not isinstance(self.start_date, datetime) and not isinstance(self.end_date, datetime):
-            self.start_date = TZ.localize(datetime.utcfromtimestamp(float(self.start_date)))
-            self.end_date = TZ.localize(datetime.utcfromtimestamp(float(self.end_date)))
-        if isinstance(self.location, str):
-            self.location = self.location.split(",")
-        super(self.__class__, self).save(*args, **kwargs)
 
     def serialize(self):
         return {
@@ -72,6 +65,8 @@ class Event(models.Model):
 
 
 class EventUserAssignment(models.Model):
+    class Meta():
+        ordering = ['-event__start_date']
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 

@@ -1,0 +1,156 @@
+@import "colors";
+
+@side: 250px;
+.profile {
+  width: 90%;
+  height: auto !important;
+  margin: 5% 10% !important;
+  .picture-card {
+    margin: 10px 10px;
+    display: inline-block !important;
+    height: auto !important;
+    max-width: @side+40px !important;
+    max-height: @side+40px !important;
+    padding: 20px 20px !important;
+    width: 100% !important;
+
+    .image-container {
+      display: inline-block;
+      max-width: @side;
+      position:relative;
+      object-fit: contain;
+      &:hover {
+        .button-panel {
+          height: 37px;
+          .upload-picture {
+            color: darken(@popover-dialog-header, 20%) !important;
+          }
+        }
+      }
+
+      .button-panel {
+
+        -moz-transition: all 0.1s linear;
+        -o-transition: all 0.1s linear;
+        -webkit-transition: all 0.1s linear;
+        height: 0;
+        width: @side;
+        background-color: @button-panel;
+        position: absolute;
+        bottom: 0;
+
+        .upload-picture {
+          margin: 0 auto !important;
+          background-color: transparent !important;
+          color: transparent !important;
+          cursor: pointer;
+          width: 100% !important;
+          &:hover {
+            color: @popover-dialog-header !important;
+          }
+        }
+
+      }
+
+      .profile-pic {
+        max-height: @side;
+        width: @side;
+        object-fit: contain;
+        object-position: 100% 100%;
+      }
+    }
+  }
+
+  .info-card {
+
+    &:hover {
+      .update-profile {
+        visibility: visible;
+      }
+    }
+
+    .update-profile {
+      visibility: hidden;
+      position: absolute;
+      top: 0.7em;
+      right: 0.7em;
+      i {
+        color: @subheader;
+      }
+      &:hover {
+        cursor: pointer;
+        i {
+          color: @popover-header;
+        }
+      }
+    }
+
+    .profile-title {
+      span {
+        font-weight: 700;
+        color: @popover-header
+      }
+    }
+
+    .profile-subheader {
+      color: @subheader;
+    }
+
+    padding: 20px 20px !important;
+    position: absolute;
+    margin: 10px 10px;
+    display: inline-block !important;
+    max-height: @side+40px !important;
+    max-width: (@side*2) !important;
+  }
+
+}
+
+.file-upload {
+    cursor: pointer;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    width: 100%;
+    opacity: 0;
+}
+
+.upload-photo-button {
+  & span {
+    bottom: 42px !important;
+  }
+}
+
+.dialog-image-window {
+  img {
+    max-width: @side*2;
+    max-height: @side*2;
+    object-fit: contain;
+    object-position: 100%;
+  }
+  position: absolute !important;
+  bottom: 42% !important;
+  right: 21% !important;
+  left: 21% !important;
+  margin: 0 auto !important;
+  max-width: @side*1.5 !important;
+  max-height: @side*1.5 !important;
+}
+
+.pic-to-crop {
+  margin: 0 auto !important;
+  max-width: @side*2 !important;
+  max-height: @side*2 !important;
+  object-position: 100%;
+  img {
+    max-width: @side*2 !important;
+    max-height: @side*2 !important;
+    object-fit: contain;
+    object-position: 100%;
+  }
+}
+
+.validation-message {
+  margin-top: 10px;
+}
